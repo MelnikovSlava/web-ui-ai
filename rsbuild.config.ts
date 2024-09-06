@@ -8,5 +8,6 @@ export default defineConfig({
   },
   html: {
     favicon: "./src/assets/icon.png",
+    title: "Assistent",
   },
 });
