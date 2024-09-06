@@ -57,7 +57,7 @@ export class ChatStore {
   };
 
   private async _updateChatTitle(firstMessage: MessageBase) {
-    const title = firstMessage.content.trim().substring(0, 30);
+    const title = firstMessage.content.trim().substring(0, 100);
     await this._db.updateChatName(this.chat.id, title);
     this.chat.name = title;
   }
