@@ -1,0 +1,12 @@
+https://{$HOST}:8443 {
+	  encode zstd gzip
+
+    header /* {
+        -Server
+    }
+
+    root /var/www/html/dist
+
+    try_files {path} {path}/ /index.html
+    file_server
+}
