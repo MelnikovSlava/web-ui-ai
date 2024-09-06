@@ -48,5 +48,6 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           script: |
             cd ${{ secrets.PATH_APP }}
-            tar -xzf dist.tar.gz -C.
+            tar -xzf dist.tar.gz -C .
+            rm dist.tar.gz
             # docker-compose up -d
