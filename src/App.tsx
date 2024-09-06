@@ -23,7 +23,10 @@ const App = () => {
 	return (
 		<PanelGroup
 			direction="horizontal"
-			className={clsx("bg-main-background text-white")}
+			className={clsx(
+				"bg-main-background text-white",
+				"border-t-main-border border-t",
+			)}
 		>
 			<Panel
 				defaultSize={panelSize}
