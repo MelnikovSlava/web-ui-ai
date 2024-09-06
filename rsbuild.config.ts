@@ -6,4 +6,7 @@ export default defineConfig({
   output: {
     assetPrefix: ".",
   },
+  html: {
+    favicon: "./src/assets/icon.png",
+  },
 });
