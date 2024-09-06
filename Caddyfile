@@ -1,12 +1,52 @@
-https://{$HOST}:8443 {
-	  encode zstd gzip
+{
+    # Global settings
+    # Disable automatic redirects from HTTP to HTTPS
+    # This allows us to control redirects manually
+    auto_https disable_redirects
+}
 
+# Settings for the main domain on port 8443
+# {$HOST} is an environment variable that should contain your domain name
+{$HOST}:8443 {
+    # TLS (HTTPS) settings
+    # 'on_demand' means Caddy will request a certificate
+    # when the domain is first accessed
+    tls {
+        on_demand
+    }
+
+    # Create a named matcher for HTTP requests
+    @http {
+        protocol http
+    }
+    # Redirect all HTTP requests to HTTPS
+    # {host} is the current domain, {uri} is the current path
+    redir @http https://{host}:8443{uri}
+
+    # Enable response compression
+    encode zstd gzip
+
+    # Response header settings
+    # Remove the Server header for increased security
     header /* {
         -Server
     }
 
+    # Set the root directory for serving files
     root /var/www/html/dist
 
+    # Try to serve the requested file, then directory, then fall back to index.html
+    # This is useful for single-page applications (SPAs)
     try_files {path} {path}/ /index.html
+
+    # Enable static file serving
     file_server
+}
+
+# Handle requests on port 80 (HTTP)
+# This is used for the HTTP-01 challenge when obtaining SSL certificates
+:80 {
+    # Respond with "OK" to all requests
+    # This allows the ACME challenge to succeed
+    respond "OK" 200
 }
