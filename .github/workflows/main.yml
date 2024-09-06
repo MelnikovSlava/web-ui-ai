@@ -28,6 +28,10 @@ jobs:
 
       - name: Archive files
         run: tar -czf dist.tar.gz dist
+      
+      - name: Update Caddyfile with HOST
+        run: |
+          sed -i 's/{$HOST}/${{ secrets.HOST }}/g' Caddyfile
 
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.4

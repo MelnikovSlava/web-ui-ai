@@ -6,8 +6,7 @@ services:
     image: caddy:2.8.4
     restart: always
     ports:
-      # - "80:80"
-      - "8443:443"
+      - "8443:8443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./dist:/var/www/html/dist
