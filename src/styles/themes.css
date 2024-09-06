@@ -1,0 +1,39 @@
+/* :root {
+    --baseOne: hsl(0, 0%, 100%);
+    --baseTwo: hsl(252, 2%, 51%);
+    --baseThree: hsl(0, 0%, 96%);
+    --baseFour: hsl(0, 0%, 100%);
+    --accent1: hsl(6, 100%, 80%);
+  } */
+
+/* @media (prefers-color-scheme: dark) {
+    :root {
+      --baseOne: hsl(229, 57%, 11%);
+      --baseTwo: hsl(243, 100%, 93%);
+      --baseThree: hsl(228, 56%, 26%);
+      --baseFour: hsl(229, 57%, 11%);
+      --accent1: hsl(6, 100%, 80%);
+    }
+  } */
+
+body[data-theme="gray"] {
+  /* base */
+  --main-background: #212121;
+  --workspace-active: #42464f;
+  --main-border: #383737;
+  --active-chat: #383737;
+  --hover-chat: #282828;
+  --hover-active-chat: #3e3d3d;
+  --msg-user-border: #343841;
+  --msg-user-body: #24272d;
+  --msg-assistent-border: #383737;
+  --msg-assistent-body: #2a2929;
+
+  /* chat */
+  --chat-content-width: 900px;
+  --chat-color-text: #cacaca;
+
+  /* scroll */
+  --scrollbar-tracker: #282828;
+  --scrollbar-thumb: #807f7f;
+}

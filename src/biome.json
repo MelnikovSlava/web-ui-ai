@@ -1,0 +1,27 @@
+{
+  "linter": {
+    "enabled": true,
+    "rules": {
+      "correctness": {
+        "noUnusedImports": {
+          "level": "error",
+          "fix": "none"
+        }
+      },
+      "style":{
+        "useImportType": {
+          "level": "warn",
+          "fix": "safe"
+        }
+      },
+      "a11y": {
+        "useKeyWithClickEvents": {
+          "level": "info"
+        }
+      }
+    }
+  },
+  "formatter": {
+    "enabled": true
+  }
+}
