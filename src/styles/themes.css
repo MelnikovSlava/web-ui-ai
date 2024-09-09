@@ -16,7 +16,7 @@
     }
   } */
 
-body[data-theme="gray"] {
+body[data-theme="default"] {
   /* base */
   --main-background: #212121;
   --workspace-active: #42464f;

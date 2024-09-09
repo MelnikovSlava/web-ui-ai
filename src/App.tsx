@@ -5,15 +5,14 @@ import { Panel as Side } from "./panel/Panel";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { useEffect, useState } from "react";
 import { localStorageUtils } from "./utils/localStorage";
+import { useSetTheme } from "./utils/theme";
 
 const App = () => {
 	const [panelSize, setPanelSize] = useState(
 		() => localStorageUtils.getPanelWidth() || 30,
 	);
 
-	useEffect(() => {
-		document.body.setAttribute("data-theme", "gray");
-	}, []);
+	useSetTheme();
 
 	const handlePanelResize = (size: number) => {
 		setPanelSize(size);

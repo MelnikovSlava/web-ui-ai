@@ -2,10 +2,11 @@ import React, { FC, useContext, useState } from "react";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import { MainLayout } from "../../layouts/MainLayout";
-import { FormControl, FormLabel, Input } from "@mui/joy";
+import { FormControl, FormLabel, Input, Select } from "@mui/joy";
 import { localStorageUtils } from "../../utils/localStorage";
 import { IButton } from "../../ui-kit/IButton";
 import { useGlobalStore } from "../../store/global.store";
+import { SelectTheme } from "./SelectTheme";
 
 export const Settings = observer(() => {
 	const store = useGlobalStore();
@@ -32,6 +33,8 @@ export const Settings = observer(() => {
 					<FormLabel sx={{ color: "inherit" }}>Openrouter key</FormLabel>
 					<Input value={token} onChange={handleTokenChange} />
 				</FormControl>
+
+				<SelectTheme />
 			</div>
 
 			<div className={clsx("flex")}>

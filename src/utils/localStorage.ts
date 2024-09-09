@@ -1,5 +1,6 @@
 const PANEL_WIDTH_KEY = "left_panel_width";
 const TOKEN = "token";
+const THEME = "theme";
 
 export const localStorageUtils = {
   setPanelWidth: (width: number) => {
@@ -17,6 +18,14 @@ export const localStorageUtils = {
 
   setToken: (value: string) => {
     return localStorage.setItem(TOKEN, value);
+  },
+
+  setTheme: (value: string) => {
+    return localStorage.setItem(THEME, value);
+  },
+
+  getTheme: () => {
+    return localStorage.getItem(THEME);
   },
 
   clearAllSettings: () => {
