@@ -6,6 +6,8 @@ module.exports = {
     extend: {
       colors: {
         "main-background": "var(--main-background)",
+        "panel-background": "var(--panel-background)",
+        "sidebar-background": "var(--sidebar-background)",
         "workspace-active": "var(--workspace-active)",
         "main-border": "var(--main-border)",
         "active-chat": "var(--active-chat)",
@@ -16,6 +18,7 @@ module.exports = {
         "msg-assistent-border": "var(--msg-assistent-border)",
         "msg-assistent-body": "var(--msg-assistent-body)",
         "chat-color-text": "var(--chat-color-text)",
+        "control-element": "var(--control-element)",
       },
       maxWidth: {
         "chat-content": "var(--chat-content-width)",

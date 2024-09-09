@@ -6,6 +6,7 @@ import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";
 import { useEffect, useState } from "react";
 import { localStorageUtils } from "./utils/localStorage";
 import { useSetTheme } from "./utils/theme";
+import { Sidebar } from "./sidebar/Sidebar";
 
 const App = () => {
 	const [panelSize, setPanelSize] = useState(
@@ -20,26 +21,29 @@ const App = () => {
 	};
 
 	return (
-		<PanelGroup
-			direction="horizontal"
+		<div
 			className={clsx(
+				"flex",
 				"bg-main-background text-white",
 				"border-t-main-border border-t",
 			)}
 		>
-			<Panel
-				defaultSize={panelSize}
-				minSize={20}
-				maxSize={50}
-				onResize={handlePanelResize}
-			>
-				<Side />
-			</Panel>
-			<PanelResizeHandle className={clsx("w-[1px] bg-main-border")} />
-			<Panel>
-				<Main />
-			</Panel>
-		</PanelGroup>
+			<Sidebar />
+			<PanelGroup direction="horizontal">
+				<Panel
+					defaultSize={panelSize}
+					minSize={20}
+					maxSize={50}
+					onResize={handlePanelResize}
+				>
+					<Side />
+				</Panel>
+				<PanelResizeHandle className={clsx("w-[1px] bg-main-border")} />
+				<Panel>
+					<Main />
+				</Panel>
+			</PanelGroup>
+		</div>
 	);
 };
 

@@ -3,10 +3,11 @@ import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import { Textarea } from "@mui/joy";
 import type { VitalProps } from "../../../utils/types";
-import { useGlobalStore } from "../../../store/global.store";
+import { store, useGlobalStore } from "../../../store/global.store";
 import type { ChatStore } from "../../../store/chat.store";
 import { LuSend } from "react-icons/lu";
 import { StopBtn } from "./StopBtn";
+import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 
 type InputBlockProps = {} & VitalProps;
 
@@ -21,7 +22,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 	}, [chatStore, isStreaming]);
 
 	const handleSendMessage = async () => {
-		if (chatStore.input.trim()) {
+		if (chatStore.input?.trim()) {
 			await chatStore.sendMessage(chatStore.input);
 		}
 	};
@@ -76,18 +77,14 @@ export const InputBlock = observer((props: InputBlockProps) => {
 				{isStreaming ? (
 					<StopBtn onClick={handleStopStreaming} />
 				) : (
-					<div
+					<HoverWrapper
 						className={clsx(
 							"flex items-center justify-center",
 							"h-[36px] w-[36px]",
 						)}
 					>
-						<LuSend
-							onClick={handleSendMessage}
-							size={22}
-							className={clsx("hover:opacity-100 opacity-40")}
-						/>
-					</div>
+						<LuSend onClick={handleSendMessage} size={22} />
+					</HoverWrapper>
 				)}
 			</div>
 		</div>

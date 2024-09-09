@@ -30,9 +30,7 @@ export const SelectTheme = (props: SelectThemeProps) => {
 		},
 	];
 
-	const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-		const theme = event.target.value as Theme;
-
+	const handleChange = (theme: Theme) => {
 		setTheme(theme);
 		setGlobalTheme(theme);
 	};
@@ -40,7 +38,11 @@ export const SelectTheme = (props: SelectThemeProps) => {
 	return (
 		<FormControl>
 			<FormLabel sx={{ color: "inherit" }}>Theme</FormLabel>
-			<Select variant="outlined" onChange={(e) => handleChange(e)}>
+			<Select
+				value={theme}
+				variant="outlined"
+				onChange={(e, value) => handleChange(value || "default")}
+			>
 				{items.map((item) => {
 					return (
 						<Option key={item.value} value={item.value}>

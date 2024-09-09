@@ -19,7 +19,15 @@ export const Panel = observer(() => {
 	const workspaces = [...store.workspaces.values()];
 
 	return (
-		<div className={clsx("flex flex-col", "p-4", "h-screen", "overflow-auto")}>
+		<div
+			className={clsx(
+				"flex flex-col",
+				"p-4",
+				"h-screen",
+				"overflow-auto",
+				"bg-panel-background",
+			)}
+		>
 			<div className={clsx("panel-list flex-1")}>
 				{workspaces.map((w) => (
 					<Accordion
@@ -41,14 +49,6 @@ export const Panel = observer(() => {
 						</div>
 					</Accordion>
 				))}
-			</div>
-
-			<div className={clsx("flex items-center")}>
-				<CreateNewWBtn
-					onClick={store.createNewWorkspace}
-					className={clsx("")}
-				/>
-				<IoMdSettings onClick={() => store.setView("settings")} />
 			</div>
 		</div>
 	);

@@ -2,11 +2,11 @@ import React, { FC } from "react";
 import clsx from "clsx";
 import { VitalProps } from "../utils/types";
 import { Workspace } from "../logic/types";
-import { AiFillAppstore } from "react-icons/ai";
 import { useGlobalStore } from "../store/global.store";
-import { AiOutlineAppstore } from "react-icons/ai";
 import { IoIosSettings } from "react-icons/io";
 import { observer } from "mobx-react-lite";
+import { RiApps2Fill } from "react-icons/ri";
+import { RiApps2Line } from "react-icons/ri";
 
 type WorkspaceItemProps = {
 	workspace: Workspace;
@@ -36,7 +36,7 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 				props.className,
 			)}
 		>
-			{isActive ? <AiFillAppstore /> : <AiOutlineAppstore />}
+			{isActive ? <RiApps2Fill /> : <RiApps2Line />}
 			<span className={clsx("ml-2", "flex-1", "line-clamp-1")}>{name}</span>
 
 			<IoIosSettings
