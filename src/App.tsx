@@ -23,7 +23,7 @@ const App = () => {
 	return (
 		<div
 			className={clsx(
-				"flex",
+				"flex h-full",
 				"bg-main-background text-white",
 				"border-t-main-border border-t",
 			)}
