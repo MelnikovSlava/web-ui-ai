@@ -4,7 +4,7 @@ import clsx from "clsx";
 import type { VitalProps } from "../../../utils/types";
 import type { MessageBase } from "../../../store/types";
 import hljs from "highlight.js";
-import { Marked, Renderer, marked } from "marked";
+import { Marked, Renderer } from "marked";
 import { markedHighlight } from "marked-highlight";
 import markedKatex from "marked-katex-extension";
 import { useClipboard } from "../../../hooks/useClipboard";
