@@ -16,7 +16,7 @@ export const Sidebar = observer(() => {
 				"bg-sidebar-background",
 				"w-[50px]",
 				"flex flex-col items-center",
-				"py-4",
+				"pb-4 pt-6",
 			)}
 		>
 			<HoverWrapper className={clsx("")} onClick={store.createNewWorkspace}>
