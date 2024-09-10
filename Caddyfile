@@ -16,12 +16,12 @@
     # }
 
     # Create a named matcher for HTTP requests
-    @http {
-        protocol http
-    }
+    # @http {
+    #     protocol http
+    # }
     # Redirect all HTTP requests to HTTPS
     # {host} is the current domain, {uri} is the current path
-    redir @http https://{host}:8443{uri}
+    # redir @http https://{host}:8443{uri}
 
     # Enable response compression
     encode zstd gzip
