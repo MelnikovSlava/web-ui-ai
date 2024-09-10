@@ -8,6 +8,7 @@ import { WorkspaceItem } from "./WorkspaceItem";
 import { observer } from "mobx-react-lite";
 import { Accordion } from "./Accordion";
 import { IoMdSettings } from "react-icons/io";
+import { NoWorkspaces } from "./NoWorkspaces";
 
 export const Panel = observer(() => {
 	const store = useGlobalStore();
@@ -49,6 +50,7 @@ export const Panel = observer(() => {
 						</div>
 					</Accordion>
 				))}
+				{workspaces.length === 0 && <NoWorkspaces className={clsx("mt-2")} />}
 			</div>
 		</div>
 	);

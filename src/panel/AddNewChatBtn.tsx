@@ -18,7 +18,7 @@ export const AddNewChatBtn = (props: AddNewChatBtnProps) => {
 			)}
 			onClick={props.onClick}
 		>
-			<IoIosAddCircleOutline size={20} />
+			<IoIosAddCircleOutline size={16} />
 			<span className={clsx("ml-1")}>Add</span>
 		</HoverWrapper>
 	);
