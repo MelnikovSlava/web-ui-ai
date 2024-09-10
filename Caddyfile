@@ -2,7 +2,7 @@
     # Global settings
     # Disable automatic redirects from HTTP to HTTPS
     # This allows us to control redirects manually
-    auto_https disable_redirects
+    # auto_https disable_redirects
 }
 
 # Settings for the main domain on port 8443
@@ -11,9 +11,9 @@
     # TLS (HTTPS) settings
     # 'on_demand' means Caddy will request a certificate
     # when the domain is first accessed
-    tls {
-        on_demand
-    }
+    # tls {
+    #     on_demand
+    # }
 
     # Create a named matcher for HTTP requests
     @http {
