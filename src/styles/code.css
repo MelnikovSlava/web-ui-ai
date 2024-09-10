@@ -30,7 +30,7 @@
   overflow: auto;
   display: block;
   width: auto;
-  background: var('--msg-code-body');
+  background: var(--msg-code-body);
   color: #f8f8f2;
   padding: 16px;
   font-size: 13px;

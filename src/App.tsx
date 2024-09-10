@@ -34,8 +34,8 @@ const App = () => {
 			<PanelGroup direction="horizontal">
 				<Panel
 					defaultSize={panelSize}
-					minSize={20}
-					maxSize={50}
+					minSize={5}
+					maxSize={30}
 					onResize={handlePanelResize}
 				>
 					<Side />

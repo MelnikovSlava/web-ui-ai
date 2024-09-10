@@ -8,6 +8,8 @@ import { Marked, Renderer } from "marked";
 import { markedHighlight } from "marked-highlight";
 import markedKatex from "marked-katex-extension";
 import { useClipboard } from "../../../hooks/useClipboard";
+import { Toolbox } from "./Toolbox";
+import { Avatar } from "./Avatar";
 
 type MessageProps = {
 	msg: MessageBase;
@@ -90,8 +92,8 @@ export const Message = observer((props: MessageProps) => {
 				"w-full",
 				// "max-w-[800px]",
 				"mb-5",
-				"flex",
-				isUser ? "justify-end" : "justify-start",
+				"flex flex-col",
+				isUser ? "items-end" : "items-start",
 				props.className,
 			)}
 		>
@@ -100,16 +102,33 @@ export const Message = observer((props: MessageProps) => {
 					isUser
 						? "bg-msg-user-body border-msg-user-border"
 						: "bg-msg-assistent-body border-msg-assistent-border",
+					isUser && "whitespace-pre-line",
 					"border",
 					"overflow-hidden",
 					"rounded-xl",
 					"py-3 px-4",
+					"mb-2",
+					// "min-w-[140px]",
+					// "w-full",
+					isUser && "max-w-[96%]",
+					"group/msg",
 				)}
-				// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
-				dangerouslySetInnerHTML={{
-					__html: isUser ? props.msg.content : parsedText,
-				}}
-			/>
+			>
+				<div className={clsx("flex", "w-full", "justify-between", "mb-2")}>
+					<Avatar isUser={isUser} />
+					<Toolbox
+						isUser={isUser}
+						className={clsx("ml-10", "group-hover/msg:visible invisible")}
+					/>
+				</div>
+
+				<div
+					// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+					dangerouslySetInnerHTML={{
+						__html: isUser ? props.msg.content : parsedText,
+					}}
+				/>
+			</div>
 		</div>
 	);
 });
