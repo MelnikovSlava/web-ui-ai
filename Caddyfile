@@ -5,6 +5,7 @@
     # auto_https disable_redirects
 }
 
+
 # Settings for the main domain on port 8443
 # {$HOST} is an environment variable that should contain your domain name
 {$HOST}:8443 {
