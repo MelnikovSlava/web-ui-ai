@@ -1,8 +1,8 @@
 import { makeAutoObservable } from "mobx";
-import { IndexedDb } from "../logic/indexed-db";
-import type { Workspace } from "../logic/types";
+import { IndexedDb } from "./indexed-db";
+import type { Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
-import { AiStore } from "../logic/ai-service";
+import { AiStore } from "./ai.store";
 
 type View = "chat" | "workspace" | "settings";
 

@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { localStorageUtils } from "./utils/localStorage";
 import { useSetTheme } from "./utils/theme";
 import { Sidebar } from "./sidebar/Sidebar";
+import { useHotkeysGlobal } from "./hooks/useHotkeys";
 
 const App = () => {
 	const [panelSize, setPanelSize] = useState(
@@ -14,6 +15,7 @@ const App = () => {
 	);
 
 	useSetTheme();
+	useHotkeysGlobal();
 
 	const handlePanelResize = (size: number) => {
 		setPanelSize(size);

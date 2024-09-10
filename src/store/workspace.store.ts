@@ -1,6 +1,6 @@
 import { makeAutoObservable } from "mobx";
-import type { IndexedDb } from "../logic/indexed-db";
-import type { Chat, Workspace } from "../logic/types";
+import type { IndexedDb } from "./indexed-db";
+import type { Chat, Workspace } from "./types";
 import { ChatStore } from "./chat.store";
 import { RootStore } from "./global.store";
 

@@ -7,6 +7,7 @@ import { localStorageUtils } from "../../utils/localStorage";
 import { IButton } from "../../ui-kit/IButton";
 import { useGlobalStore } from "../../store/global.store";
 import { SelectTheme } from "./SelectTheme";
+import { UsageWidget } from "./UsageWidget";
 
 export const Settings = observer(() => {
 	const store = useGlobalStore();
@@ -21,7 +22,7 @@ export const Settings = observer(() => {
 
 	const handleUpdateSettings = () => {
 		localStorageUtils.setToken(token);
-		store.aiStore.updateKey(token);
+		store.aiStore.updateToken(token);
 	};
 
 	return (
@@ -35,6 +36,8 @@ export const Settings = observer(() => {
 				</FormControl>
 
 				<SelectTheme />
+
+				<UsageWidget />
 			</div>
 
 			<div className={clsx("flex")}>

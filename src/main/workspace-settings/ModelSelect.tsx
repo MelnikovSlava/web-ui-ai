@@ -6,7 +6,7 @@ import {
 	CircularProgress,
 } from "@mui/joy";
 import { VitalProps } from "../../utils/types";
-import { AiStore } from "../../logic/ai-service";
+import { AiStore } from "../../store/ai.store";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 

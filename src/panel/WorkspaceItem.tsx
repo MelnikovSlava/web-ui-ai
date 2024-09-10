@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import clsx from "clsx";
 import { VitalProps } from "../utils/types";
-import { Workspace } from "../logic/types";
+import { Workspace } from "../store/types";
 import { useGlobalStore } from "../store/global.store";
 import { IoIosSettings } from "react-icons/io";
 import { observer } from "mobx-react-lite";
