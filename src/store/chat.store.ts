@@ -122,6 +122,6 @@ export class ChatStore {
   }
 
   public stopStreaming = () => {
-    this._aiStore.stopStreaming();
+    this._aiStore.abortRequest();
   };
 }

@@ -124,8 +124,8 @@ export class AiStore {
             const data = JSON.parse(content);
             const partialResponse = data.choices[0].delta.content;
             if (partialResponse) {
-              onPartialResponse(partialResponse);
               aiResponse += partialResponse;
+              onPartialResponse(partialResponse);
             }
           }
         }
