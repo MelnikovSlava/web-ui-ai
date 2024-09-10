@@ -11,3 +11,10 @@ services:
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./dist:/var/www/html/dist
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:
