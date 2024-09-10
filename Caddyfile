@@ -1,29 +1,4 @@
-{
-    # Global settings
-    # Disable automatic redirects from HTTP to HTTPS
-    # This allows us to control redirects manually
-    # auto_https disable_redirects
-}
-
-
-# Settings for the main domain on port 8443
-# {$HOST} is an environment variable that should contain your domain name
 {$HOST}:8443 {
-    # TLS (HTTPS) settings
-    # 'on_demand' means Caddy will request a certificate
-    # when the domain is first accessed
-    # tls {
-    #     on_demand
-    # }
-
-    # Create a named matcher for HTTP requests
-    # @http {
-    #     protocol http
-    # }
-    # Redirect all HTTP requests to HTTPS
-    # {host} is the current domain, {uri} is the current path
-    # redir @http https://{host}:8443{uri}
-
     # Enable response compression
     encode zstd gzip
 
