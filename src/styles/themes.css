@@ -36,6 +36,7 @@ body[data-theme="default"] {
   --msg-user-body: #24272d;
   --msg-assistent-border: #383737;
   --msg-assistent-body: #2a2929;
+  --msg-code-body: rgb(31, 31, 30);
 
   /* chat */
   --chat-content-width: 900px;
@@ -72,6 +73,7 @@ body[data-theme="ocean"] {
   --msg-user-body: #172235;
   --msg-assistent-border: #1F2937;
   --msg-assistent-body: #121B2A;
+  --msg-code-body: #101827;
 
   /* chat */
   --chat-content-width: 900px;
