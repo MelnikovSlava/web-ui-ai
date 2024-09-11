@@ -47,7 +47,9 @@ export class WorkspaceStore {
   };
 
   private _addChatToStore = async (chat: Chat) => {
-    this.chats.set(chat.id, new ChatStore(chat, this.model, this._db, this._root));
+    const newChat = new ChatStore(chat, this.model, this._db, this._root);
+    await newChat.init();
+    this.chats.set(chat.id, newChat);
   };
 
   public createNewChat = async () => {

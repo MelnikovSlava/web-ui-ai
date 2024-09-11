@@ -2,6 +2,8 @@ import { makeAutoObservable, runInAction } from "mobx";
 import type { IndexedDb } from "./indexed-db";
 import type { Chat, Message, MessageBase } from "./types";
 import type { RootStore } from "./global.store";
+import { AiStore } from "./ai.store";
+import { DEFAULT_CHAT_TITLE } from "../utils/constants";
 
 export class ChatStore {
 	private _db: IndexedDb;
@@ -28,8 +30,6 @@ export class ChatStore {
 			role: "assistant",
 		};
 
-		this._init();
-
 		makeAutoObservable(this);
 	}
 
@@ -53,7 +53,7 @@ export class ChatStore {
 		return this._aiStore.isStreaming;
 	}
 
-	private async _init() {
+	public async init() {
 		const messages = await this._db.getMessages(this.chat.id);
 		this._messages = new Map(messages.map((m) => [m.id, m]));
 	}
@@ -62,10 +62,27 @@ export class ChatStore {
 		this.input = input;
 	};
 
-	private async _updateChatTitle(firstMessage: MessageBase) {
-		const title = firstMessage.content.trim().substring(0, 100);
-		await this._db.updateChatName(this.chat.id, title);
-		this.chat.name = title;
+	private async _updateChatTitle() {
+		const ai = new AiStore();
+
+		const firstTwoMessages = this.messages.slice(0, 2);
+		const messagesForAi = this._prepareMessagesForAi(firstTwoMessages);
+
+		messagesForAi.push({
+			content:
+				"Write a short name for the chat from messages. Maximum 50 characters. I only need a clear title.",
+			role: "user",
+		});
+
+		const title = await ai.sendMessage(messagesForAi);
+
+		if (title) {
+			await this._db.updateChatName(this.chat.id, title);
+
+			runInAction(() => {
+				this.chat.name = title;
+			});
+		}
 	}
 
 	public async deleteMessage(msg: Message) {
@@ -98,8 +115,9 @@ export class ChatStore {
 		await this._db.updateMessageContent(messageId, newContent);
 
 		// Get all messages after the edited message
-		const messagesToDelete = this.messages
-			.filter((msg) => msg.timestamp > editedMessage.timestamp);
+		const messagesToDelete = this.messages.filter(
+			(msg) => msg.timestamp > editedMessage.timestamp,
+		);
 
 		// Delete messages after the edited one
 		for (const msg of messagesToDelete) {
@@ -123,8 +141,6 @@ export class ChatStore {
 		);
 		const messagesToCopy = this.messages.filter((msg) => msg.id <= messageId);
 
-		//TODO: rename default chat
-
 		for (const message of messagesToCopy) {
 			await this._db.addMessage({
 				chatId: newChat.id,
@@ -140,13 +156,23 @@ export class ChatStore {
 			this._db,
 			this._root,
 		);
+
+		await newChatStore.init();
+
 		const workspace = this._root.workspaces.get(this.chat.workspaceId);
 		workspace?.chats.set(newChat.id, newChatStore);
+
+		if (
+			newChatStore.chat.name === DEFAULT_CHAT_TITLE &&
+			newChatStore.messages.length >= 2
+		) {
+			newChatStore._updateChatTitle();
+		}
 
 		this._root.selectChat(newChat.id);
 	};
 
-	public inputMessage =async  (content: string)=> {
+	public inputMessage = async (content: string) => {
 		const userMessage: MessageBase = {
 			chatId: this.chat.id,
 			role: "user",
@@ -158,19 +184,21 @@ export class ChatStore {
 		runInAction(() => {
 			this._messages.set(addedMessage.id, addedMessage);
 			this.input = "";
-
-			if (this._messages.size < 2 && !this.chat.default) {
-				this._updateChatTitle(userMessage);
-			}
 		});
 
 		await this._sendMessagesToAi();
-	}
+	};
 
-	private _sendMessagesToAi = async ()=> {
-		const messagesForAi = Array.from(this._messages.values())
+	private _prepareMessagesForAi = (messages: Message[]) => {
+		const messagesForAi = messages
 			.sort((a, b) => a.timestamp - b.timestamp)
 			.map((msg) => ({ role: msg.role, content: msg.content }));
+
+		return messagesForAi;
+	};
+
+	private _sendMessagesToAi = async () => {
+		const messagesForAi = this._prepareMessagesForAi(this.messages);
 
 		const aiResponse = await this._aiStore.sendMessage(
 			messagesForAi,
@@ -194,9 +222,13 @@ export class ChatStore {
 			runInAction(() => {
 				this._messages.set(addedAiMessage.id, addedAiMessage);
 				this.currentStreamedMessage.content = "";
+
+				if (this._messages.size >= 2 && !this.chat.default) {
+					this._updateChatTitle();
+				}
 			});
 		}
-	}
+	};
 
 	public stopStreaming = () => {
 		this._aiStore.abortRequest();
