@@ -3,6 +3,7 @@ import { IndexedDb } from "./indexed-db";
 import type { Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
 import { AiStore } from "./ai.store";
+import { INIT_WORKSPACE_TITLE, DEFAULT_CHAT_TITLE } from "../utils/constants";
 
 type View = "chat" | "workspace" | "settings";
 
@@ -57,11 +58,9 @@ export class RootStore {
   };
 
   public createNewWorkspace = async () => {
-    const wTitle = "New Workspace";
-    const workspace = await this._db.createWorkspace(wTitle, "");
+    const workspace = await this._db.createWorkspace(INIT_WORKSPACE_TITLE, "");
 
-    const cTitle = "Default";
-    const chat = await this._db.createChat(workspace.id, cTitle, true);
+    const chat = await this._db.createChat(workspace.id, DEFAULT_CHAT_TITLE, true);
 
     this._addWorkspace(workspace);
     this.selectWorkspace(workspace.id);
@@ -84,7 +83,6 @@ export class RootStore {
     if (chats) {
       const arr = [...chats.values()];
       const defultChat = arr.find((chat) => chat.chat.default);
-      console.log("def chat", defultChat, arr);
 
       if (defultChat) {
         this.selectChat(defultChat.chat.id);

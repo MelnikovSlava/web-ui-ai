@@ -23,7 +23,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 
 	const handleSendMessage = async () => {
 		if (chatStore.input?.trim()) {
-			await chatStore.sendMessage(chatStore.input);
+			await chatStore.inputMessage(chatStore.input);
 		}
 	};
 
@@ -39,7 +39,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 	};
 
 	return (
-		<div className="relative w-full max-w-chat-content mx-auto">
+		<div className="relative w-full max-w-[var(--chat-content-width)] mx-auto">
 			<Textarea
 				slotProps={{
 					textarea: {
@@ -47,25 +47,32 @@ export const InputBlock = observer((props: InputBlockProps) => {
 					},
 				}}
 				autoFocus
-				placeholder="Ask me anything"
+				placeholder={isStreaming ? 'Generating ...' : "Ask me anything"}
 				value={chatStore.input}
 				onChange={(e) => chatStore.setInput(e.target.value)}
 				onKeyDown={handleKeyDown}
 				maxRows={20}
 				variant="outlined"
 				disabled={chatStore.isStreaming}
-				className={clsx("w-full", "!border-border")}
+				// disabled={true}
 				size="sm"
 				sx={{
 					"--Textarea-radius": "9px",
 					"--Textarea-gap": "9px",
 					"--Textarea-focusedThickness": "2px",
+					"--_Textarea-focusedHighlight": "var(--input-ring)",
 					// "--Textarea-minHeight": "50px",
 
+					width: '100%',
 					padding: "12px",
 					background: "none",
 					color: "inherit",
 					borderColor: "var(--main-border)",
+
+					"&.Mui-disabled": {
+						borderColor: "var(--main-border)",
+						opacity: '50%',
+					}
 				}}
 			/>
 			<div

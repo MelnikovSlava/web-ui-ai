@@ -3,6 +3,7 @@ import type { IndexedDb } from "./indexed-db";
 import type { Chat, Workspace } from "./types";
 import { ChatStore } from "./chat.store";
 import { RootStore } from "./global.store";
+import { INIT_CHAT_TITLE } from "../utils/constants";
 
 export class WorkspaceStore {
   private _db: IndexedDb;
@@ -36,7 +37,7 @@ export class WorkspaceStore {
   }
 
   public get defaultChat() {
-    return [...this.chats.values()].find((c) => c.default);
+    return [...this.chats.values()].find((c) => c.isDefault);
   }
 
   private _init = async () => {
@@ -45,13 +46,13 @@ export class WorkspaceStore {
     allChats.forEach(this._addChatToStore);
   };
 
-  private _addChatToStore = async (c: Chat) => {
-    this.chats.set(c.id, new ChatStore(c, this.model, this._db, this._root));
+  private _addChatToStore = async (chat: Chat) => {
+    this.chats.set(chat.id, new ChatStore(chat, this.model, this._db, this._root));
   };
 
   public createNewChat = async () => {
-    const cTitle = "Thread";
-    const chat = await this._db.createChat(this.workspace.id, cTitle);
+    const workspaceId = this.workspace.id;
+    const chat = await this._db.createChat(workspaceId, INIT_CHAT_TITLE);
 
     await this._addChatToStore(chat);
 

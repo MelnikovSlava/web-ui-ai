@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { useState } from "react";
 
 export function useClipboard({ timeout = 2000 } = {}) {

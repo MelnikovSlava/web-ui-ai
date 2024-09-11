@@ -38,15 +38,15 @@ export const ChatItem = observer((props: ChatItemProps) => {
 			onClick={() => openChat(id)}
 			className={clsx(
 				isActive
-					? "text-gray-200 hover:bg-hover-chat"
-					: "hover:bg-hover-chat text-gray-500",
-				"mb-1",
+					? "text-gray-200 hover:bg-[var(--hover-chat)]"
+					: "hover:bg-[var(--hover-chat)] text-gray-500",
 				"items-stretch",
 				"rounded-lg",
 				"select-none",
 				"cursor-pointer",
 				"flex items-center",
 				"overflow-hidden",
+				props.className,
 			)}
 		>
 			<div className={clsx("flex-1 p-2")}>

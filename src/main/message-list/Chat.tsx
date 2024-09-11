@@ -20,17 +20,15 @@ export const Chat = observer((props: ChatProps) => {
 		return null;
 	}
 
-	const messages = [...chatStore.messages.values()];
-
 	return (
 		<MainLayout
 			className={clsx(
 				// "px-5",
-				"text-chat-color-text text-[15px]",
+				"text-[var(--chat-color-text)] text-[15px]",
 				props.className,
 			)}
 		>
-			{messages.length > 0 ? (
+			{chatStore.messages.length > 0 ? (
 				<ListContainer
 					store={chatStore}
 					className={clsx(
@@ -44,12 +42,12 @@ export const Chat = observer((props: ChatProps) => {
 						className={clsx(
 							// "flex-1 overflow-auto",
 							"mx-auto",
-							"w-full max-w-chat-content",
+							"w-full max-w-[var(--chat-content-width)]",
 						)}
 					>
 						<Created timestamp={chatStore.chat.timestamp} />
 
-						{messages.map((message) => {
+						{chatStore.messages.map((message) => {
 							return <Message msg={message} key={message.id} />;
 						})}
 

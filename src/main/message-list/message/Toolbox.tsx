@@ -8,33 +8,70 @@ import { TbCopy } from "react-icons/tb";
 import { GrUpdate } from "react-icons/gr";
 import { GrEdit } from "react-icons/gr";
 import { MdForkRight } from "react-icons/md";
+import { IoMdMore } from "react-icons/io";
+import { useClipboard } from "../../../hooks/useClipboard";
+import { Message } from "../../../store/types";
+import { useGlobalStore } from "../../../store/global.store";
 
 type ToolboxProps = {
-	isUser: boolean;
+	msg: Message;
+	onEdit: () => void;
 } & VitalProps;
 
+const SIZE = 15;
+
 export const Toolbox = observer((props: ToolboxProps) => {
+	const store = useGlobalStore();
+	const currentChat = store.currentChatStore;
+	const { copy } = useClipboard();
+
+	const isUser = props.msg.role === 'user';
+
+	const items = [
+		{
+			icon: <TbCopy size={SIZE} />,
+			onClick: () => copy(props.msg.content),
+			show: true,
+		},
+		// {
+		// 	icon: <GrUpdate size={SIZE - 4} />,
+		// 	onClick: () => { },
+		// 	show: !isUser,
+		// },
+		{
+			icon: <GrEdit size={SIZE - 2} />,
+			onClick: props.onEdit,
+			show: isUser,
+		},
+		{
+			icon: <MdForkRight size={SIZE} />,
+			onClick: () => currentChat?.forkChat(props.msg.id),
+			show: !isUser,
+		},
+		{
+			icon: <RiDeleteBinLine size={SIZE} />,
+			onClick: () => currentChat?.deleteMessage(props.msg),
+			show: true,
+		},
+	];
+
 	return (
 		<div className={clsx("flex", props.className)}>
-			<IconWrapper className={clsx("ml-1")}>
-				<RiDeleteBinLine />
-			</IconWrapper>
+			{items.map((item, i) => {
+				if (!item.show) {
+					return null;
+				}
 
-			<IconWrapper className={clsx("ml-1")}>
-				<TbCopy />
-			</IconWrapper>
-
-			<IconWrapper className={clsx("ml-1")}>
-				<GrUpdate size={12} />
-			</IconWrapper>
-
-			<IconWrapper className={clsx("ml-1")}>
-				<GrEdit size={14} />
-			</IconWrapper>
-
-			<IconWrapper className={clsx("ml-1")}>
-				<MdForkRight size={18} />
-			</IconWrapper>
+				return (
+					<IconWrapper
+						key={i}
+						className={clsx("ml-0.5")}
+						onClick={item.onClick}
+					>
+						{item.icon}
+					</IconWrapper>
+				);
+			})}
 		</div>
 	);
 });

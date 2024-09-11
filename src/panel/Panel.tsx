@@ -9,6 +9,7 @@ import { observer } from "mobx-react-lite";
 import { Accordion } from "./Accordion";
 import { IoMdSettings } from "react-icons/io";
 import { NoWorkspaces } from "./NoWorkspaces";
+import { Stepper, Step } from "@mui/joy";
 
 export const Panel = observer(() => {
 	const store = useGlobalStore();
@@ -26,7 +27,7 @@ export const Panel = observer(() => {
 				"p-4",
 				"h-screen",
 				"overflow-auto",
-				"bg-panel-background",
+				"bg-[var(--panel-background)]",
 			)}
 		>
 			<div className={clsx("panel-list flex-1")}>
@@ -42,6 +43,7 @@ export const Panel = observer(() => {
 							{[...w.chats.values()].map((chat) => (
 								<ChatItem
 									chat={chat}
+									className="mb-1"
 									key={chat.chat.id}
 									workspaceId={w.workspace.id}
 								/>

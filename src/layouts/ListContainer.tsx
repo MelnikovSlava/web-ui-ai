@@ -53,7 +53,7 @@ const ListContainer = observer((props: Props) => {
 
 		// Reset manual scrolling flag
 		isUserManuallyScrollingUp.current = false;
-	}, [props.store.messages.size]);
+	}, [props.store.messages.length]);
 
 	useEffect(() => {
 		if (isUserManuallyScrollingUp.current === true) return;

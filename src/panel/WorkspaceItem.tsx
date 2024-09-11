@@ -25,8 +25,8 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 		<div
 			onClick={() => openWorkspace(id)}
 			className={clsx(
-				isActive ? "bg-workspace-active" : "opacity-70",
-				"border-workspace-active border",
+				isActive ? "bg-[var(--workspace-active)]" : "opacity-70",
+				"border-[var(--workspace-active)] border",
 				"flex items-center",
 				"p-2",
 				"rounded-lg",

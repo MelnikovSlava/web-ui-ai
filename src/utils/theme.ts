@@ -1,7 +1,9 @@
 import { useEffect } from "react";
 import { localStorageUtils } from "./localStorage";
 
-export type Theme = "ocean" | "default";
+export const Themes = ["ocean", "default", "lucide"] as const;
+
+export type Theme = (typeof Themes)[number];
 
 export function getTheme(): Theme {
   return (localStorageUtils.getTheme() as Theme) || "default";

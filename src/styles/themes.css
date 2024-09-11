@@ -87,5 +87,42 @@ body[data-theme="ocean"] {
   --control-element: #D1D5DB;
 
   /* input */
-  --input-ring: #D7BA7D;
+  --input-ring: #D1D5DB;
+}
+
+body[data-theme="lucide"] {
+  /* base */
+  --main-background: #1B1B1F;
+  --main-border: #2E2E32;
+  --panel-background: #161618;
+  --sidebar-background: #161618;
+
+  /* workspace */
+  --workspace-active: #282A2F;
+
+  /* chat */
+  --active-chat: #DEDED5;
+  --hover-chat: #282828;
+  --hover-active-chat: #3e3d3d;
+
+  /* message */
+  --msg-user-border: #1f1f23;
+  --msg-user-body: #222228;
+  --msg-assistent-border: #1F2937;
+  --msg-assistent-body: #121B2A;
+  --msg-code-body: #101827;
+
+  /* chat */
+  --chat-content-width: 900px;
+  --chat-color-text: #DEDED5;
+
+  /* scroll */
+  --scrollbar-tracker: #282828;
+  --scrollbar-thumb: #807f7f;
+
+  /* controls */
+  --control-element: #F67273;
+
+  /* input */
+  --input-ring: #F67273;
 }

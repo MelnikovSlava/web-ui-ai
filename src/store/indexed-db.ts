@@ -154,19 +154,28 @@ export class IndexedDb {
     });
   }
 
-  async addMessage(message: MessageBase): Promise<Message> {
+  async addMessage(message: Partial<Message>): Promise<Message> {
     const { store, transaction } = this.getObjectStore("messages", "readwrite");
     return new Promise((resolve, reject) => {
       const timestamp = new Date().getTime();
-      const request = store.add({ ...message, timestamp });
+      const request = store.add({timestamp, ...message });
       transaction.onerror = () => reject(transaction.error);
       transaction.oncomplete = () => {
         const id = request.result as number;
-        const newMessage: Message = { ...message, timestamp, id };
+        const newMessage: Message = { timestamp, id, ...message } as Message;
         resolve(newMessage);
       };
     });
   }
+
+  async deleteMessage(messageId: number): Promise<void> {
+  const { store, transaction } = this.getObjectStore("messages", "readwrite");
+  return new Promise((resolve, reject) => {
+    const request = store.delete(messageId);
+    transaction.onerror = () => reject(transaction.error);
+    transaction.oncomplete = () => resolve();
+  });
+}
 
   async updateChatName(id: number, newName: string): Promise<void> {
     const { store, transaction } = this.getObjectStore("chats", "readwrite");
@@ -185,6 +194,24 @@ export class IndexedDb {
       transaction.oncomplete = () => resolve();
     });
   }
+
+async updateMessageContent(messageId: number, newContent: string): Promise<void> {
+  const { store, transaction } = this.getObjectStore("messages", "readwrite");
+  return new Promise((resolve, reject) => {
+    const request = store.get(messageId);
+    request.onsuccess = () => {
+      const message = request.result as Message;
+      if (message) {
+        message.content = newContent;
+        store.put(message);
+      } else {
+        reject(new Error("Message not found"));
+      }
+    };
+    transaction.onerror = () => reject(transaction.error);
+    transaction.oncomplete = () => resolve();
+  });
+}
 
   async updateWorkspace(
     workspaceId: number,

@@ -26,8 +26,8 @@ const App = () => {
 		<div
 			className={clsx(
 				"flex h-full",
-				"bg-main-background text-white",
-				"border-t-main-border border-t",
+				"bg-[var(--main-background)] text-white",
+				"border-t-[var(--main-border)] border-t",
 			)}
 		>
 			<Sidebar />
@@ -40,7 +40,9 @@ const App = () => {
 				>
 					<Side />
 				</Panel>
-				<PanelResizeHandle className={clsx("w-[1px] bg-main-border")} />
+				<PanelResizeHandle
+					className={clsx("w-[1px] bg-[var(--main-border)]")}
+				/>
 				<Panel>
 					<Main />
 				</Panel>

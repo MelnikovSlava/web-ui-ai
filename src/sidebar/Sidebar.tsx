@@ -12,8 +12,8 @@ export const Sidebar = observer(() => {
 	return (
 		<div
 			className={clsx(
-				"border-r-main-border border-r",
-				"bg-sidebar-background",
+				"border-r-[var(--main-border)] border-r",
+				"bg-[var(--sidebar-background)]",
 				"w-[50px]",
 				"flex flex-col items-center",
 				"pb-4 pt-6",
@@ -23,7 +23,7 @@ export const Sidebar = observer(() => {
 				<RiApps2AddFill size={22} className={clsx("")} />
 			</HoverWrapper>
 
-			<div className={clsx("flex-1")}></div>
+			<div className={clsx("flex-1")} />
 
 			<HoverWrapper
 				className={clsx("")}
