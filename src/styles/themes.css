@@ -18,13 +18,15 @@
 
 body[data-theme="default"] {
   /* base */
+  --main-color-text: #cacaca;
   --main-background: #212121;
   --main-border: #383737;
   --panel-background: #212121;
   --sidebar-background: #212121;
 
   /* workspace */
-  --workspace-active: #42464f;
+  --workspace-active: #353434;
+  /* --workspace-active: #42464f; */
 
   /* chat */
   --active-chat: #383737;
@@ -55,6 +57,7 @@ body[data-theme="default"] {
 
 body[data-theme="ocean"] {
   /* base */
+  --main-color-text: #fff;
   --main-background: #101827;
   --main-border: #1F2937;
   --panel-background: #141C2B;
@@ -65,8 +68,8 @@ body[data-theme="ocean"] {
 
   /* chat */
   --active-chat: #383737;
-  --hover-chat: #282828;
-  --hover-active-chat: #3e3d3d;
+  --hover-chat: #1a2538;
+  --hover-active-chat: #1a2538;
 
   /* message */
   --msg-user-border: #1F2937;
@@ -92,6 +95,7 @@ body[data-theme="ocean"] {
 
 body[data-theme="lucide"] {
   /* base */
+  --main-color-text: #fff;
   --main-background: #1B1B1F;
   --main-border: #2E2E32;
   --panel-background: #161618;

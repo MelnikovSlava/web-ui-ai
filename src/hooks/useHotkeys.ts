@@ -4,7 +4,7 @@ import { useGlobalStore } from "../store/global.store";
 export const useHotkeysGlobal = () => {
   const store = useGlobalStore();
 
-  useHotkeys("ctrl+m", () => {
+  useHotkeys("ctrl+n", () => {
     if (store.currentWorkspaceStore) {
       store.currentWorkspaceStore.createNewChat();
     }

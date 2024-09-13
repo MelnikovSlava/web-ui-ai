@@ -26,7 +26,7 @@ const App = () => {
 		<div
 			className={clsx(
 				"flex h-full",
-				"bg-[var(--main-background)] text-white",
+				"bg-[var(--main-background)] text-[var(--main-color-text)]",
 				"border-t-[var(--main-border)] border-t",
 			)}
 		>

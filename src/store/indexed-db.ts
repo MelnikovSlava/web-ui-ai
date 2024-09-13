@@ -83,7 +83,7 @@ export class IndexedDb {
 
   async createChat(
     workspaceId: number,
-    name: string,
+    name = '',
     isDefault = false
   ): Promise<Chat> {
     const { store, transaction } = this.getObjectStore("chats", "readwrite");

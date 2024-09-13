@@ -1,12 +1,13 @@
 import React, { FC, useContext } from "react";
-import { IoCloseSharp } from "react-icons/io5";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import type { VitalProps } from "../utils/types";
 import type { ChatStore } from "../store/chat.store";
 import { useGlobalStore } from "../store/global.store";
-import useModifierKeys from "../hooks/useModifierKeys";
+import { RiDeleteBinLine } from "react-icons/ri";
 import { MdCleaningServices } from "react-icons/md";
+import { IconWrapper } from "../ui-kit/IconWrapper";
+import { DEFAULT_CHAT_TITLE, INIT_CHAT_TITLE } from "../utils/constants";
 
 type ChatItemProps = {
 	workspaceId: number;
@@ -15,9 +16,10 @@ type ChatItemProps = {
 
 export const ChatItem = observer((props: ChatItemProps) => {
 	const store = useGlobalStore();
-	const isModifierPressed = useModifierKeys();
-	const { id, name, default: def } = props.chat.chat;
-	const isActive = id === store.openChatId;
+	const chatId = props.chat.chat.id;
+	const isDefault = props.chat.isDefault;
+	const isActive = chatId === store.openChatId;
+	const chatName = props.chat.chat.name || INIT_CHAT_TITLE;
 
 	const openChat = (chatId: number) => {
 		store.selectChat(chatId);
@@ -31,11 +33,9 @@ export const ChatItem = observer((props: ChatItemProps) => {
 		store.clearChat(chatId);
 	};
 
-	const showDeleteIcon = isModifierPressed;
-
 	return (
 		<div
-			onClick={() => openChat(id)}
+			onClick={() => openChat(chatId)}
 			className={clsx(
 				isActive
 					? "text-gray-200 hover:bg-[var(--hover-chat)]"
@@ -46,37 +46,34 @@ export const ChatItem = observer((props: ChatItemProps) => {
 				"cursor-pointer",
 				"flex items-center",
 				"overflow-hidden",
+				"p-2",
+				"group/chat",
 				props.className,
 			)}
 		>
-			<div className={clsx("flex-1 p-2")}>
-				<h1 className={clsx("line-clamp-1 pr-2 text-[14px]")}>{name} </h1>
-			</div>
+			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>{isDefault ? DEFAULT_CHAT_TITLE : chatName}</h1>
 
 			<div
 				onClick={(e) => {
 					e.stopPropagation();
 
-					if (def) {
-						clearChat(id);
+					if (isDefault) {
+						clearChat(chatId);
 					} else {
-						deleteChat(id);
+						deleteChat(chatId);
 					}
 				}}
 				className={clsx(
-					showDeleteIcon ? "block" : "hidden",
-					"flex items-center justify-center",
-					"opacity-30 hover:opacity-100",
-					"text-white",
-					def ? "bg-orange-400" : "bg-red-400",
-					"w-[40px]",
+					"group-hover/chat:opacity-100 opacity-0"
 				)}
 			>
-				{def ? (
-					<MdCleaningServices size={18} className={clsx("mr-1")} />
-				) : (
-					<IoCloseSharp size={20} className={clsx("mr-1")} />
-				)}
+				<IconWrapper className={clsx('')}>
+					{isDefault ? (
+						<MdCleaningServices size={15} />
+					) : (
+						<RiDeleteBinLine size={15} />
+					)}
+				</IconWrapper>
 			</div>
 		</div>
 	);

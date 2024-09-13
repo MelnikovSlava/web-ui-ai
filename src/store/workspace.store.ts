@@ -54,7 +54,7 @@ export class WorkspaceStore {
 
   public createNewChat = async () => {
     const workspaceId = this.workspace.id;
-    const chat = await this._db.createChat(workspaceId, INIT_CHAT_TITLE);
+    const chat = await this._db.createChat(workspaceId, '');
 
     await this._addChatToStore(chat);
 

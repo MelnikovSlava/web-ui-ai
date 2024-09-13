@@ -3,7 +3,6 @@ import type { IndexedDb } from "./indexed-db";
 import type { Chat, Message, MessageBase } from "./types";
 import type { RootStore } from "./global.store";
 import { AiStore } from "./ai.store";
-import { DEFAULT_CHAT_TITLE } from "../utils/constants";
 
 export class ChatStore {
 	private _db: IndexedDb;
@@ -15,8 +14,8 @@ export class ChatStore {
 	public input: string;
 	public currentStreamedMessage: Message;
 
-	constructor(chat: Chat, model: string, db: IndexedDb, root: RootStore) {
-		this.chat = chat;
+	constructor(data: Chat, model: string, db: IndexedDb, root: RootStore) {
+		this.chat = data;
 		this._root = root;
 		this.model = model;
 		this._db = db;
@@ -63,25 +62,37 @@ export class ChatStore {
 	};
 
 	private async _updateChatTitle() {
-		const ai = new AiStore();
+		const ai = new AiStore(this._root);
 
 		const firstTwoMessages = this.messages.slice(0, 2);
 		const messagesForAi = this._prepareMessagesForAi(firstTwoMessages);
 
 		messagesForAi.push({
 			content:
-				"Write a short name for the chat from messages. Maximum 50 characters. I only need a clear title.",
+				"Write a short name for the chat. From 2 to 4 words. The title must be in the same language as the chat conversation. Choose the appropriate emoji for the title of this chat. Answer, like json object, example: {title: 'Title', emoji: 'emoji'}",
 			role: "user",
 		});
 
-		const title = await ai.sendMessage(messagesForAi);
+		const response = await ai.sendMessage(messagesForAi);
 
-		if (title) {
+		if (response) {
+			const jsonRegex = /\{.*\}/s;
+			const match = response.match(jsonRegex);
+
+			if (match) {
+  const jsonString = match[0];
+  const parsedObject = JSON.parse(jsonString);
+
+				const title = `${parsedObject.emoji} ${parsedObject.title}`;
+
 			await this._db.updateChatName(this.chat.id, title);
 
 			runInAction(() => {
 				this.chat.name = title;
 			});
+} else {
+  console.error('Объект JSON не найден');
+}
 		}
 	}
 
@@ -136,8 +147,7 @@ export class ChatStore {
 
 	public forkChat = async (messageId: number) => {
 		const newChat = await this._db.createChat(
-			this.chat.workspaceId,
-			this.chat.name,
+			this.chat.workspaceId
 		);
 		const messagesToCopy = this.messages.filter((msg) => msg.id <= messageId);
 
@@ -162,10 +172,7 @@ export class ChatStore {
 		const workspace = this._root.workspaces.get(this.chat.workspaceId);
 		workspace?.chats.set(newChat.id, newChatStore);
 
-		if (
-			newChatStore.chat.name === DEFAULT_CHAT_TITLE &&
-			newChatStore.messages.length >= 2
-		) {
+		if (this._needToUpdateTitle(newChatStore)) {
 			newChatStore._updateChatTitle();
 		}
 
@@ -197,6 +204,10 @@ export class ChatStore {
 		return messagesForAi;
 	};
 
+	private _needToUpdateTitle = (chat: ChatStore) => {
+		return chat.messages.length >= 2 && !chat.chat.name && !chat.chat.default;
+	}
+
 	private _sendMessagesToAi = async () => {
 		const messagesForAi = this._prepareMessagesForAi(this.messages);
 
@@ -223,7 +234,7 @@ export class ChatStore {
 				this._messages.set(addedAiMessage.id, addedAiMessage);
 				this.currentStreamedMessage.content = "";
 
-				if (this._messages.size >= 2 && !this.chat.default) {
+				if (this._needToUpdateTitle(this)) {
 					this._updateChatTitle();
 				}
 			});

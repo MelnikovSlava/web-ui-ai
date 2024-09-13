@@ -14,7 +14,7 @@ export const HoverWrapper = (props: HoverWrapperProps) => {
 			className={clsx(
 				"cursor-pointer",
 				"select-none",
-				"hover:opacity-100 opacity-40",
+				"hover:opacity-100 opacity-30",
 				"text-[var(--control-element)]",
 				className,
 			)}

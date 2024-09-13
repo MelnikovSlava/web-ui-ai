@@ -7,6 +7,7 @@ import { IoIosSettings } from "react-icons/io";
 import { observer } from "mobx-react-lite";
 import { RiApps2Fill } from "react-icons/ri";
 import { RiApps2Line } from "react-icons/ri";
+import { IconWrapper } from "../ui-kit/IconWrapper";
 
 type WorkspaceItemProps = {
 	workspace: Workspace;
@@ -39,16 +40,18 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 			{isActive ? <RiApps2Fill /> : <RiApps2Line />}
 			<span className={clsx("ml-2", "flex-1", "line-clamp-1")}>{name}</span>
 
-			<IoIosSettings
-				size={20}
-				className={clsx(
-					"opacity-0 group-hover/item:opacity-80 hover:opacity-100",
-				)}
-				onClick={(e) => {
-					e.stopPropagation();
-					storeGlobal.setOpenWorkspaceSettings(id);
-				}}
-			/>
+			<div className={clsx('opacity-0 group-hover/item:opacity-80')}>
+				<IconWrapper
+					onClick={(e) => {
+						e.stopPropagation();
+						storeGlobal.setOpenWorkspaceSettings(id);
+					}}
+				>
+					<IoIosSettings
+						size={18}
+					/>
+				</IconWrapper>
+			</div>
 		</div>
 	);
 });

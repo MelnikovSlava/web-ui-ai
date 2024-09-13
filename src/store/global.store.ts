@@ -4,6 +4,7 @@ import type { Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
 import { AiStore } from "./ai.store";
 import { INIT_WORKSPACE_TITLE, DEFAULT_CHAT_TITLE } from "../utils/constants";
+import { SettingsStore } from "./settings.store";
 
 type View = "chat" | "workspace" | "settings";
 
@@ -13,12 +14,15 @@ export class RootStore {
   public workspaces: Map<Workspace["id"], WorkspaceStore>;
 
   public aiStore: AiStore;
+  public settingsStore: SettingsStore;
+
   public view: View;
   public openWorkspaceId: number;
   public openChatId: number;
 
   constructor() {
-    this.aiStore = new AiStore();
+    this.aiStore = new AiStore(this);
+    this.settingsStore = new SettingsStore(this);
     this.workspaces = new Map();
     this.view = "chat";
     this.openWorkspaceId = 0;
@@ -60,7 +64,7 @@ export class RootStore {
   public createNewWorkspace = async () => {
     const workspace = await this._db.createWorkspace(INIT_WORKSPACE_TITLE, "");
 
-    const chat = await this._db.createChat(workspace.id, DEFAULT_CHAT_TITLE, true);
+    const chat = await this._db.createChat(workspace.id, '', true);
 
     this._addWorkspace(workspace);
     this.selectWorkspace(workspace.id);

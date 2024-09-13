@@ -1,30 +1,31 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { localStorageUtils } from "../utils/localStorage";
 import type { Key, Model } from "./types";
+import type { RootStore } from "./global.store";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const AUTH_KEY_URL = "https://openrouter.ai/api/v1/auth/key";
 const MODELS_URL = "https://openrouter.ai/api/v1/models";
 
 export class AiStore {
+	private _root: RootStore;
 	private _controller: AbortController | null = null;
-	private _token: string | null;
 
 	public creditsRemaining: Key | null;
 	public isStreaming: boolean;
 	public models: Model[] = [];
 
-	constructor() {
+	constructor(root: RootStore) {
+		this._root = root;
+
 		this.isStreaming = false;
-		this._token = localStorageUtils.getToken();
 		this.creditsRemaining = null;
 
 		makeAutoObservable(this);
 	}
 
-	public updateToken = (key: string): void => {
-		this._token = key;
-	};
+	private get _token() {
+		return this._root.settingsStore.token;
+	}
 
 	public fetchCreditsRemaining = async (): Promise<void> => {
 		try {
@@ -154,5 +155,3 @@ export class AiStore {
 		}
 	};
 }
-
-export const aiStore = new AiStore();
