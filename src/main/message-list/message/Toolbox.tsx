@@ -11,7 +11,7 @@ import { MdForkRight } from "react-icons/md";
 import { IoMdMore } from "react-icons/io";
 import { useClipboard } from "../../../hooks/useClipboard";
 import { Message } from "../../../store/types";
-import { useGlobalStore } from "../../../store/global.store";
+import { useRootStore } from "../../../store/root.store";
 
 type ToolboxProps = {
 	msg: Message;
@@ -21,7 +21,7 @@ type ToolboxProps = {
 const SIZE = 15;
 
 export const Toolbox = observer((props: ToolboxProps) => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 	const currentChat = store.currentChatStore;
 	const { copy } = useClipboard();
 

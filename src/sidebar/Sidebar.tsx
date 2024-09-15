@@ -3,11 +3,11 @@ import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import { RiApps2AddFill } from "react-icons/ri";
 import { HoverWrapper } from "../ui-kit/HoverWrapper";
-import { useGlobalStore } from "../store/global.store";
+import { useRootStore } from "../store/root.store";
 import { IoMdSettings } from "react-icons/io";
 
 export const Sidebar = observer(() => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 
 	return (
 		<div

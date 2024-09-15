@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import { Textarea } from "@mui/joy";
 import type { VitalProps } from "../../../utils/types";
-import { store, useGlobalStore } from "../../../store/global.store";
+import { store, useRootStore } from "../../../store/root.store";
 import type { ChatStore } from "../../../store/chat.store";
 import { LuSend } from "react-icons/lu";
 import { StopBtn } from "./StopBtn";
@@ -12,7 +12,7 @@ import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 type InputBlockProps = {} & VitalProps;
 
 export const InputBlock = observer((props: InputBlockProps) => {
-	const storeGlobal = useGlobalStore();
+	const storeGlobal = useRootStore();
 	const chatStore = storeGlobal.currentChatStore as ChatStore;
 	const refTextarea = React.useRef<HTMLTextAreaElement>(null);
 	const isStreaming = chatStore.isStreaming;

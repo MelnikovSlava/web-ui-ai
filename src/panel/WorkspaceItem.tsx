@@ -2,7 +2,7 @@ import React, { FC } from "react";
 import clsx from "clsx";
 import { VitalProps } from "../utils/types";
 import { Workspace } from "../store/types";
-import { useGlobalStore } from "../store/global.store";
+import { useRootStore } from "../store/root.store";
 import { IoIosSettings } from "react-icons/io";
 import { observer } from "mobx-react-lite";
 import { RiApps2Fill } from "react-icons/ri";
@@ -14,7 +14,7 @@ type WorkspaceItemProps = {
 } & VitalProps;
 
 export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
-	const storeGlobal = useGlobalStore();
+	const storeGlobal = useRootStore();
 	const { id, name } = props.workspace;
 	const isActive = id === storeGlobal.openWorkspaceId;
 

@@ -1,6 +1,6 @@
 import React, { FC } from "react";
 import clsx from "clsx";
-import { useGlobalStore } from "../store/global.store";
+import { useRootStore } from "../store/root.store";
 import { CreateNewWBtn } from "./CreateNewWBtn";
 import { AddNewChatBtn } from "./AddNewChatBtn";
 import { ChatItem } from "./ChatItem";
@@ -12,7 +12,7 @@ import { NoWorkspaces } from "./NoWorkspaces";
 import { Stepper, Step } from "@mui/joy";
 
 export const Panel = observer(() => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 
 	const handleToggle = (id: number) => {
 		// storeGlobal.openWorkspaceId();

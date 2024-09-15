@@ -5,7 +5,7 @@ import type { VitalProps } from "../../../utils/types";
 import { MessageBase, Message as MsgType } from "../../../store/types";
 import { Toolbox } from "./Toolbox";
 import { Avatar } from "./Avatar";
-import { useGlobalStore } from "../../../store/global.store";
+import { useRootStore } from "../../../store/root.store";
 import { MsgContent } from "./MsgContent";
 import { MsgEditing } from "./MsgEditing";
 
@@ -14,7 +14,7 @@ type MessageProps = {
 } & VitalProps;
 
 export const Message = observer((props: MessageProps) => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 	const isUser = props.msg.role === "user";
 	const isStreaming = store.aiStore.isStreaming;
 

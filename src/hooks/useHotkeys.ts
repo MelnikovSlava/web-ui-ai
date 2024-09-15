@@ -1,8 +1,8 @@
 import { useHotkeys } from "react-hotkeys-hook";
-import { useGlobalStore } from "../store/global.store";
+import { useRootStore } from "../store/root.store";
 
 export const useHotkeysGlobal = () => {
-  const store = useGlobalStore();
+  const store = useRootStore();
 
   useHotkeys("ctrl+n", () => {
     if (store.currentWorkspaceStore) {

@@ -2,12 +2,12 @@ import React, { FC, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import { VitalProps } from "../../utils/types";
-import { useGlobalStore } from "../../store/global.store";
+import { useRootStore } from "../../store/root.store";
 
 type UsageWidgetProps = {} & VitalProps;
 
 export const UsageWidget = observer((props: UsageWidgetProps) => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 
 	return (
 		<div className={clsx("flex", props.className)}>

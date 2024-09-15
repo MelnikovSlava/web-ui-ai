@@ -1,5 +1,5 @@
 import { makeAutoObservable } from "mobx";
-import { RootStore } from "./global.store";
+import { RootStore } from "./root.store";
 import { localStorageUtils } from "../utils/localStorage";
 
 export class SettingsStore {

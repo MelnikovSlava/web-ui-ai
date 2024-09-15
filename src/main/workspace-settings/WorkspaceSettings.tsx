@@ -4,7 +4,7 @@ import clsx from "clsx";
 import type { VitalProps } from "../../utils/types";
 import { MainLayout } from "../../layouts/MainLayout";
 import { FormControl, FormLabel, Input } from "@mui/joy";
-import { useGlobalStore } from "../../store/global.store";
+import { useRootStore } from "../../store/root.store";
 import { IButton } from "../../ui-kit/IButton";
 import type { WorkspaceStore } from "../../store/workspace.store";
 import { ModelSelect } from "./ModelSelect";
@@ -12,17 +12,16 @@ import { ModelSelect } from "./ModelSelect";
 type WorkspaceSettingsProps = {} & VitalProps;
 
 export const WorkspaceSettings = observer((props: WorkspaceSettingsProps) => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 	const workspace = store.currentWorkspaceStore as WorkspaceStore;
 	const [title, setTitle] = useState(workspace?.workspace.name || "");
-	const [model, setModel] = useState<string>(workspace.model);
 
 	const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		setTitle(e.target.value);
 	};
 
 	const handleUpdateSettings = () => {
-		workspace?.updateWorkspace(title, model);
+		workspace?.updateWorkspace({ title });
 	};
 
 	const handleDeleteWorkspace = () => {
@@ -41,7 +40,7 @@ export const WorkspaceSettings = observer((props: WorkspaceSettingsProps) => {
 					<Input value={title} onChange={handleTitleChange} />
 				</FormControl>
 
-				<ModelSelect in={model} out={setModel} className={clsx("mt-4")} />
+				<ModelSelect className={clsx("mt-4")} />
 			</div>
 
 			<div className={clsx("flex")}>

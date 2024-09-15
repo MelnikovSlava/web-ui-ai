@@ -9,38 +9,22 @@ import { VitalProps } from "../../utils/types";
 import { AiStore } from "../../store/ai.store";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
+import { useRootStore } from "../../store/root.store";
+import { Model } from "../../store/types";
 
-type ModelSelectProps = {
-	in: string;
-	out: (value: string) => void;
-} & VitalProps;
-
-const aiStore = new AiStore();
+type ModelSelectProps = {} & VitalProps;
 
 export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
+	const store = useRootStore();
+	const workspace = store.currentWorkspaceStore;
+	const models = store.aiStore.models;
+
 	const [open, setOpen] = useState(false);
-	const [loading, setLoading] = useState(false);
-	const [value, setValue] = useState<string | null>(null);
+	const [value, setValue] = useState<Model | null>(() => {
+		const modelId = workspace?.model;
 
-	useEffect(() => {
-		if (!open || aiStore.models.length > 0) {
-			return;
-		}
-
-		const loadModels = async () => {
-			setLoading(true);
-			await aiStore.fetchModels();
-			setLoading(false);
-		};
-
-		loadModels();
-	}, [open]);
-
-	useEffect(() => {
-		if (props.in) {
-			setValue(props.in);
-		}
-	}, [props.in]);
+		return models.find((model) => model.id === modelId) || null
+	});
 
 	return (
 		<FormControl id="model-select" className={clsx("", props.className)}>
@@ -51,18 +35,19 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 				onOpen={() => setOpen(true)}
 				onClose={() => setOpen(false)}
 				isOptionEqualToValue={(option, value) => option.id === value.id}
-				options={aiStore.models}
+				options={models}
 				getOptionLabel={(option) => option.name}
-				loading={loading}
-				value={aiStore.models.find((model) => model.id === value) || null}
+				value={value}
 				onChange={(event, newValue) => {
-					setValue(newValue ? newValue.name : null);
-					props.out(newValue ? newValue.id : "");
+					setValue(newValue);
+					workspace?.updateWorkspace({
+						model: newValue ? newValue.id : ''
+					})
 				}}
 				renderOption={(props, option) => (
 					<li
 						{...props}
-						key={option.id}
+						// key={option.id}
 						className={clsx(
 							"p-1",
 							"pb-2",
@@ -80,7 +65,6 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 						</span> */}
 					</li>
 				)}
-				endDecorator={loading ? <CircularProgress size="sm" /> : null}
 			/>
 		</FormControl>
 	);

@@ -3,7 +3,7 @@ import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import type { VitalProps } from "../utils/types";
 import type { ChatStore } from "../store/chat.store";
-import { useGlobalStore } from "../store/global.store";
+import { useRootStore } from "../store/root.store";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { MdCleaningServices } from "react-icons/md";
 import { IconWrapper } from "../ui-kit/IconWrapper";
@@ -15,7 +15,7 @@ type ChatItemProps = {
 } & VitalProps;
 
 export const ChatItem = observer((props: ChatItemProps) => {
-	const store = useGlobalStore();
+	const store = useRootStore();
 	const chatId = props.chat.chat.id;
 	const isDefault = props.chat.isDefault;
 	const isActive = chatId === store.openChatId;

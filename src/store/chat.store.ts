@@ -1,7 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { IndexedDb } from "./indexed-db";
 import type { Chat, Message, MessageBase } from "./types";
-import type { RootStore } from "./global.store";
+import type { RootStore } from "./root.store";
 import { AiStore } from "./ai.store";
 
 export class ChatStore {

@@ -2,7 +2,7 @@ import React, { FC, Fragment, useContext } from "react";
 import { observer } from "mobx-react-lite";
 import clsx from "clsx";
 import type { VitalProps } from "../../utils/types";
-import { useGlobalStore } from "../../store/global.store";
+import { useRootStore } from "../../store/root.store";
 import { InputBlock } from "./input/InputBlock";
 import { Message } from "./message/Message";
 import { MainLayout } from "../../layouts/MainLayout";
@@ -13,7 +13,7 @@ import { Empty } from "./Empty";
 type ChatProps = {} & VitalProps;
 
 export const Chat = observer((props: ChatProps) => {
-	const storeGlobal = useGlobalStore();
+	const storeGlobal = useRootStore();
 	const chatStore = storeGlobal.currentChatStore;
 
 	if (!chatStore) {

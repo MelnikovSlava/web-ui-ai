@@ -2,7 +2,7 @@ import { makeAutoObservable } from "mobx";
 import type { IndexedDb } from "./indexed-db";
 import type { Chat, Workspace } from "./types";
 import { ChatStore } from "./chat.store";
-import { RootStore } from "./global.store";
+import { RootStore } from "./root.store";
 import { INIT_CHAT_TITLE } from "../utils/constants";
 
 export class WorkspaceStore {
@@ -61,8 +61,11 @@ export class WorkspaceStore {
     this._root.selectChat(chat.id);
   };
 
-  public updateWorkspace = async (title: string, model: string) => {
+  public updateWorkspace = async (data: { title?: string, model?: string }) => {
+    const { title = this.workspace.name, model = this.workspace.model } = data;
+
     await this._db.updateWorkspace(this.workspace.id, title, model);
+
     this.workspace.name = title;
     this.workspace.model = model;
 

@@ -1,6 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { Key, Model } from "./types";
-import type { RootStore } from "./global.store";
+import type { RootStore } from "./root.store";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const AUTH_KEY_URL = "https://openrouter.ai/api/v1/auth/key";

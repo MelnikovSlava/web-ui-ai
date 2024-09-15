@@ -18,27 +18,27 @@
 
 body[data-theme="default"] {
   /* base */
-  --main-color-text: #cacaca;
-  --main-background: #212121;
-  --main-border: #383737;
-  --panel-background: #212121;
-  --sidebar-background: #212121;
+  --main-color-text: #D1D7E0;
+  --main-background: #202830;
+  --main-border: #3D444D;
+  --panel-background: #202830;
+  --sidebar-background: #202830;
 
   /* workspace */
-  --workspace-active: #353434;
+  --workspace-active: #2A313C;
   /* --workspace-active: #42464f; */
 
   /* chat */
-  --active-chat: #383737;
-  --hover-chat: #282828;
-  --hover-active-chat: #3e3d3d;
+  --active-chat: #282F38;
+  --hover-chat: #282F38;
+  --hover-active-chat: #282F38;
 
   /* message */
   --msg-user-border: #343841;
   --msg-user-body: #24272d;
   --msg-assistent-border: #383737;
-  --msg-assistent-body: #2a2929;
-  --msg-code-body: rgb(31, 31, 30);
+  --msg-assistent-body: #262C36;
+  --msg-code-body: #151B23;
 
   /* chat */
   --chat-content-width: 900px;
@@ -75,7 +75,8 @@ body[data-theme="ocean"] {
   --msg-user-border: #1F2937;
   --msg-user-body: #172235;
   --msg-assistent-border: #1F2937;
-  --msg-assistent-body: #121B2A;
+  /* --msg-assistent-body: #121B2A; */
+  --msg-assistent-body: #1F2937;
   --msg-code-body: #101827;
 
   /* chat */
@@ -87,15 +88,16 @@ body[data-theme="ocean"] {
   --scrollbar-thumb: #807f7f;
 
   /* controls */
+  /* --control-element: #D1D5DB; */
   --control-element: #D1D5DB;
 
   /* input */
-  --input-ring: #D1D5DB;
+  --input-ring: #1A56DB;
 }
 
 body[data-theme="lucide"] {
   /* base */
-  --main-color-text: #fff;
+  --main-color-text: #DFDFD6;
   --main-background: #1B1B1F;
   --main-border: #2E2E32;
   --panel-background: #161618;
@@ -110,11 +112,11 @@ body[data-theme="lucide"] {
   --hover-active-chat: #3e3d3d;
 
   /* message */
-  --msg-user-border: #1f1f23;
-  --msg-user-body: #222228;
-  --msg-assistent-border: #1F2937;
-  --msg-assistent-body: #121B2A;
-  --msg-code-body: #101827;
+  --msg-user-border: #292930;
+  --msg-user-body: #24242a;
+  --msg-assistent-border: #28292f;
+  --msg-assistent-body: #202126;
+  --msg-code-body: #1c1c1e;
 
   /* chat */
   --chat-content-width: 900px;

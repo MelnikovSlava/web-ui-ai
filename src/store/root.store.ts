@@ -135,4 +135,4 @@ export class RootStore {
 }
 
 export const store = new RootStore();
-export const useGlobalStore = () => store;
+export const useRootStore = () => store;
