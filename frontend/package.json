@@ -35,6 +35,7 @@
     "uuid": "10.0.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "1.9.3",
     "@rsbuild/core": "1.0.1-rc.2",
     "@rsbuild/plugin-react": "1.0.1-rc.2",
     "@types/react": "18.3.5",

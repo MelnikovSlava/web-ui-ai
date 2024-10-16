@@ -1,0 +1,24 @@
+@baseUrl = http://localhost:3000
+@authToken = 'sfdasfsfa'
+
+# @name register
+POST {{baseUrl}}/register
+# Authorization: {{authToken}}
+# Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "<PASSWORD>"
+}
+
+###
+
+# @name login
+POST {{baseUrl}}/login
+# Authorization: {{authToken}}
+# Content-Type: application/json
+
+{
+    "username": "test",
+    "password": "<PASSWORD>"
+}
