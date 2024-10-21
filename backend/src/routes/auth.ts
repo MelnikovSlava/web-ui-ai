@@ -1,68 +1,69 @@
-import type { Server } from '@hapi/hapi';
-import Joi from 'joi';
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { db } from '../config/database';
-import { usersTable } from '../db/schema';
-import { eq } from 'drizzle-orm';
-
-const jwtSecret = 'your-secret-key'; // В реальном приложении используйте переменные окружения
+import type { Server } from "@hapi/hapi";
+import Joi from "joi";
+import { registerUser, authenticateUser } from "../services/user.service";
 
 export const authRoutes = (server: Server) => {
-  server.route({
-    method: 'POST',
-    path: '/register',
-    options: {
-      auth: false,
-      validate: {
-        payload: Joi.object({
-          username: Joi.string().required(),
-          password: Joi.string().required()
-        })
-      }
-    },
-    handler: async (request, h) => {
-      const { username, password } = request.payload as { username: string; password: string };
-      
-      const existingUser = await db.select().from(usersTable).where(eq(usersTable.username, username)).get();
-      if (existingUser) {
-        return h.response({ message: 'Username already exists' }).code(400);
-      }
+	server.route({
+		method: "POST",
+		path: "/api/register",
+		options: {
+			auth: false,
+			// validate: {
+			// 	payload: Joi.object({
+			// 		username: Joi.string().required(),
+			// 		password: Joi.string().required(),
+			// 		key: Joi.string().required(),
+			// 	}),
+			// },
+		},
+		handler: async (request, h) => {
+			const { username, password } = request.payload as {
+				username: string;
+				password: string;
+			};
 
-      const hashedPassword = await bcrypt.hash(password, 10);
-      await db.insert(usersTable).values({ username, password: hashedPassword });
+			console.log("rr", request.payload);
 
-      return h.response({ message: 'User registered successfully' }).code(201);
-    }
-  });
+			try {
+				const token = await registerUser(username, password);
+				return { token };
+				// return h
+				// 	.response({ message: "User registered successfully" })
+				// 	.code(201);
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : "An unknown error occurred";
+				return h.response({ message }).code(400);
+			}
+		},
+	});
 
-  server.route({
-    method: 'POST',
-    path: '/login',
-    options: {
-      auth: false,
-      validate: {
-        payload: Joi.object({
-          username: Joi.string().required(),
-          password: Joi.string().required()
-        })
-      }
-    },
-    handler: async (request, h) => {
-      const { username, password } = request.payload as { username: string; password: string };
-      
-      const user = await db.select().from(usersTable).where(eq(usersTable.username, username)).get();
-      if (!user) {
-        return h.response({ message: 'Invalid credentials' }).code(401);
-      }
+	server.route({
+		method: "POST",
+		path: "/api/login",
+		options: {
+			auth: false,
+			validate: {
+				payload: Joi.object({
+					username: Joi.string().required(),
+					password: Joi.string().required(),
+				}),
+			},
+		},
+		handler: async (request, h) => {
+			const { username, password } = request.payload as {
+				username: string;
+				password: string;
+			};
 
-      const isValid = await bcrypt.compare(password, user.password);
-      if (!isValid) {
-        return h.response({ message: 'Invalid credentials' }).code(401);
-      }
-
-      const token = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: '1h' });
-      return { token };
-    }
-  });
+			try {
+				const token = await authenticateUser(username, password);
+				return { token };
+			} catch (error) {
+				const message =
+					error instanceof Error ? error.message : "An unknown error occurred";
+				return h.response({ message }).code(401);
+			}
+		},
+	});
 };

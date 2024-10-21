@@ -1,5 +1,4 @@
 import clsx from "clsx";
-import "./index.css";
 import { Main } from "./main/Main";
 import { Panel as Side } from "./panel/Panel";
 import { PanelGroup, Panel, PanelResizeHandle } from "react-resizable-panels";

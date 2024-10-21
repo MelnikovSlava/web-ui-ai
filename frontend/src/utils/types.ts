@@ -1,4 +1,6 @@
 export type VitalProps = {
-  className?: string;
-  children?: any;
+	className?: string;
+	children?: any;
 };
+
+export type RStatus = "pending" | "done" | "error";

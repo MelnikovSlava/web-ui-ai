@@ -16,12 +16,32 @@
 	"organizeImports": {
 		"enabled": true
 	},
-	"linter": {
-		"enabled": true,
-		"rules": {
-			"recommended": true
-		}
-	},
+  "linter": {
+    "enabled": true,
+    "rules": {
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "off"
+			},
+      "correctness": {
+        "noUnusedImports": {
+          "level": "error",
+          "fix": "safe"
+        }
+      },
+      "style":{
+        "useImportType": {
+          "level": "warn",
+          "fix": "safe"
+        }
+      },
+      "a11y": {
+        "useKeyWithClickEvents": {
+          "level": "info"
+        }
+      }
+    }
+  },
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"
