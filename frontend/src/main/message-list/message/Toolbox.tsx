@@ -1,31 +1,33 @@
-import React, { FC, useContext } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
-import { VitalProps } from "../../../utils/types";
-import { IconWrapper } from "../../../ui-kit/IconWrapper";
-import { RiDeleteBinLine } from "react-icons/ri";
-import { TbCopy } from "react-icons/tb";
-import { GrUpdate } from "react-icons/gr";
+import { observer } from "mobx-react-lite";
+import {} from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdForkRight } from "react-icons/md";
-import { IoMdMore } from "react-icons/io";
+import { RiDeleteBinLine } from "react-icons/ri";
+import { TbCopy } from "react-icons/tb";
+import { useNavigate } from "react-router";
 import { useClipboard } from "../../../hooks/useClipboard";
-import { Message } from "../../../store/types";
-import { useRootStore } from "../../../store/root.store";
+import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
+import { routes } from "../../../router";
+import type { MessageStore } from "../../../store/message.store";
+import { IconWrapper } from "../../../ui-kit/IconWrapper";
+import type { VitalProps } from "../../../utils/types";
 
 type ToolboxProps = {
-	msg: Message;
+	msg: MessageStore;
 	onEdit: () => void;
 } & VitalProps;
 
 const SIZE = 15;
 
 export const Toolbox = observer((props: ToolboxProps) => {
-	const store = useRootStore();
-	const currentChat = store.currentChatStore;
+	const navigate = useNavigate();
+	const urlWorkspaceId = useUrlWorkspaceId();
 	const { copy } = useClipboard();
 
-	const isUser = props.msg.role === 'user';
+	const messageStore = props.msg;
+
+	const isUser = messageStore.role === "user";
 
 	const items = [
 		{
@@ -45,12 +47,16 @@ export const Toolbox = observer((props: ToolboxProps) => {
 		},
 		{
 			icon: <MdForkRight size={SIZE} />,
-			onClick: () => currentChat?.forkChat(props.msg.id),
+			onClick: () => {
+				const newChat = messageStore.chatStore.workspace.forkChat(messageStore);
+
+				navigate(routes.chat(urlWorkspaceId, newChat.id));
+			},
 			show: !isUser,
 		},
 		{
 			icon: <RiDeleteBinLine size={SIZE} />,
-			onClick: () => currentChat?.deleteMessage(props.msg),
+			onClick: () => messageStore.chatStore.deleteMessage(messageStore),
 			show: true,
 		},
 	];

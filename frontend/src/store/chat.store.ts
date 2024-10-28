@@ -1,33 +1,28 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import type { IndexedDb } from "./indexed-db";
-import type { Chat, Message, MessageBase } from "./types";
-import type { RootStore } from "./root.store";
+import { generateNewId, getTimestamp } from "../utils/utils";
 import { AiStore } from "./ai.store";
+import { MessageStore } from "./message.store";
+import type { Chat, Message } from "./types";
+import type { WorkspaceStore } from "./workspace.store";
 
-export class ChatStore {
-	private _db: IndexedDb;
-	private _root: RootStore;
-	private _messages: Map<Message["id"], Message>;
+export class ChatStore implements Chat {
+	private _messages: Map<Message["id"], MessageStore>;
 
-	public chat: Chat;
-	public model: string;
-	public input: string;
-	public currentStreamedMessage: Message;
+	public id: number;
+	public name: string;
+	public timestamp: number;
+	public workspaceId: number;
 
-	constructor(data: Chat, model: string, db: IndexedDb, root: RootStore) {
-		this.chat = data;
-		this._root = root;
-		this.model = model;
-		this._db = db;
+	public workspace: WorkspaceStore;
+
+	constructor(workspaceStore: WorkspaceStore) {
 		this._messages = new Map();
-		this.input = "";
-		this.currentStreamedMessage = {
-			id: -1,
-			timestamp: 0,
-			chatId: this.chat.id,
-			content: "",
-			role: "assistant",
-		};
+
+		this.workspace = workspaceStore;
+		this.id = generateNewId(this.workspace.root.allChats);
+		this.name = "";
+		this.timestamp = getTimestamp();
+		this.workspaceId = this.workspace.id;
 
 		makeAutoObservable(this);
 	}
@@ -36,79 +31,52 @@ export class ChatStore {
 		return Array.from(this._messages.values());
 	}
 
-	public get createdTimestamp() {
-		return this.chat.timestamp;
-	}
-
-	public get isDefault() {
-		return this.chat.default;
-	}
-
 	private get _aiStore() {
-		return this._root.aiStore;
+		return this.workspace.root.aiStore;
 	}
 
 	public get isStreaming() {
 		return this._aiStore.isStreaming;
 	}
 
-	public async init() {
-		const messages = await this._db.getMessages(this.chat.id);
-		this._messages = new Map(messages.map((m) => [m.id, m]));
-	}
-
-	public setInput = (input: string) => {
-		this.input = input;
-	};
-
 	private async _updateChatTitle() {
-		const ai = new AiStore(this._root);
+		const ai = new AiStore();
 
 		const firstTwoMessages = this.messages.slice(0, 2);
-		const messagesForAi = this._prepareMessagesForAi(firstTwoMessages);
+		const messageShortHistory = this._prepareMessagesForAi(firstTwoMessages);
 
-		messagesForAi.push({
+		messageShortHistory.push({
 			content:
 				"Write a short name for the chat. From 2 to 4 words. The title must be in the same language as the chat conversation. Choose the appropriate emoji for the title of this chat. Answer, like json object, example: {title: 'Title', emoji: 'emoji'}",
 			role: "user",
 		});
 
-		const response = await ai.sendMessage(messagesForAi);
+		const response = await ai.sendMessage(messageShortHistory);
 
 		if (response) {
 			const jsonRegex = /\{.*\}/s;
 			const match = response.match(jsonRegex);
 
 			if (match) {
-  const jsonString = match[0];
-  const parsedObject = JSON.parse(jsonString);
+				const jsonString = match[0];
+				const parsedObject = JSON.parse(jsonString);
 
 				const title = `${parsedObject.emoji} ${parsedObject.title}`;
 
-			await this._db.updateChatName(this.chat.id, title);
-
-			runInAction(() => {
-				this.chat.name = title;
-			});
-} else {
-  console.error('Объект JSON не найден');
-}
+				runInAction(() => {
+					this.name = title;
+				});
+			} else {
+				console.error("Объект JSON не найден");
+			}
 		}
 	}
 
-	public async deleteMessage(msg: Message) {
-		if (msg.id === -1) {
-			this.currentStreamedMessage.content = "";
-		} else {
-			runInAction(() => {
-				this._messages.delete(msg.id);
-			});
-
-			await this._db.deleteMessage(msg.id);
-		}
+	public deleteMessage(msg: Message) {
+		this._messages.delete(msg.id);
 	}
 
-	public onEditMessage = async (messageId: number, newContent: string) => {
+	public onEditMessage = (messageId: number, newContent: string) => {
 		const editedMessage = this._messages.get(messageId);
 
 		if (!editedMessage) {
@@ -117,13 +85,9 @@ export class ChatStore {
 		}
 
 		// Update the message content in the local store
-		runInAction(() => {
-			editedMessage.content = newContent;
-			this._messages.set(messageId, editedMessage);
-		});
+		editedMessage.setContent(newContent);
 
-		// Update the message content in the database
-		await this._db.updateMessageContent(messageId, newContent);
+		// this._messages.set(messageId, editedMessage);
 
 		// Get all messages after the edited message
 		const messagesToDelete = this.messages.filter(
@@ -132,68 +96,39 @@ export class ChatStore {
 
 		// Delete messages after the edited one
 		for (const msg of messagesToDelete) {
-			await this.deleteMessage(msg);
+			this.deleteMessage(msg);
 		}
 
 		this._sendMessagesToAi();
 	};
 
-	public clearMessages = () => {
-		runInAction(() => {
-			this._messages.clear();
-			this.currentStreamedMessage.content = "";
-		});
-	};
-
-	public forkChat = async (messageId: number) => {
-		const newChat = await this._db.createChat(
-			this.chat.workspaceId
-		);
-		const messagesToCopy = this.messages.filter((msg) => msg.id <= messageId);
-
-		for (const message of messagesToCopy) {
-			await this._db.addMessage({
-				chatId: newChat.id,
-				content: message.content,
-				timestamp: message.timestamp,
-				role: message.role,
-			});
-		}
-
-		const newChatStore = new ChatStore(
-			newChat,
-			this.model,
-			this._db,
-			this._root,
-		);
-
-		await newChatStore.init();
-
-		const workspace = this._root.workspaces.get(this.chat.workspaceId);
-		workspace?.chats.set(newChat.id, newChatStore);
-
-		if (this._needToUpdateTitle(newChatStore)) {
-			newChatStore._updateChatTitle();
-		}
-
-		this._root.selectChat(newChat.id);
-	};
-
-	public inputMessage = async (content: string) => {
-		const userMessage: MessageBase = {
-			chatId: this.chat.id,
-			role: "user",
-			content,
+	public serialize = (): Chat => {
+		return {
+			id: this.id,
+			name: this.name,
+			timestamp: this.timestamp,
+			workspaceId: this.workspaceId,
 		};
+	};
 
-		const addedMessage = await this._db.addMessage(userMessage);
+	public deserialize = (chat: Chat, messages: Message[]) => {
+		this.id = chat.id;
+		this.name = chat.name;
+		this.timestamp = chat.timestamp;
 
-		runInAction(() => {
-			this._messages.set(addedMessage.id, addedMessage);
-			this.input = "";
-		});
+		messages
+			.filter((m) => m.chatId === chat.id)
+			.forEach((message) => {
+				const messageStore = new MessageStore(this);
+				messageStore.deserialize(message);
 
-		await this._sendMessagesToAi();
+				this._messages.set(message.id, messageStore);
+			});
+	};
+
+	public inputMessage = (content: string) => {
+		this._addNewMessage(content, "user");
+		this._sendMessagesToAi();
 	};
 
 	private _prepareMessagesForAi = (messages: Message[]) => {
@@ -204,40 +139,34 @@ export class ChatStore {
 		return messagesForAi;
 	};
 
-	private _needToUpdateTitle = (chat: ChatStore) => {
-		return chat.messages.length >= 2 && !chat.chat.name && !chat.chat.default;
-	}
+	public pushMessage = (content: string, role: Message["role"]) => {
+		this._addNewMessage(content, role);
+	};
+
+	private _addNewMessage = (content: string, role: Message["role"]) => {
+		const message = new MessageStore(this);
+
+		message.setContent(content);
+		message.setRole(role);
+
+		this._messages.set(message.id, message);
+
+		return message;
+	};
 
 	private _sendMessagesToAi = async () => {
-		const messagesForAi = this._prepareMessagesForAi(this.messages);
+		const messageHistory = this._prepareMessagesForAi(this.messages);
+		const messageFromAi = this._addNewMessage("", "assistant");
 
-		const aiResponse = await this._aiStore.sendMessage(
-			messagesForAi,
-			this.model,
-			(partial: string) => {
-				runInAction(() => {
-					this.currentStreamedMessage.content = partial;
-				});
-			},
+		const aiFinalAnswer = await this._aiStore.sendMessage(
+			messageHistory,
+			this.workspace.model,
+			messageFromAi.setContent,
 		);
 
-		if (aiResponse) {
-			const aiMessage: MessageBase = {
-				chatId: this.chat.id,
-				role: "assistant",
-				content: aiResponse,
-			};
-
-			const addedAiMessage = await this._db.addMessage(aiMessage);
-
-			runInAction(() => {
-				this._messages.set(addedAiMessage.id, addedAiMessage);
-				this.currentStreamedMessage.content = "";
-
-				if (this._needToUpdateTitle(this)) {
-					this._updateChatTitle();
-				}
-			});
+		// check for update title of this chat
+		if (aiFinalAnswer && this._messages.size >= 2 && !this.name) {
+			this._updateChatTitle();
 		}
 	};
 

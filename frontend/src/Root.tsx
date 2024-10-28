@@ -1,23 +1,24 @@
 import clsx from "clsx";
-import { localStorageUtils } from "./utils/localStorage";
-import App from "./App";
-import { Auth } from "./auth/Auth";
+import { observer } from "mobx-react-lite";
+import { Outlet } from "react-router";
+import { useHotkeysGlobal } from "./hooks/useHotkeys";
+import { SnackBarManager } from "./ui-kit/snackbar/SnackBarManager";
+import { useSetTheme } from "./utils/theme";
 
-import "./index.css";
+export const Root = observer(() => {
+	useSetTheme();
+	useHotkeysGlobal();
 
-const Root = () => {
-  return (
-    <div
-      className={clsx(
-        "flex h-full",
-        "bg-[var(--main-background)] text-[var(--main-color-text)]",
-        "border-t-[var(--main-border)] border-t",
-      )}
-    >
-      {localStorageUtils.getToken() ? <App /> : <Auth />}
-      {/* {isLoading && <CircularProgress className={clsx('!mx-auto self-center')} />} */}
-    </div>
-  );
-};
-
-export default Root;
+	return (
+		<div
+			className={clsx(
+				"flex h-full w-full",
+				"bg-[var(--main-background)] text-[var(--main-color-text)]",
+				"border-t-[var(--main-border)] border-t",
+			)}
+		>
+			<SnackBarManager />
+			<Outlet />
+		</div>
+	);
+});

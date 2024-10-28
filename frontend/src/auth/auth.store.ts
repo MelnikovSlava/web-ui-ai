@@ -1,30 +1,37 @@
 import { makeAutoObservable } from "mobx";
-import { localStorageUtils } from "../utils/localStorage";
 import { api } from "../api/api";
-import { resolvePromise } from "../utils/utils";
 import { getStoreContext } from "../hooks/useCreateStore";
+import { localStorageUtils } from "../utils/localStorage";
+import { resolvePromise } from "../utils/utils";
 
 export default class AuthStore {
-	public isAuthentificated: boolean;
-
 	constructor() {
-		this.isAuthentificated = !!localStorageUtils.getToken();
-
-		// RootStoreInstance.resetCallback(this.reset);
 		makeAutoObservable(this);
 	}
 
 	public reset = () => {};
 
-	public registrationAction = (
-		data: Parameters<typeof api.registerUser>[0],
-	) => {
+	public registrationAction = (data: Parameters<typeof api.register>[0]) => {
 		return resolvePromise({
-			promise: () => api.registerUser(data),
-			resolve: () => {
-				// AmplitudeAnlytics.event("Registration");
+			promise: () => api.register(data),
+			resolve: ({ data }) => {
+				this._setToken(data.token);
 			},
 		});
+	};
+
+	public loginAction = (data: Parameters<typeof api.login>[0]) => {
+		return resolvePromise({
+			promise: () => api.login(data),
+			resolve: ({ data }) => {
+				this._setToken(data.token);
+			},
+		});
+	};
+
+	private _setToken = (token: string) => {
+		localStorageUtils.setToken(token);
+		// rootStore.isAuthentificated = true;
 	};
 }
 

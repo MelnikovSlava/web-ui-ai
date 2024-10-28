@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import clsx from "clsx";
 import type { VitalProps } from "../utils/types";
 

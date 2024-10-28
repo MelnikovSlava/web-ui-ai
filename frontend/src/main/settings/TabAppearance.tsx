@@ -1,20 +1,15 @@
-import React, { FC, useContext } from 'react';
-import { observer } from 'mobx-react-lite';
-import clsx from 'clsx';
-import { VitalProps } from '../../utils/types';
-import { SelectTheme } from './SelectTheme';
+import clsx from "clsx";
+import { observer } from "mobx-react-lite";
+import {} from "react";
+import type { VitalProps } from "../../utils/types";
+import { SelectTheme } from "./SelectTheme";
 
-
-type TabAppearanceProps = {
-
-} & VitalProps
+type TabAppearanceProps = {} & VitalProps;
 
 export const TabAppearance = observer((props: TabAppearanceProps) => {
-
-  return (
-    <div className={clsx('', props.className)}>
-
-      <SelectTheme />
-    </div>
-  );
+	return (
+		<div className={clsx("", props.className)}>
+			<SelectTheme />
+		</div>
+	);
 });

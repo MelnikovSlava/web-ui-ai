@@ -1,6 +1,5 @@
-import React, { FC } from "react";
 import clsx from "clsx";
-import { VitalProps } from "../../utils/types";
+import type { VitalProps } from "../../utils/types";
 
 type EmptyProps = {} & VitalProps;
 

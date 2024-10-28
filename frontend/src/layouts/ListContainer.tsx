@@ -1,13 +1,13 @@
-// import { ScrollArea } from "@radix-ui/react-scroll-area";
-import { ReactNode, useCallback, useEffect, useRef } from "react";
-import { VitalProps } from "../utils/types";
 import clsx from "clsx";
-import { ScrollArea } from "./ScrollArea";
 import { observer } from "mobx-react-lite";
-import { ChatStore } from "../store/chat.store";
+// import { ScrollArea } from "@radix-ui/react-scroll-area";
+import { useCallback, useEffect, useRef } from "react";
+import type { ChatStore } from "../store/chat.store";
+import type { VitalProps } from "../utils/types";
+import { ScrollArea } from "./ScrollArea";
 
 type Props = {
-	store: ChatStore;
+	chatStore: ChatStore;
 } & VitalProps;
 
 const ListContainer = observer((props: Props) => {
@@ -46,14 +46,14 @@ const ListContainer = observer((props: Props) => {
 
 		// Reset manual scrolling flag
 		isUserManuallyScrollingUp.current = false;
-	}, [props.store.chat.id]);
+	}, [props.chatStore.id]);
 
 	useEffect(() => {
 		scrollToBottom("smooth");
 
 		// Reset manual scrolling flag
 		isUserManuallyScrollingUp.current = false;
-	}, [props.store.messages.length]);
+	}, [props.chatStore.messages.length]);
 
 	useEffect(() => {
 		if (isUserManuallyScrollingUp.current === true) return;

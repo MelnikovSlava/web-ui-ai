@@ -1,25 +1,25 @@
 import { makeAutoObservable } from "mobx";
-import { RootStore } from "./root.store";
 import { localStorageUtils } from "../utils/localStorage";
+import type { RootStore } from "./root.store";
 
 export class SettingsStore {
 	private _root: RootStore;
 
-	public token: string;
+	public key: string;
 
 	constructor(root: RootStore) {
 		this._root = root;
 
-		this.token = localStorageUtils.getToken() || "";
+		this.key = localStorageUtils.getKey() || "";
 
 		makeAutoObservable(this);
 	}
 
-	public setToken = (token: string) => {
-		this.token = token;
+	public setKey = (token: string) => {
+		this.key = token;
 	};
 
 	public applySettings = () => {
-		localStorageUtils.setToken(this.token);
+		localStorageUtils.setKey(this.key);
 	};
 }

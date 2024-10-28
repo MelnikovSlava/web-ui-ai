@@ -1,41 +1,55 @@
-import React, { FC, useContext } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
-import type { VitalProps } from "../utils/types";
-import type { ChatStore } from "../store/chat.store";
-import { useRootStore } from "../store/root.store";
+import { observer } from "mobx-react-lite";
+import {} from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
-import { MdCleaningServices } from "react-icons/md";
+import { useNavigate } from "react-router";
+import { useUrlChatId } from "../hooks/useUrlChatId";
+import { useUrlWorkspaceId } from "../hooks/useUrlWorkspaceId";
+import { routes } from "../router";
+import type { ChatStore } from "../store/chat.store";
 import { IconWrapper } from "../ui-kit/IconWrapper";
-import { DEFAULT_CHAT_TITLE, INIT_CHAT_TITLE } from "../utils/constants";
+import { INIT_CHAT_TITLE } from "../utils/constants";
+import type { VitalProps } from "../utils/types";
 
 type ChatItemProps = {
-	workspaceId: number;
 	chat: ChatStore;
 } & VitalProps;
 
 export const ChatItem = observer((props: ChatItemProps) => {
-	const store = useRootStore();
-	const chatId = props.chat.chat.id;
-	const isDefault = props.chat.isDefault;
-	const isActive = chatId === store.openChatId;
-	const chatName = props.chat.chat.name || INIT_CHAT_TITLE;
+	const navigate = useNavigate();
+	const chatStore = props.chat;
 
-	const openChat = (chatId: number) => {
-		store.selectChat(chatId);
-	};
+	const urlWorkspaceId = useUrlWorkspaceId();
+	const urlChatId = useUrlChatId();
+	const isActive = urlChatId === chatStore.id;
 
 	const deleteChat = (chatId: number) => {
-		store.deleteChat(chatId);
-	};
+		if (isActive) {
+			let route: string;
 
-	const clearChat = (chatId: number) => {
-		store.clearChat(chatId);
+			const otherChats = chatStore.workspace.chats.filter(
+				(c) => c.id !== chatId,
+			);
+
+			if (otherChats.length > 0) {
+				const lastOtherChat = otherChats[otherChats.length - 1];
+
+				route = routes.chat(urlWorkspaceId, lastOtherChat.id);
+			} else {
+				route = routes.workspace(urlWorkspaceId);
+			}
+
+			navigate(route);
+		}
+
+		props.chat.workspace.deleteChat(chatId);
 	};
 
 	return (
 		<div
-			onClick={() => openChat(chatId)}
+			onClick={() => {
+				navigate(routes.chat(chatStore.workspaceId, chatStore.id));
+			}}
 			className={clsx(
 				isActive
 					? "text-gray-200 hover:bg-[var(--hover-chat)]"
@@ -51,28 +65,19 @@ export const ChatItem = observer((props: ChatItemProps) => {
 				props.className,
 			)}
 		>
-			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>{isDefault ? DEFAULT_CHAT_TITLE : chatName}</h1>
+			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>
+				{props.chat.name || INIT_CHAT_TITLE}
+			</h1>
 
 			<div
 				onClick={(e) => {
 					e.stopPropagation();
-
-					if (isDefault) {
-						clearChat(chatId);
-					} else {
-						deleteChat(chatId);
-					}
+					deleteChat(chatStore.id);
 				}}
-				className={clsx(
-					"group-hover/chat:opacity-100 opacity-0"
-				)}
+				className={clsx("group-hover/chat:opacity-100 opacity-0")}
 			>
-				<IconWrapper className={clsx('')}>
-					{isDefault ? (
-						<MdCleaningServices size={15} />
-					) : (
-						<RiDeleteBinLine size={15} />
-					)}
+				<IconWrapper className={clsx("")}>
+					<RiDeleteBinLine size={15} />
 				</IconWrapper>
 			</div>
 		</div>

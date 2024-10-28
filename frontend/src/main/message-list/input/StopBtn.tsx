@@ -1,6 +1,6 @@
-import React from "react";
 import clsx from "clsx";
-import { VitalProps } from "../../../utils/types";
+import type React from "react";
+import type { VitalProps } from "../../../utils/types";
 
 type StopBtnProps = {
 	onClick: () => void;

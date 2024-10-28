@@ -1,20 +1,16 @@
-import React, { FC, Fragment, useContext } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
-import type { VitalProps } from "../../utils/types";
-import { useRootStore } from "../../store/root.store";
-import { InputBlock } from "./input/InputBlock";
-import { Message } from "./message/Message";
-import { MainLayout } from "../../layouts/MainLayout";
+import { observer } from "mobx-react-lite";
+import {} from "react";
 import ListContainer from "../../layouts/ListContainer";
+import { MainLayout } from "../../layouts/MainLayout";
 import { Created } from "./Created";
 import { Empty } from "./Empty";
+import { InputBlock } from "./input/InputBlock";
+import { Message } from "./message/Message";
+import { useChatStore } from "./useChatStore";
 
-type ChatProps = {} & VitalProps;
-
-export const Chat = observer((props: ChatProps) => {
-	const storeGlobal = useRootStore();
-	const chatStore = storeGlobal.currentChatStore;
+export const Chat = observer(() => {
+	const chatStore = useChatStore();
 
 	if (!chatStore) {
 		return null;
@@ -25,12 +21,11 @@ export const Chat = observer((props: ChatProps) => {
 			className={clsx(
 				// "px-5",
 				"text-[var(--chat-color-text)] text-[15px]",
-				props.className,
 			)}
 		>
 			{chatStore.messages.length > 0 ? (
 				<ListContainer
-					store={chatStore}
+					chatStore={chatStore}
 					className={clsx(
 						"px-5",
 						"flex flex-col ",
@@ -45,15 +40,11 @@ export const Chat = observer((props: ChatProps) => {
 							"w-full max-w-[var(--chat-content-width)]",
 						)}
 					>
-						<Created timestamp={chatStore.chat.timestamp} />
+						<Created timestamp={chatStore.timestamp} />
 
 						{chatStore.messages.map((message) => {
 							return <Message msg={message} key={message.id} />;
 						})}
-
-						{chatStore.currentStreamedMessage.content && (
-							<Message msg={chatStore.currentStreamedMessage} />
-						)}
 					</div>
 				</ListContainer>
 			) : (

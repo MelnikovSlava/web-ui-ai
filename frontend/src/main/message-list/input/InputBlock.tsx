@@ -1,29 +1,31 @@
-import React, { FC, KeyboardEvent, useEffect } from "react";
-import { observer } from "mobx-react-lite";
-import clsx from "clsx";
 import { Textarea } from "@mui/joy";
-import type { VitalProps } from "../../../utils/types";
-import { store, useRootStore } from "../../../store/root.store";
-import type { ChatStore } from "../../../store/chat.store";
+import clsx from "clsx";
+import { observer } from "mobx-react-lite";
+import React, { useEffect, useState } from "react";
 import { LuSend } from "react-icons/lu";
-import { StopBtn } from "./StopBtn";
 import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
+import type { VitalProps } from "../../../utils/types";
+import { useChatStore } from "../useChatStore";
+import { StopBtn } from "./StopBtn";
 
 type InputBlockProps = {} & VitalProps;
 
 export const InputBlock = observer((props: InputBlockProps) => {
-	const storeGlobal = useRootStore();
-	const chatStore = storeGlobal.currentChatStore as ChatStore;
+	const chatStore = useChatStore();
+
 	const refTextarea = React.useRef<HTMLTextAreaElement>(null);
 	const isStreaming = chatStore.isStreaming;
+
+	const [input, setInput] = useState<string>("");
 
 	useEffect(() => {
 		refTextarea?.current?.focus();
 	}, [chatStore, isStreaming]);
 
-	const handleSendMessage = async () => {
-		if (chatStore.input?.trim()) {
-			await chatStore.inputMessage(chatStore.input);
+	const handleSendMessage = () => {
+		if (input.trim()) {
+			chatStore.inputMessage(input);
+			setInput("");
 		}
 	};
 
@@ -31,7 +33,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 		chatStore.stopStreaming();
 	};
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+	const handleKeyDown = (e) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 			handleSendMessage();
@@ -47,9 +49,9 @@ export const InputBlock = observer((props: InputBlockProps) => {
 					},
 				}}
 				autoFocus
-				placeholder={isStreaming ? 'Generating ...' : "Ask me anything"}
-				value={chatStore.input}
-				onChange={(e) => chatStore.setInput(e.target.value)}
+				placeholder={isStreaming ? "Generating ..." : "Ask me anything"}
+				value={input}
+				onChange={(e) => setInput(e.target.value)}
 				onKeyDown={handleKeyDown}
 				maxRows={20}
 				variant="outlined"
@@ -63,7 +65,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 					"--_Textarea-focusedHighlight": "var(--input-ring)",
 					// "--Textarea-minHeight": "50px",
 
-					width: '100%',
+					width: "100%",
 					padding: "12px",
 					background: "none",
 					color: "inherit",
@@ -71,8 +73,8 @@ export const InputBlock = observer((props: InputBlockProps) => {
 
 					"&.Mui-disabled": {
 						borderColor: "var(--main-border)",
-						opacity: '50%',
-					}
+						opacity: "50%",
+					},
 				}}
 			/>
 			<div

@@ -1,20 +1,18 @@
-import React, { FC } from 'react';
-import clsx from 'clsx';
-import { FormControl, FormLabel, Input, InputProps } from '@mui/joy';
-import { VitalProps } from '../utils/types';
-
+import { FormControl, FormLabel, Input, type InputProps } from "@mui/joy";
+import type { VitalProps } from "../utils/types";
 
 type IInputProps = {
-  label?: string;
-} & VitalProps & InputProps;
+	label?: string;
+} & VitalProps &
+	InputProps;
 
 export const IInput = (props: IInputProps) => {
-  const { label, ...rest } = props;
+	const { label, ...rest } = props;
 
-  return (
-    <FormControl>
-      <FormLabel sx={{ color: "inherit" }}>{props.label}</FormLabel>
-      <Input {...rest} />
-    </FormControl>
-  );
+	return (
+		<FormControl>
+			<FormLabel sx={{ color: "inherit" }}>{props.label}</FormLabel>
+			<Input {...rest} />
+		</FormControl>
+	);
 };

@@ -1,30 +1,50 @@
-import React, { FC } from "react";
 import clsx from "clsx";
-import { VitalProps } from "../utils/types";
-import { Workspace } from "../store/types";
-import { useRootStore } from "../store/root.store";
-import { IoIosSettings } from "react-icons/io";
 import { observer } from "mobx-react-lite";
+import { IoIosSettings } from "react-icons/io";
 import { RiApps2Fill } from "react-icons/ri";
 import { RiApps2Line } from "react-icons/ri";
+import { useNavigate } from "react-router";
+import { useUrlWorkspaceId } from "../hooks/useUrlWorkspaceId";
+import { routes } from "../router";
+import type { WorkspaceStore } from "../store/workspace.store";
 import { IconWrapper } from "../ui-kit/IconWrapper";
+import { INIT_WORKSPACE_TITLE } from "../utils/constants";
+import type { VitalProps } from "../utils/types";
 
 type WorkspaceItemProps = {
-	workspace: Workspace;
+	workspace: WorkspaceStore;
 } & VitalProps;
 
 export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
-	const storeGlobal = useRootStore();
-	const { id, name } = props.workspace;
-	const isActive = id === storeGlobal.openWorkspaceId;
+	const navigate = useNavigate();
+	const workspaceStore = props.workspace;
+
+	const urlWorkspaceId = useUrlWorkspaceId();
+
+	const isActive = workspaceStore.id === urlWorkspaceId;
 
 	const openWorkspace = (wId: number) => {
-		storeGlobal.selectWorkspace(wId);
+		if (isActive) {
+			return;
+		}
+
+		let route = routes.workspace(wId);
+
+		const targetWorkspace = workspaceStore.root.getWorkspace(wId);
+		const chatsTargetWorkspace = targetWorkspace.chats;
+		const lastChatTargetWorkspace =
+			chatsTargetWorkspace[chatsTargetWorkspace.length - 1];
+
+		if (lastChatTargetWorkspace) {
+			route = routes.chat(wId, lastChatTargetWorkspace.id);
+		}
+
+		navigate(route);
 	};
 
 	return (
 		<div
-			onClick={() => openWorkspace(id)}
+			onClick={() => openWorkspace(workspaceStore.id)}
 			className={clsx(
 				isActive ? "bg-[var(--workspace-active)]" : "opacity-70",
 				"border-[var(--workspace-active)] border",
@@ -38,18 +58,18 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 			)}
 		>
 			{isActive ? <RiApps2Fill /> : <RiApps2Line />}
-			<span className={clsx("ml-2", "flex-1", "line-clamp-1")}>{name}</span>
+			<span className={clsx("ml-2", "flex-1", "line-clamp-1")}>
+				{workspaceStore.name || INIT_WORKSPACE_TITLE}
+			</span>
 
-			<div className={clsx('opacity-0 group-hover/item:opacity-80')}>
+			<div className={clsx("opacity-0 group-hover/item:opacity-80")}>
 				<IconWrapper
 					onClick={(e) => {
 						e.stopPropagation();
-						storeGlobal.setOpenWorkspaceSettings(id);
+						navigate(routes.settingsWorkspace(workspaceStore.id));
 					}}
 				>
-					<IoIosSettings
-						size={18}
-					/>
+					<IoIosSettings size={18} />
 				</IconWrapper>
 			</div>
 		</div>

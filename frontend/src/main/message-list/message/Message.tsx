@@ -1,31 +1,48 @@
-import React, { FC, useContext, useEffect, useRef, useState } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
+import type { MessageStore } from "../../../store/message.store";
+import { LoaderDots } from "../../../ui-kit/LoaderDots";
 import type { VitalProps } from "../../../utils/types";
-import { MessageBase, Message as MsgType } from "../../../store/types";
-import { Toolbox } from "./Toolbox";
 import { Avatar } from "./Avatar";
-import { useRootStore } from "../../../store/root.store";
 import { MsgContent } from "./MsgContent";
 import { MsgEditing } from "./MsgEditing";
+import { Toolbox } from "./Toolbox";
 
 type MessageProps = {
-	msg: MsgType;
+	msg: MessageStore;
 } & VitalProps;
 
 export const Message = observer((props: MessageProps) => {
-	const store = useRootStore();
-	const isUser = props.msg.role === "user";
-	const isStreaming = store.aiStore.isStreaming;
+	const messageStore = props.msg;
+	const isUser = messageStore.role === "user";
+	const isStreaming = messageStore.chatStore.workspace.root.aiStore.isStreaming;
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 
 	const onSubmitEdited = (newContent: string) => {
-		const chatStore = store.currentChatStore;
-		chatStore?.onEditMessage(props.msg.id, newContent);
+		messageStore.chatStore.onEditMessage(props.msg.id, newContent);
 
 		setIsEditing(false);
 	};
+
+	let content: any;
+
+	if (isEditing) {
+		content = (
+			<MsgEditing
+				msg={props.msg}
+				onCancel={() => setIsEditing(false)}
+				onSubmit={onSubmitEdited}
+			/>
+		);
+	} else {
+		if (!isUser && props.msg.content === "") {
+			content = <LoaderDots className={clsx("!mt-4 !mb-2.5")} />;
+		} else {
+			content = <MsgContent msg={props.msg} />;
+		}
+	}
 
 	return (
 		<div
@@ -66,7 +83,7 @@ export const Message = observer((props: MessageProps) => {
 				>
 					<Avatar isUser={isUser} />
 					<Toolbox
-						msg={props.msg as MsgType}
+						msg={props.msg}
 						onEdit={() => setIsEditing(true)}
 						className={clsx(
 							"ml-10",
@@ -76,15 +93,7 @@ export const Message = observer((props: MessageProps) => {
 					/>
 				</div>
 
-				{isEditing ? (
-					<MsgEditing
-						msg={props.msg}
-						onCancel={() => setIsEditing(false)}
-						onSubmit={onSubmitEdited}
-					/>
-				) : (
-					<MsgContent msg={props.msg} />
-				)}
+				{content}
 			</div>
 		</div>
 	);

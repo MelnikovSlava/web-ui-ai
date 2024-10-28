@@ -1,13 +1,13 @@
-import React, { FC, useContext } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
-import { RiApps2AddFill } from "react-icons/ri";
-import { HoverWrapper } from "../ui-kit/HoverWrapper";
-import { useRootStore } from "../store/root.store";
+import { observer } from "mobx-react-lite";
+import {} from "react";
 import { IoMdSettings } from "react-icons/io";
+import { useNavigate } from "react-router";
+import { routes } from "../router";
+import { HoverWrapper } from "../ui-kit/HoverWrapper";
 
 export const Sidebar = observer(() => {
-	const store = useRootStore();
+	const navigate = useNavigate();
 
 	return (
 		<div
@@ -19,15 +19,17 @@ export const Sidebar = observer(() => {
 				"pb-4 pt-6",
 			)}
 		>
-			<HoverWrapper className={clsx("")} onClick={store.createNewWorkspace}>
+			{/* <HoverWrapper className={clsx("")} onClick={store.createNewWorkspace}>
 				<RiApps2AddFill size={22} className={clsx("")} />
-			</HoverWrapper>
+			</HoverWrapper> */}
 
 			<div className={clsx("flex-1")} />
 
 			<HoverWrapper
 				className={clsx("")}
-				onClick={() => store.setView("settings")}
+				onClick={() => {
+					navigate(routes.settings);
+				}}
 			>
 				<IoMdSettings size={22} />
 			</HoverWrapper>

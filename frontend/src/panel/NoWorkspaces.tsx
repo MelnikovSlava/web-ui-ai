@@ -1,7 +1,6 @@
-import React, { FC } from "react";
 import clsx from "clsx";
-import { VitalProps } from "../utils/types";
 import { GoArrowLeft } from "react-icons/go";
+import type { VitalProps } from "../utils/types";
 
 type NoWorkspacesProps = {} & VitalProps;
 

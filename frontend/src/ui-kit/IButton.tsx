@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import { Button, type ButtonProps } from "@mui/joy";
 
 type IButtonProps = ButtonProps;

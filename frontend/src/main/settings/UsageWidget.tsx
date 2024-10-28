@@ -1,8 +1,8 @@
-import React, { FC, useContext } from "react";
-import { observer } from "mobx-react-lite";
 import clsx from "clsx";
-import { VitalProps } from "../../utils/types";
+import { observer } from "mobx-react-lite";
+import {} from "react";
 import { useRootStore } from "../../store/root.store";
+import type { VitalProps } from "../../utils/types";
 
 type UsageWidgetProps = {} & VitalProps;
 

@@ -1,138 +1,111 @@
 import { makeAutoObservable } from "mobx";
-import { IndexedDb } from "./indexed-db";
-import type { Workspace } from "./types";
-import { WorkspaceStore } from "./workspace.store";
+import { api } from "../api/api";
+import {} from "../utils/constants";
+import { resolvePromise } from "../utils/utils";
 import { AiStore } from "./ai.store";
-import { INIT_WORKSPACE_TITLE, DEFAULT_CHAT_TITLE } from "../utils/constants";
+import type { ChatStore } from "./chat.store";
+import type { MessageStore } from "./message.store";
 import { SettingsStore } from "./settings.store";
-
-type View = "chat" | "workspace" | "settings";
+import type { Chat, Message, Workspace } from "./types";
+import { WorkspaceStore } from "./workspace.store";
 
 export class RootStore {
-  private _db = new IndexedDb();
+	public workspaces: Map<Workspace["id"], WorkspaceStore>;
 
-  public workspaces: Map<Workspace["id"], WorkspaceStore>;
+	public aiStore: AiStore;
+	public settingsStore: SettingsStore;
 
-  public aiStore: AiStore;
-  public settingsStore: SettingsStore;
+	constructor() {
+		this.aiStore = new AiStore();
+		this.settingsStore = new SettingsStore(this);
+		this.workspaces = new Map();
 
-  public view: View;
-  public openWorkspaceId: number;
-  public openChatId: number;
+		makeAutoObservable(this);
+	}
 
-  constructor() {
-    this.aiStore = new AiStore(this);
-    this.settingsStore = new SettingsStore(this);
-    this.workspaces = new Map();
-    this.view = "chat";
-    this.openWorkspaceId = 0;
-    this.openChatId = 0;
+	public get allWorkspaces() {
+		return Array.from(this.workspaces.values());
+	}
 
-    this._init();
+	public get allChats() {
+		const chats: ChatStore[] = [];
 
-    makeAutoObservable(this);
-  }
+		for (const workspace of this.allWorkspaces) {
+			chats.push(...workspace.chats);
+		}
 
-  public get currentWorkspaceStore() {
-    return this.workspaces.get(this.openWorkspaceId);
-  }
+		return chats;
+	}
 
-  public get getChatsOfCurrentWorkspace() {
-    return this.currentWorkspaceStore?.chats;
-  }
+	public get allMessages() {
+		const messages: MessageStore[] = [];
 
-  public get currentChatStore() {
-    return this.currentWorkspaceStore?.chats.get(this.openChatId);
-  }
+		for (const chat of this.allChats) {
+			messages.push(...chat.messages);
+		}
 
-  private _init = async () => {
-    this._db = new IndexedDb();
-    await this._db.init();
-    await this._updateWorkspace();
-  };
+		return messages;
+	}
 
-  private _updateWorkspace = async () => {
-    const allWorkspaces = await this._db.getWorkspaces();
+	public getDataAction = async () => {
+		return resolvePromise({
+			promise: () => api.getData(),
+			resolve: ({ data }) => {
+				data.workspaces.forEach((workspace) => {
+					const store = new WorkspaceStore(this);
+					store.deserialize(workspace, data.chats, data.messages);
+					this.workspaces.set(workspace.id, store);
+				});
+			},
+		});
+	};
 
-    allWorkspaces.forEach(this._addWorkspace);
-  };
+	public serialize = () => {
+		return {
+			workspaces: this.allWorkspaces.map((workspace) => workspace.serialize()),
+			chats: this.allChats.map((chat) => chat.serialize()),
+			messages: this.allMessages.map((message) => message.serialize()),
+		};
+	};
 
-  private _addWorkspace = async (w: Workspace) => {
-    this.workspaces.set(w.id, new WorkspaceStore(w, this._db, this));
-  };
+	public deserialize = (
+		workspaces: Workspace[],
+		chats: Chat[],
+		messages: Message[],
+	) => {
+		workspaces.forEach((workspace) => {
+			const store = new WorkspaceStore(this);
+			store.deserialize(workspace, chats, messages);
+			this.workspaces.set(workspace.id, store);
+		});
+	};
 
-  public createNewWorkspace = async () => {
-    const workspace = await this._db.createWorkspace(INIT_WORKSPACE_TITLE, "");
+	public getWorkspace = (id: number) => {
+		const workspace = this.workspaces.get(id);
 
-    const chat = await this._db.createChat(workspace.id, '', true);
+		if (!workspace) {
+			throw new Error("Workspace not found");
+		}
 
-    this._addWorkspace(workspace);
-    this.selectWorkspace(workspace.id);
-  };
+		return workspace;
+	};
 
-  public setView(view: View) {
-    this.view = view;
-  }
+	public getChat = (workspaceId: number, chatId: number) => {
+		return this.workspaces.get(workspaceId)?.getChat(chatId);
+	};
 
-  public selectChat(chatId: number) {
-    this.view = "chat";
-    this.openChatId = chatId;
-  }
+	public createNewWorkspace = () => {
+		const store = new WorkspaceStore(this);
 
-  public selectWorkspace(workspaceId: number) {
-    this.openWorkspaceId = workspaceId;
+		this.workspaces.set(store.id, store);
 
-    const chats = this.currentWorkspaceStore?.chats;
+		return store;
+	};
 
-    if (chats) {
-      const arr = [...chats.values()];
-      const defultChat = arr.find((chat) => chat.chat.default);
-
-      if (defultChat) {
-        this.selectChat(defultChat.chat.id);
-      }
-    }
-  }
-
-  public setOpenWorkspaceSettings(workspaceId: number) {
-    this.setView("workspace");
-    this.openWorkspaceId = workspaceId;
-  }
-
-  public deleteChat = async (chatId: number) => {
-    await this._db.deleteChat(chatId);
-    this.currentWorkspaceStore?.chats.delete(chatId);
-
-    if (this.openChatId === chatId) {
-      const defaultChat = this.currentWorkspaceStore?.defaultChat;
-
-      if (defaultChat) {
-        this.selectChat(defaultChat.chat.id);
-      } else {
-        throw new Error("No default chat");
-      }
-    }
-  };
-
-  public clearChat = async (chatId: number) => {
-    await this._db.clearChat(chatId);
-    this.currentChatStore?.clearMessages();
-  };
-
-  public deleteWorkspace = async (workspaceId: number) => {
-    await this._db.deleteWorkspace(workspaceId);
-    this.workspaces.delete(workspaceId);
-
-    if (this.openWorkspaceId === workspaceId) {
-      if (this.workspaces.size > 0) {
-        const allWorkspaces = [...this.workspaces.values()];
-        this.selectWorkspace(allWorkspaces[0].id);
-      } else {
-        throw new Error("No workspace");
-      }
-    }
-  };
+	public deleteWorkspace = (workspaceId: number) => {
+		this.workspaces.delete(workspaceId);
+	};
 }
 
-export const store = new RootStore();
-export const useRootStore = () => store;
+export const rootStore = new RootStore();
+export const useRootStore = () => rootStore;

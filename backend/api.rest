@@ -1,24 +1,31 @@
-@baseUrl = http://localhost:3000
-@authToken = 'sfdasfsfa'
+@baseUrl = http://localhost:4000
+@authToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MiwiaWF0IjoxNzI5NjA2MDc1LCJleHAiOjE3MzMyMDYwNzV9.PQKVqoXDXChVXIBbp6YOemgD9PEqnoTmbWsujEubUGA'
 
 # @name register
-POST {{baseUrl}}/register
+POST {{baseUrl}}/api/register
 # Authorization: {{authToken}}
 # Content-Type: application/json
 
 {
-    "username": "test",
+    "username": "test1",
     "password": "<PASSWORD>"
 }
 
 ###
 
 # @name login
-POST {{baseUrl}}/login
+POST {{baseUrl}}/api/login
 # Authorization: {{authToken}}
 # Content-Type: application/json
 
 {
-    "username": "test",
+    "username": "test1",
     "password": "<PASSWORD>"
 }
+
+###
+
+# @name getData
+GET {{baseUrl}}/api/data
+Authorization: {{authToken}}
+# Content-Type: application/json

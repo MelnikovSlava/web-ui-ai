@@ -1,17 +1,24 @@
-import React, { FC } from "react";
-import clsx from "clsx";
-import type { VitalProps } from "../utils/types";
-import { IoIosAdd } from "react-icons/io";
 import { Button } from "@mui/joy";
+import clsx from "clsx";
+import { IoIosAdd } from "react-icons/io";
+import { useNavigate } from "react-router";
+import { routes } from "../router";
+import { useRootStore } from "../store/root.store";
+import type { VitalProps } from "../utils/types";
 
-type CreateNewWBtnProps = {
-	onClick?: () => void;
-} & VitalProps;
+type CreateNewWBtnProps = {} & VitalProps;
 
 export const CreateNewWBtn = (props: CreateNewWBtnProps) => {
+	const navigate = useNavigate();
+	const rootStore = useRootStore();
+
 	return (
 		<Button
-			onClick={props.onClick}
+			onClick={() => {
+				const store = rootStore.createNewWorkspace();
+
+				navigate(routes.workspace(store.id));
+			}}
 			startDecorator={<IoIosAdd size={22} />}
 			className={clsx("", props.className)}
 			size="md"

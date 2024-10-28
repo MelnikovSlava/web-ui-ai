@@ -1,5 +1,5 @@
-import React, { PropsWithChildren, forwardRef } from "react";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
+import React, {} from "react";
 import { twMerge } from "tailwind-merge";
 
 // import "./styles.scss";

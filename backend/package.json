@@ -1,8 +1,8 @@
 {
   "devDependencies": {
-    "@biomejs/biome": "1.9.3",
+    "@biomejs/biome": "1.9.4",
     "@types/bun": "1.1.11",
-    "@types/node": "22.7.6",
+    "@types/node": "22.7.7",
     "@types/bcrypt": "5.0.2",
     "@types/hapi__jwt": "2.0.5",
     "drizzle-kit": "0.26.2",
@@ -14,8 +14,7 @@
     "@libsql/client": "0.14.0",
     "bcrypt": "5.1.1",
     "dotenv": "16.4.5",
-    "drizzle-orm": "0.35.1",
-    "joi": "17.13.3",
-    "zod": "^3.23.8"
+    "drizzle-orm": "0.35.2",
+    "joi": "17.13.3"
   }
 }

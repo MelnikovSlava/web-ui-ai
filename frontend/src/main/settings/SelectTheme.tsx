@@ -1,15 +1,14 @@
-import type React from "react";
-import { FC, useState } from "react";
-import type { VitalProps } from "../../utils/types";
 import { FormControl, FormLabel } from "@mui/joy";
-import Select from "@mui/joy/Select";
 import Option from "@mui/joy/Option";
+import Select from "@mui/joy/Select";
+import { useState } from "react";
 import {
+	type Theme,
+	Themes,
 	getTheme,
 	setTheme as setGlobalTheme,
-	Themes,
-	type Theme,
 } from "../../utils/theme";
+import type { VitalProps } from "../../utils/types";
 
 type SelectThemeProps = {} & VitalProps;
 

@@ -1,29 +1,25 @@
-import React, { FC, useEffect, useState } from "react";
-import {
-	FormControl,
-	FormLabel,
-	Autocomplete,
-	CircularProgress,
-} from "@mui/joy";
-import { VitalProps } from "../../utils/types";
-import { AiStore } from "../../store/ai.store";
-import { observer } from "mobx-react-lite";
+import { Autocomplete, FormControl, FormLabel } from "@mui/joy";
 import clsx from "clsx";
+import { observer } from "mobx-react-lite";
+import { type FC, useState } from "react";
+import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
 import { useRootStore } from "../../store/root.store";
-import { Model } from "../../store/types";
+import type { Model } from "../../store/types";
+import type { VitalProps } from "../../utils/types";
 
 type ModelSelectProps = {} & VitalProps;
 
 export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 	const store = useRootStore();
-	const workspace = store.currentWorkspaceStore;
+	const urlWorkspaceId = useUrlWorkspaceId();
+	const workspace = store.getWorkspace(urlWorkspaceId);
 	const models = store.aiStore.models;
 
 	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState<Model | null>(() => {
-		const modelId = workspace?.model;
+		const modelId = workspace.model;
 
-		return models.find((model) => model.id === modelId) || null
+		return models.find((model) => model.id === modelId) || null;
 	});
 
 	return (
@@ -40,9 +36,9 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 				value={value}
 				onChange={(event, newValue) => {
 					setValue(newValue);
-					workspace?.updateWorkspace({
-						model: newValue ? newValue.id : ''
-					})
+					workspace.updateWorkspace({
+						model: newValue ? newValue.id : "",
+					});
 				}}
 				renderOption={(props, option) => (
 					<li

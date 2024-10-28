@@ -1,40 +1,31 @@
-import React, { FC, useContext, useState } from "react";
-import { observer } from "mobx-react-lite";
+import { Tab, Tabs } from "@mui/material";
 import clsx from "clsx";
+import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { MainLayout } from "../../layouts/MainLayout";
-import { localStorageUtils } from "../../utils/localStorage";
-import { IButton } from "../../ui-kit/IButton";
 import { useRootStore } from "../../store/root.store";
-import { TabCommon } from "./TabCommon";
+import { IButton } from "../../ui-kit/IButton";
 import { TabAppearance } from "./TabAppearance";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/src/ui-kit/ITabs"
+import { TabCommon } from "./TabCommon";
 import { TabModels } from "./TabModels";
-
-type Tab = 'common' | 'appearance' | 'models';
-
-type TabItem = {
-	key: Tab;
-	title: string;
-	content: JSX.Element;
-};
 
 export const Settings = observer(() => {
 	const store = useRootStore();
-	const [tab, settab] = useState<Tab>('common');
+	const [tab, settab] = useState<string>("common");
 
-	const items: TabItem[] = [
+	const items: { key: string; title: string; content: JSX.Element }[] = [
 		{
-			key: 'common',
+			key: "common",
 			title: "Common",
 			content: <TabCommon />,
 		},
 		{
-			key: 'appearance',
+			key: "appearance",
 			title: "Appearance",
 			content: <TabAppearance />,
 		},
 		{
-			key: 'models',
+			key: "models",
 			title: "Models",
 			content: <TabModels />,
 		},
@@ -42,26 +33,29 @@ export const Settings = observer(() => {
 
 	return (
 		<MainLayout className={clsx("")}>
-			<section className={clsx('px-6 pt-7', 'flex-1 flex flex-col', 'overflow-hidden')}>
+			<section
+				className={clsx("px-6 pt-7", "flex-1 flex flex-col", "overflow-hidden")}
+			>
 				<h1 className={clsx("text-[28px] font-bold", "mb-5")}>Settings</h1>
 
 				<Tabs
-					defaultValue={tab}
-					className={clsx("flex flex-col flex-1", "w-full", 'overflow-hidden')}
+					value={tab}
+					onChange={(event, newValue) => settab(newValue)}
+					className={clsx("w-full", "overflow-hidden")}
 				>
-					<TabsList>
-						{items.map((item) => {
-							return <TabsTrigger value={item.key} key={item.key}>{item.title}</TabsTrigger>;
-						})}
-					</TabsList>
-					{items.map((item) => {
-						return (
-							<TabsContent className={clsx('overflow-auto')} value={item.key} key={item.key}>
-								{item.content}
-							</TabsContent>
-						);
-					})}
+					{items.map((item) => (
+						<Tab label={item.title} value={item.key} key={item.key} />
+					))}
 				</Tabs>
+				{items.map((item) => (
+					<div
+						className={clsx("overflow-auto")}
+						hidden={tab !== item.key}
+						key={item.key}
+					>
+						{item.content}
+					</div>
+				))}
 			</section>
 
 			<div

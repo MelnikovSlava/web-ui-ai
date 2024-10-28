@@ -38,3 +38,39 @@ export const resolvePromise = <T>(dto: {
 
 	return prom;
 };
+
+export function generateRundomId(count = 10, isNum = false) {
+	if (isNum) {
+		let num = Math.random();
+
+		num *= new Date().getTime();
+		num *= Math.random();
+
+		return num.toFixed(count);
+	}
+
+	let text = "";
+	const possible =
+		"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+	for (let i = 0; i < count; i++)
+		text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+	return text;
+}
+
+export const generateNewId = (arr: { id: number }[]) => {
+	const ids = arr.map((item) => item.id);
+
+	if (ids.length === 0) {
+		return 0;
+	}
+
+	const id = Math.max(...ids) + 1;
+
+	return id;
+};
+
+export const getTimestamp = () => {
+	return new Date().getTime();
+};

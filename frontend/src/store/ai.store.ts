@@ -1,30 +1,27 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { Key, Model } from "./types";
-import type { RootStore } from "./root.store";
+import { localStorageUtils } from "../utils/localStorage";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const AUTH_KEY_URL = "https://openrouter.ai/api/v1/auth/key";
 const MODELS_URL = "https://openrouter.ai/api/v1/models";
 
 export class AiStore {
-	private _root: RootStore;
 	private _controller: AbortController | null = null;
 
 	public creditsRemaining: Key | null;
 	public isStreaming: boolean;
 	public models: Model[] = [];
 
-	constructor(root: RootStore) {
-		this._root = root;
-
+	constructor() {
 		this.isStreaming = false;
 		this.creditsRemaining = null;
 
 		makeAutoObservable(this);
 	}
 
-	private get _token() {
-		return this._root.settingsStore.token;
+	private get _key() {
+		return localStorageUtils.getKey();
 	}
 
 	public fetchCreditsRemaining = async (): Promise<void> => {
@@ -32,7 +29,7 @@ export class AiStore {
 			const response = await fetch(AUTH_KEY_URL, {
 				method: "GET",
 				headers: {
-					Authorization: `Bearer ${this._token}`,
+					Authorization: `Bearer ${this._key}`,
 					"Content-Type": "application/json",
 				},
 			});
@@ -56,7 +53,7 @@ export class AiStore {
 			const response = await fetch(MODELS_URL, {
 				method: "GET",
 				headers: {
-					Authorization: `Bearer ${this._token}`,
+					Authorization: `Bearer ${this._key}`,
 					"Content-Type": "application/json",
 				},
 			});
@@ -90,7 +87,7 @@ export class AiStore {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json",
-					Authorization: `Bearer ${this._token}`,
+					Authorization: `Bearer ${this._key}`,
 				},
 				body: JSON.stringify({
 					model,

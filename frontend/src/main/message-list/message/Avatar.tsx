@@ -1,8 +1,7 @@
-import React, { FC } from "react";
 import clsx from "clsx";
+import { PiUserCircleFill } from "react-icons/pi";
 import assistent from "../../../assets/icon.png";
 import type { VitalProps } from "../../../utils/types";
-import { PiUserCircleFill } from "react-icons/pi";
 
 type AvatarProps = {
 	isUser: boolean;

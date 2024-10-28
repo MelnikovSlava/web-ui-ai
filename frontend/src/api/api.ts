@@ -1,7 +1,22 @@
+import axios, { type AxiosInstance } from "axios";
+import { router, routes } from "../router";
+import type { Chat, Data, Workspace } from "../store/types";
+import { localStorageUtils } from "../utils/localStorage";
+
+export type TokenResponse = {
+	token: string;
+};
+
+export type AuthParams = {
+	username: string;
+	password: string;
+};
+
 class Api {
 	private _dev: boolean;
 	private _baseUrl: string;
 	private _prefix: string;
+	private _axios: AxiosInstance;
 
 	constructor() {
 		this._dev = process.env.NODE_ENV === "development";
@@ -11,69 +26,71 @@ class Api {
 		if (this._dev) {
 			this._baseUrl = "http://localhost:4000";
 		}
-	}
 
-	private _fetch = <T>(...args: Parameters<typeof fetch>) => {
-		if (typeof args[0] === "string") {
-			args[0] = this._buildPath(args[0]);
-		}
-
-		return new Promise<T>((res, rej) => {
-			fetch(...args)
-				.then((result) => res(result.json()))
-				.catch(rej);
-		});
-	};
-
-	private _buildPath = (path: string) => {
-		return this._baseUrl + this._prefix + path;
-	};
-
-	public registerUser = (params: {
-		username: string;
-		password: string;
-		key: string;
-	}) => {
-		return this._fetch<{ token: string }>("/register", {
-			method: "POST",
+		this._axios = axios.create({
+			baseURL: this._baseUrl + this._prefix,
 			headers: {
 				"Content-Type": "application/json",
 			},
-			body: JSON.stringify(params),
 		});
+
+		this._axios.interceptors.request.use((config) => {
+			const token = localStorageUtils.getToken();
+
+			if (token) {
+				config.headers.Authorization = `Bearer ${token}`;
+			}
+
+			return config;
+		});
+
+		this._axios.interceptors.response.use(
+			(response) => response,
+			(error) => {
+				if (error.response?.status === 401) {
+					router.navigate(routes.auth);
+				}
+				const message = error.response?.data?.message || error.message;
+				return Promise.reject(new Error(message));
+			},
+		);
+	}
+
+	public register = (params: AuthParams) => {
+		return this._axios.post<TokenResponse>("/register", params);
 	};
 
-	// public initClient = () => {
-	//   return initClient(c, {
-	//     baseUrl: `${this._baseUrl}/api`,
-	//     baseHeaders: {},
-	//     api: async (args: ApiFetcherArgs & { useMock?: string }) => {
-	//       const token = LsBase.get('token');
+	public login = (params: AuthParams) => {
+		return this._axios.post<TokenResponse>("/login", params);
+	};
 
-	//       // public access
-	//       if (token) {
-	//         args.headers.authorization = `Bearer ${token}`;
+	public getData = () => {
+		return this._axios.get<Data>("/data");
+	};
 
-	//         if (this._mockServer.isRunning()) {
-	//           this._mockServer.shutdown();
-	//         }
-	//       } else if (!this._mockServer.isRunning()) {
-	//         this._mockServer.init();
-	//       }
+	public createWorkspace = (params: { name: string; model: string }) => {
+		return this._axios.post<Workspace>("/workspace", params);
+	};
 
-	//       // const promise = fetch(args.path, {
-	//       //   method: args.method,
-	//       //   headers: args.headers,
-	//       //   body: args.body,
-	//       // });
+	public deleteWorkspace = (id: number) => {
+		return this._axios.delete(`/workspace/${id}`);
+	};
 
-	//       const promise = logFetch({ args, promise: tsRestFetchApi });
-	//       const delayed = minTime(promise, this._dev ? 0 : 0);
+	public updateWorkspace = (params: {
+		id: number;
+		newName: string;
+		newModel: string;
+	}) => {
+		return this._axios.put("/workspace", params);
+	};
 
-	//       return delayed();
-	//     },
-	//   });
-	// };
+	public createChat = (params: { name: string; workspaceId: number }) => {
+		return this._axios.post<Chat>("/chats", params);
+	};
+
+	public deleteChat = (chatId: number) => {
+		return this._axios.delete(`/chats/${chatId}`);
+	};
 }
 
 export const api = new Api();

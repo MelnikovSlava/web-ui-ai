@@ -1,4 +1,3 @@
-import React, { FC } from "react";
 import clsx from "clsx";
 import { HoverWrapper, type HoverWrapperProps } from "./HoverWrapper";
 

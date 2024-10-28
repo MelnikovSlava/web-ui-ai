@@ -1,74 +1,100 @@
 import { makeAutoObservable } from "mobx";
-import type { IndexedDb } from "./indexed-db";
-import type { Chat, Workspace } from "./types";
+import { getStoreContext } from "../hooks/useCreateStore";
+import { DEFAULT_MODEL } from "../utils/constants";
+import { generateNewId } from "../utils/utils";
 import { ChatStore } from "./chat.store";
-import { RootStore } from "./root.store";
-import { INIT_CHAT_TITLE } from "../utils/constants";
+import type { MessageStore } from "./message.store";
+import type { RootStore } from "./root.store";
+import type { Chat, Message, Workspace } from "./types";
 
-export class WorkspaceStore {
-  private _db: IndexedDb;
-  private _root: RootStore;
+export class WorkspaceStore implements Workspace {
+	private _chats: Map<Chat["id"], ChatStore>;
 
-  public workspace: Workspace;
-  public chats: Map<Chat["id"], ChatStore>;
+	public id: number;
+	public name: string;
+	public model: string;
 
-  constructor(workspace: Workspace, db: IndexedDb, root: RootStore) {
-    this.workspace = workspace;
-    this._root = root;
-    this._db = db;
+	public root: RootStore;
 
-    this.chats = new Map();
+	constructor(rootStore: RootStore) {
+		this.id = generateNewId(rootStore.allWorkspaces);
+		this.name = "";
+		this.model = DEFAULT_MODEL;
 
-    this._init();
+		this._chats = new Map();
 
-    makeAutoObservable(this);
-  }
+		this.root = rootStore;
 
-  public get name() {
-    return this.workspace.name;
-  }
+		makeAutoObservable(this);
+	}
 
-  public get id() {
-    return this.workspace.id;
-  }
+	public get chats() {
+		return [...this._chats.values()];
+	}
 
-  public get model() {
-    return this.workspace.model;
-  }
+	public serialize = () => {};
 
-  public get defaultChat() {
-    return [...this.chats.values()].find((c) => c.isDefault);
-  }
+	public deserialize = (
+		workspace: Workspace,
+		chats: Chat[],
+		messages: Message[],
+	) => {
+		this.id = workspace.id;
+		this.name = workspace.name;
+		this.model = workspace.model;
 
-  private _init = async () => {
-    const allChats = await this._db.getChats(this.workspace.id);
+		chats
+			.filter((chat) => chat.workspaceId === this.id)
+			.forEach((chat) => {
+				const store = new ChatStore(this);
+				store.deserialize(chat, messages);
 
-    allChats.forEach(this._addChatToStore);
-  };
+				this._chats.set(store.id, store);
+			});
+	};
 
-  private _addChatToStore = async (chat: Chat) => {
-    const newChat = new ChatStore(chat, this.model, this._db, this._root);
-    await newChat.init();
-    this.chats.set(chat.id, newChat);
-  };
+	public getChat = (chatId: number) => {
+		const chat = this._chats.get(chatId);
 
-  public createNewChat = async () => {
-    const workspaceId = this.workspace.id;
-    const chat = await this._db.createChat(workspaceId, '');
+		if (!chat) {
+			throw new Error("Chat not found");
+		}
 
-    await this._addChatToStore(chat);
+		return chat;
+	};
 
-    this._root.selectChat(chat.id);
-  };
+	public createNewChat = () => {
+		const store = new ChatStore(this);
 
-  public updateWorkspace = async (data: { title?: string, model?: string }) => {
-    const { title = this.workspace.name, model = this.workspace.model } = data;
+		this._chats.set(store.id, store);
 
-    await this._db.updateWorkspace(this.workspace.id, title, model);
+		return store;
+	};
 
-    this.workspace.name = title;
-    this.workspace.model = model;
+	public forkChat = (message: MessageStore) => {
+		const donorChat = this.getChat(message.chatId);
+		const newChat = this.createNewChat();
 
-    this._init();
-  };
+		donorChat.messages
+			.filter((msg) => msg.id <= message.id)
+			.forEach((msg) => newChat.pushMessage(msg.content, msg.role));
+
+		return newChat;
+	};
+
+	public deleteChat = (chatId: number) => {
+		this._chats.delete(chatId);
+	};
+
+	public updateWorkspace = (data: { name?: string; model?: string }) => {
+		if (data.name !== undefined) {
+			this.name = data.name;
+		}
+
+		if (data.model !== undefined) {
+			this.model = data.model;
+		}
+	};
 }
+
+export const WorkspaceStoreData = getStoreContext<WorkspaceStore>();
