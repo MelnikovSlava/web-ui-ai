@@ -1,14 +1,23 @@
 import type { Server } from "@hapi/hapi";
 import Joi from "joi";
-import { addChat, deleteChat, updateChatName } from "../services/chat.service";
+import {
+	addChat,
+	deleteChat,
+	forkChat,
+	updateChatName,
+} from "../services/chat.service";
 
 interface AddChatPayload {
 	name: string;
-	workspaceId: number; // Adding workspaceId to the payload
+	workspaceId: number;
 }
 
 interface UpdateChatPayload {
 	newName: string;
+}
+
+interface ForkChatPayload {
+	messageId: number;
 }
 
 const chatRoutes = (server: Server) => {
@@ -16,10 +25,11 @@ const chatRoutes = (server: Server) => {
 		method: "POST",
 		path: "/api/chats",
 		options: {
+			auth: "jwt",
 			validate: {
 				payload: Joi.object({
-					name: Joi.string().required(),
-					workspaceId: Joi.number().required(), // Validating workspaceId
+					name: Joi.string().allow("").required(),
+					workspaceId: Joi.number().required(),
 				}),
 			},
 		},
@@ -35,9 +45,10 @@ const chatRoutes = (server: Server) => {
 		method: "DELETE",
 		path: "/api/chats/{id}",
 		options: {
+			auth: "jwt",
 			validate: {
 				params: Joi.object({
-					id: Joi.number().required(), // Ensure id is a number
+					id: Joi.number().required(),
 				}),
 			},
 		},
@@ -52,9 +63,10 @@ const chatRoutes = (server: Server) => {
 		method: "PUT",
 		path: "/api/chats/{id}",
 		options: {
+			auth: "jwt",
 			validate: {
 				params: Joi.object({
-					id: Joi.number().required(), // Ensure id is a number
+					id: Joi.number().required(),
 				}),
 				payload: Joi.object({
 					newName: Joi.string().required(),
@@ -66,6 +78,29 @@ const chatRoutes = (server: Server) => {
 			const { newName } = request.payload as UpdateChatPayload;
 			await updateChatName(id, newName);
 			return h.response().code(200);
+		},
+	});
+
+	server.route({
+		method: "POST",
+		path: "/api/chats/{id}/fork",
+		options: {
+			auth: "jwt",
+			validate: {
+				params: Joi.object({
+					id: Joi.number().required(),
+				}),
+				payload: Joi.object({
+					messageId: Joi.number().required(),
+				}),
+			},
+		},
+		handler: async (request, h) => {
+			const { id } = request.params;
+			const { messageId } = request.payload as ForkChatPayload;
+			const result = await forkChat(id, messageId);
+
+			return h.response(result).code(201);
 		},
 	});
 };

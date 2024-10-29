@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { IoIosAddCircleOutline } from "react-icons/io";
 import { useNavigate } from "react-router";
+import { usePromise } from "../hooks/usePromise";
 import { useUrlWorkspaceId } from "../hooks/useUrlWorkspaceId";
 import { routes } from "../router";
 import type { WorkspaceStore } from "../store/workspace.store";
@@ -14,6 +15,14 @@ type AddNewChatBtnProps = {
 export const AddNewChatBtn = (props: AddNewChatBtnProps) => {
 	const navigate = useNavigate();
 	const urlWorkspaceId = useUrlWorkspaceId();
+	const chatStore = props.workspace;
+
+	const onCreateChat = usePromise({
+		func: chatStore.createChatAction,
+		resolve: (response) => {
+			navigate(routes.chat(urlWorkspaceId, response?.data.id));
+		},
+	});
 
 	return (
 		<HoverWrapper
@@ -23,9 +32,7 @@ export const AddNewChatBtn = (props: AddNewChatBtnProps) => {
 				props.className,
 			)}
 			onClick={() => {
-				const chatStore = props.workspace.createNewChat();
-
-				navigate(routes.chat(urlWorkspaceId, chatStore.id));
+				onCreateChat.promise();
 			}}
 		>
 			<IoIosAddCircleOutline size={16} />

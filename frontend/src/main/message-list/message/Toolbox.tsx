@@ -7,6 +7,7 @@ import { RiDeleteBinLine } from "react-icons/ri";
 import { TbCopy } from "react-icons/tb";
 import { useNavigate } from "react-router";
 import { useClipboard } from "../../../hooks/useClipboard";
+import { usePromise } from "../../../hooks/usePromise";
 import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { routes } from "../../../router";
 import type { MessageStore } from "../../../store/message.store";
@@ -27,12 +28,21 @@ export const Toolbox = observer((props: ToolboxProps) => {
 
 	const messageStore = props.msg;
 
-	const isUser = messageStore.role === "user";
+	const isUser = messageStore.data.role === "user";
+
+	const onFork = usePromise({
+		func: () => messageStore.chatStore.workspace.forkChat(messageStore),
+		resolve: (response) => {
+			const newChat = response?.data.chat;
+
+			navigate(routes.chat(urlWorkspaceId, newChat?.id));
+		},
+	});
 
 	const items = [
 		{
 			icon: <TbCopy size={SIZE} />,
-			onClick: () => copy(props.msg.content),
+			onClick: () => copy(props.msg.data.content),
 			show: true,
 		},
 		// {
@@ -48,15 +58,16 @@ export const Toolbox = observer((props: ToolboxProps) => {
 		{
 			icon: <MdForkRight size={SIZE} />,
 			onClick: () => {
-				const newChat = messageStore.chatStore.workspace.forkChat(messageStore);
-
-				navigate(routes.chat(urlWorkspaceId, newChat.id));
+				if (!onFork.loading) {
+					onFork.promise();
+				}
 			},
 			show: !isUser,
 		},
 		{
 			icon: <RiDeleteBinLine size={SIZE} />,
-			onClick: () => messageStore.chatStore.deleteMessage(messageStore),
+			onClick: () =>
+				messageStore.chatStore.deleteMessages([messageStore.data.id]),
 			show: true,
 		},
 	];

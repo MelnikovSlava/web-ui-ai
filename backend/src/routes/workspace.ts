@@ -1,12 +1,10 @@
+import type { Request, ResponseToolkit } from "@hapi/hapi";
 import Joi from "joi";
 import {
+	createWorkspace,
 	deleteWorkspace,
 	updateWorkspace,
-	getAllWorkspaces,
-	createWorkspace,
 } from "../services/workspace.service";
-import { getAllChats } from "../services/chat.service";
-import { getAllMessages } from "../services/message.service";
 
 interface CreateWorkspacePayload {
 	name: string;
@@ -24,20 +22,21 @@ const workspaceRoutes = (server) => {
 		method: "POST",
 		path: "/api/workspace",
 		options: {
-			auth: false,
+			auth: "jwt",
 			validate: {
 				payload: Joi.object({
-					name: Joi.string().required(),
-					model: Joi.string().required(),
+					name: Joi.string().allow("").required(),
+					model: Joi.string().allow("").required(),
 				}),
 			},
 		},
 		handler: async (request, h) => {
 			const { name, model } = request.payload as CreateWorkspacePayload;
+			const userId = request.auth.credentials.id;
 
 			try {
-				const workspaceId = await createWorkspace(name, model);
-				return h.response({ id: workspaceId, name, model }).code(201);
+				const workspace = await createWorkspace(name, model, userId);
+				return h.response(workspace).code(201);
 			} catch (error) {
 				const message =
 					error instanceof Error ? error.message : "An unknown error occurred";
@@ -50,13 +49,14 @@ const workspaceRoutes = (server) => {
 		method: "DELETE",
 		path: "/api/workspace/{id}",
 		options: {
+			auth: "jwt",
 			validate: {
 				params: Joi.object({
 					id: Joi.number().required(),
 				}),
 			},
 		},
-		handler: async (request, h) => {
+		handler: async (request: Request, h: ResponseToolkit) => {
 			const { id } = request.params;
 			await deleteWorkspace(id);
 			return h.response().code(204);
@@ -67,37 +67,20 @@ const workspaceRoutes = (server) => {
 		method: "PUT",
 		path: "/api/workspace",
 		options: {
+			auth: "jwt",
 			validate: {
 				payload: Joi.object({
 					id: Joi.number().required(),
-					newName: Joi.string().required(),
-					newModel: Joi.string().required(),
+					newName: Joi.string().allow("").required(),
+					newModel: Joi.string().allow("").required(),
 				}),
 			},
 		},
-		handler: async (request, h) => {
+		handler: async (request: Request, h: ResponseToolkit) => {
 			const { id, newName, newModel } =
 				request.payload as UpdateWorkspacePayload;
 			await updateWorkspace(id, newName, newModel);
 			return h.response().code(200);
-		},
-	});
-
-	server.route({
-		method: "GET",
-		path: "/api/data",
-		handler: async (request, h) => {
-			const workspaces = await getAllWorkspaces();
-			const chats = await getAllChats();
-			const messages = await getAllMessages();
-
-			return h
-				.response({
-					workspaces,
-					chats,
-					messages,
-				})
-				.code(200);
 		},
 	});
 };

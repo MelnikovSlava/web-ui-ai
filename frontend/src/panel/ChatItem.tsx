@@ -21,20 +21,20 @@ export const ChatItem = observer((props: ChatItemProps) => {
 
 	const urlWorkspaceId = useUrlWorkspaceId();
 	const urlChatId = useUrlChatId();
-	const isActive = urlChatId === chatStore.id;
+	const isActive = urlChatId === chatStore.data.id;
 
 	const deleteChat = (chatId: number) => {
 		if (isActive) {
 			let route: string;
 
 			const otherChats = chatStore.workspace.chats.filter(
-				(c) => c.id !== chatId,
+				(c) => c.data.id !== chatId,
 			);
 
 			if (otherChats.length > 0) {
 				const lastOtherChat = otherChats[otherChats.length - 1];
 
-				route = routes.chat(urlWorkspaceId, lastOtherChat.id);
+				route = routes.chat(urlWorkspaceId, lastOtherChat.data.id);
 			} else {
 				route = routes.workspace(urlWorkspaceId);
 			}
@@ -42,13 +42,13 @@ export const ChatItem = observer((props: ChatItemProps) => {
 			navigate(route);
 		}
 
-		props.chat.workspace.deleteChat(chatId);
+		props.chat.workspace.deleteChatAction(chatId);
 	};
 
 	return (
 		<div
 			onClick={() => {
-				navigate(routes.chat(chatStore.workspaceId, chatStore.id));
+				navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
 			}}
 			className={clsx(
 				isActive
@@ -66,13 +66,13 @@ export const ChatItem = observer((props: ChatItemProps) => {
 			)}
 		>
 			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>
-				{props.chat.name || INIT_CHAT_TITLE}
+				{props.chat.data.name || INIT_CHAT_TITLE}
 			</h1>
 
 			<div
 				onClick={(e) => {
 					e.stopPropagation();
-					deleteChat(chatStore.id);
+					deleteChat(chatStore.data.id);
 				}}
 				className={clsx("group-hover/chat:opacity-100 opacity-0")}
 			>

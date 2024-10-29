@@ -46,7 +46,7 @@ const ListContainer = observer((props: Props) => {
 
 		// Reset manual scrolling flag
 		isUserManuallyScrollingUp.current = false;
-	}, [props.chatStore.id]);
+	}, [props.chatStore.data.id]);
 
 	useEffect(() => {
 		scrollToBottom("smooth");

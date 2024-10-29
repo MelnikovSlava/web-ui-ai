@@ -7,17 +7,18 @@ import { useRootStore } from "./store/root.store";
 import { delayPromise } from "./utils/utils";
 
 export const App = () => {
-	const store = useRootStore();
+	const rootStore = useRootStore();
 
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
 		delayPromise(
-			Promise.all([store.getDataAction(), store.aiStore.fetchModels()]),
+			Promise.all([rootStore.getDataAction(), rootStore.aiStore.fetchModels()]),
+			// Promise.all([rootStore.getDataAction()]),
 		).then(() => {
 			setIsLoading(false);
 		});
-	}, [store]);
+	}, [rootStore]);
 
 	return (
 		<KeyHandler>

@@ -40,10 +40,10 @@ export const Chat = observer(() => {
 							"w-full max-w-[var(--chat-content-width)]",
 						)}
 					>
-						<Created timestamp={chatStore.timestamp} />
+						<Created timestamp={chatStore.data.timestamp} />
 
-						{chatStore.messages.map((message) => {
-							return <Message msg={message} key={message.id} />;
+						{chatStore.messageStores.map((msgStore) => {
+							return <Message msg={msgStore} key={msgStore.data.id} />;
 						})}
 					</div>
 				</ListContainer>

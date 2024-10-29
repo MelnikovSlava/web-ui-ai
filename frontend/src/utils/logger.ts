@@ -1,28 +1,27 @@
+import type { AxiosResponse } from "axios";
+import { url } from "inspector";
+
 /* eslint-disable no-console */
 export function logFetch(
-	promise: ApiFunction,
-	isUseMock: boolean,
-	isCollapse: boolean,
+	promise: Promise<AxiosResponse<any>>,
+	isUseMock = false,
+	isCollapse = true,
 ) {
-	console.clear();
-
-	const wrapper: ApiFunction = (method, url, data, options) => {
-		const result = promise(method, url, data, options);
-
-		result
+	const wrapper = () => {
+		promise
 			.then((response) => {
 				const str = isUseMock
 					? [
-							`%c MOCK %c %c ${method.toUpperCase()} %c ${url}`,
+							`%c MOCK %c %c ${response.request.method.toUpperCase()} %c ${response.request.url}`,
 							"border: 1px solid yellow; color: white;",
 							"",
 							"background-color: green; color: white",
 							"",
 						]
 					: [
-							`%c ${method.toUpperCase()} `,
+							`%c ${response.request.method.toUpperCase()} `,
 							"background-color: green; color: white",
-							`${url}`,
+							`${response.request.url}`,
 						];
 
 				if (isCollapse) {
@@ -32,20 +31,20 @@ export function logFetch(
 				}
 
 				console.log("HOST: ", window.location.origin);
-				console.log("HANDLER: ", url);
+				console.log("HANDLER: ", response.request.url);
 
-				if (options?.headers !== undefined) {
-					console.log("PARAMS: ", options.headers);
+				if (response.request.options?.headers !== undefined) {
+					console.log("PARAMS: ", response.request.options.headers);
 				}
 
-				console.log("METHOD: ", method.toUpperCase());
+				console.log("METHOD: ", response.request.method.toUpperCase());
 
-				if (!options?.useAutorization) {
+				if (!response.request.options?.useAutorization) {
 					console.log("NOT AUTHORIZE");
 				}
 
-				if (data !== undefined) {
-					console.log("SENDING REQUEST OBJECT: ", data);
+				if (response.request.data !== undefined) {
+					console.log("SENDING REQUEST OBJECT: ", response.request.data);
 				}
 
 				console.log(`RESPONSE STATUS: ${response.status}`);
@@ -81,8 +80,8 @@ export function logFetch(
 					console.log("SENDING REQUEST OBJECT: ", data);
 				}
 
-				if (data in error) {
-					console.log("RESPONSE DATA: ", error.data);
+				if (error.response) {
+					console.log("RESPONSE DATA: ", error.response.data);
 				}
 
 				console.log("ERROR: ", error);

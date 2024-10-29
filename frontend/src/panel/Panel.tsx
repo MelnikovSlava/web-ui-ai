@@ -25,15 +25,15 @@ export const Panel = observer(() => {
 			<div className={clsx("panel-list flex-1")}>
 				{rootStore.allWorkspaces.map((workspace) => (
 					<Accordion
-						key={workspace.id}
+						key={workspace.data.id}
 						title={<WorkspaceItem workspace={workspace} />}
-						isOpen={urlWorkspaceId === workspace.id}
+						isOpen={urlWorkspaceId === workspace.data.id}
 						onToggle={() => {}}
 						className={clsx("pb-2")}
 					>
 						<div className={clsx("chat-list", "pt-1", "pl-1")}>
 							{workspace.chats.map((chat) => (
-								<ChatItem chat={chat} className="mb-1" key={chat.id} />
+								<ChatItem chat={chat} className="mb-1" key={chat.data.id} />
 							))}
 							<AddNewChatBtn workspace={workspace} />
 						</div>

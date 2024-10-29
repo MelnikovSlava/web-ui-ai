@@ -1,0 +1,134 @@
+/* :root {
+    --baseOne: hsl(0, 0%, 100%);
+    --baseTwo: hsl(252, 2%, 51%);
+    --baseThree: hsl(0, 0%, 96%);
+    --baseFour: hsl(0, 0%, 100%);
+    --accent1: hsl(6, 100%, 80%);
+  } */
+
+/* @media (prefers-color-scheme: dark) {
+    :root {
+      --baseOne: hsl(229, 57%, 11%);
+      --baseTwo: hsl(243, 100%, 93%);
+      --baseThree: hsl(228, 56%, 26%);
+      --baseFour: hsl(229, 57%, 11%);
+      --accent1: hsl(6, 100%, 80%);
+    }
+  } */
+
+body[data-theme="default"] {
+  /* base */
+  --main-color-text: #D1D7E0;
+  --main-background: #202830;
+  --main-border: #3D444D;
+  --panel-background: #202830;
+  --sidebar-background: #202830;
+
+  /* workspace */
+  --workspace-active: #2A313C;
+  /* --workspace-active: #42464f; */
+
+  /* chat */
+  --active-chat: #282F38;
+  --hover-chat: #282F38;
+  --hover-active-chat: #282F38;
+
+  /* message */
+  --msg-user-border: #343841;
+  --msg-user-body: #24272d;
+  --msg-assistent-border: #383737;
+  --msg-assistent-body: #262C36;
+  --msg-code-body: #151B23;
+
+  /* chat */
+  --chat-content-width: 900px;
+  --chat-color-text: #cacaca;
+
+  /* scroll */
+  --scrollbar-tracker: #282828;
+  --scrollbar-thumb: #807f7f;
+
+  /* controls */
+  --control-element: #D7BA7D;
+
+  /* input */
+  --input-ring: #D7BA7D;
+}
+
+body[data-theme="ocean"] {
+  /* base */
+  --main-color-text: #fff;
+  --main-background: #101827;
+  --main-border: #1F2937;
+  --panel-background: #141C2B;
+  --sidebar-background: #141C2B;
+
+  /* workspace */
+  --workspace-active: #374151;
+
+  /* chat */
+  --active-chat: #383737;
+  --hover-chat: #1a2538;
+  --hover-active-chat: #1a2538;
+
+  /* message */
+  --msg-user-border: #1F2937;
+  --msg-user-body: #172235;
+  --msg-assistent-border: #1F2937;
+  /* --msg-assistent-body: #121B2A; */
+  --msg-assistent-body: #1F2937;
+  --msg-code-body: #101827;
+
+  /* chat */
+  --chat-content-width: 900px;
+  --chat-color-text: #D1D5DB;
+
+  /* scroll */
+  --scrollbar-tracker: #282828;
+  --scrollbar-thumb: #807f7f;
+
+  /* controls */
+  /* --control-element: #D1D5DB; */
+  --control-element: #D1D5DB;
+
+  /* input */
+  --input-ring: #1A56DB;
+}
+
+body[data-theme="lucide"] {
+  /* base */
+  --main-color-text: #DFDFD6;
+  --main-background: #1B1B1F;
+  --main-border: #2E2E32;
+  --panel-background: #161618;
+  --sidebar-background: #161618;
+
+  /* workspace */
+  --workspace-active: #282A2F;
+
+  /* chat */
+  --active-chat: #DEDED5;
+  --hover-chat: #282828;
+  --hover-active-chat: #3e3d3d;
+
+  /* message */
+  --msg-user-border: #292930;
+  --msg-user-body: #24242a;
+  --msg-assistent-border: #28292f;
+  --msg-assistent-body: #202126;
+  --msg-code-body: #1c1c1e;
+
+  /* chat */
+  --chat-content-width: 900px;
+  --chat-color-text: #DEDED5;
+
+  /* scroll */
+  --scrollbar-tracker: #282828;
+  --scrollbar-thumb: #807f7f;
+
+  /* controls */
+  --control-element: #F67273;
+
+  /* input */
+  --input-ring: #F67273;
+}

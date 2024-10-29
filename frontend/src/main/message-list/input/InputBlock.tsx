@@ -3,6 +3,7 @@ import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { LuSend } from "react-icons/lu";
+import { usePromise } from "../../../hooks/usePromise";
 import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 import type { VitalProps } from "../../../utils/types";
 import { useChatStore } from "../useChatStore";
@@ -18,16 +19,21 @@ export const InputBlock = observer((props: InputBlockProps) => {
 
 	const [input, setInput] = useState<string>("");
 
+	const onSend = usePromise({
+		func: async () => {
+			if (input.trim()) {
+				setInput("");
+				await chatStore.inputMessage(input);
+			}
+		},
+		// reject: () => {
+		// 	setInput("");
+		// },
+	});
+
 	useEffect(() => {
 		refTextarea?.current?.focus();
 	}, [chatStore, isStreaming]);
-
-	const handleSendMessage = () => {
-		if (input.trim()) {
-			chatStore.inputMessage(input);
-			setInput("");
-		}
-	};
 
 	const handleStopStreaming = () => {
 		chatStore.stopStreaming();
@@ -36,7 +42,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 	const handleKeyDown = (e) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
-			handleSendMessage();
+			onSend.promise();
 		}
 	};
 
@@ -92,7 +98,12 @@ export const InputBlock = observer((props: InputBlockProps) => {
 							"h-[36px] w-[36px]",
 						)}
 					>
-						<LuSend onClick={handleSendMessage} size={22} />
+						<LuSend
+							onClick={() => {
+								onSend.promise();
+							}}
+							size={22}
+						/>
 					</HoverWrapper>
 				)}
 			</div>

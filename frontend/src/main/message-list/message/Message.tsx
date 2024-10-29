@@ -15,13 +15,13 @@ type MessageProps = {
 
 export const Message = observer((props: MessageProps) => {
 	const messageStore = props.msg;
-	const isUser = messageStore.role === "user";
+	const isUser = messageStore.data.role === "user";
 	const isStreaming = messageStore.chatStore.workspace.root.aiStore.isStreaming;
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 
 	const onSubmitEdited = (newContent: string) => {
-		messageStore.chatStore.onEditMessage(props.msg.id, newContent);
+		messageStore.chatStore.onEditMessage(props.msg.data.id, newContent);
 
 		setIsEditing(false);
 	};
@@ -31,16 +31,16 @@ export const Message = observer((props: MessageProps) => {
 	if (isEditing) {
 		content = (
 			<MsgEditing
-				msg={props.msg}
+				msg={props.msg.data}
 				onCancel={() => setIsEditing(false)}
 				onSubmit={onSubmitEdited}
 			/>
 		);
 	} else {
-		if (!isUser && props.msg.content === "") {
+		if (!isUser && props.msg.data.content === "") {
 			content = <LoaderDots className={clsx("!mt-4 !mb-2.5")} />;
 		} else {
-			content = <MsgContent msg={props.msg} />;
+			content = <MsgContent msg={props.msg.data} />;
 		}
 	}
 

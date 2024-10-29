@@ -10,11 +10,14 @@ interface AddMessagePayload {
 	chatId: number;
 	content: string;
 	role: string;
-	timestamp: number;
 }
 
 interface UpdateMessagePayload {
 	newContent: string;
+}
+
+interface DeleteMessagesPayload {
+	ids: number[];
 }
 
 const messageRoutes = (server: Server) => {
@@ -23,20 +26,20 @@ const messageRoutes = (server: Server) => {
 		method: "POST",
 		path: "/api/messages",
 		options: {
+			auth: "jwt",
 			validate: {
 				payload: Joi.object({
 					chatId: Joi.number().required(),
 					content: Joi.string().required(),
 					role: Joi.string().valid("user", "assistant").required(),
-					timestamp: Joi.number().required(),
 				}),
 			},
 		},
 		handler: async (request, h) => {
-			const { chatId, content, role, timestamp } =
-				request.payload as AddMessagePayload;
-			await addMessage(chatId, content, role, timestamp);
-			return h.response().code(201);
+			const { chatId, content, role } = request.payload as AddMessagePayload;
+			const msg = await addMessage(chatId, content, role);
+
+			return h.response(msg).code(201);
 		},
 	});
 
@@ -45,6 +48,7 @@ const messageRoutes = (server: Server) => {
 		method: "DELETE",
 		path: "/api/messages/{id}",
 		options: {
+			auth: "jwt",
 			validate: {
 				params: Joi.object({
 					id: Joi.number().required(), // Ensure id is a number
@@ -58,11 +62,31 @@ const messageRoutes = (server: Server) => {
 		},
 	});
 
+	// Route to delete multiple messages
+	server.route({
+		method: "DELETE",
+		path: "/api/messages",
+		options: {
+			auth: "jwt",
+			validate: {
+				payload: Joi.object({
+					ids: Joi.array().items(Joi.number().required()).required(),
+				}),
+			},
+		},
+		handler: async (request, h) => {
+			const { ids } = request.payload as DeleteMessagesPayload;
+			await Promise.all(ids.map((id) => deleteMessage(id)));
+			return h.response().code(204);
+		},
+	});
+
 	// Route to update a message's content
 	server.route({
 		method: "PUT",
 		path: "/api/messages/{id}",
 		options: {
+			auth: "jwt",
 			validate: {
 				params: Joi.object({
 					id: Joi.number().required(), // Ensure id is a number

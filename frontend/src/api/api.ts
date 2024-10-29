@@ -1,6 +1,6 @@
 import axios, { type AxiosInstance } from "axios";
 import { router, routes } from "../router";
-import type { Chat, Data, Workspace } from "../store/types";
+import type { Chat, Data, Message, Workspace } from "../store/types";
 import { localStorageUtils } from "../utils/localStorage";
 
 export type TokenResponse = {
@@ -90,6 +90,37 @@ class Api {
 
 	public deleteChat = (chatId: number) => {
 		return this._axios.delete(`/chats/${chatId}`);
+	};
+
+	public forkChat = (chatId: number, messageId: number) => {
+		return this._axios.post<{ chat: Chat; messages: Message[] }>(
+			`/chats/${chatId}/fork`,
+			{ messageId },
+		);
+	};
+
+	public updateChatName = (id: number, newName: string) => {
+		return this._axios.put(`/chats/${id}`, { newName });
+	};
+
+	public addMessage = (params: {
+		chatId: number;
+		content: string;
+		role: string;
+	}) => {
+		return this._axios.post<Message>("/messages", params);
+	};
+
+	public deleteMessage = (messageId: number) => {
+		return this._axios.delete(`/messages/${messageId}`);
+	};
+
+	public deleteMessages = (messageIds: number[]) => {
+		return this._axios.delete("/messages", { data: { ids: messageIds } });
+	};
+
+	public updateMessage = (messageId: number, newContent: string) => {
+		return this._axios.put(`/messages/${messageId}`, { newContent });
 	};
 }
 

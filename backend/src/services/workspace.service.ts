@@ -1,9 +1,12 @@
+import { eq } from "drizzle-orm";
 import { db } from "../config/database";
 import { workspacesTable } from "../db/schema";
-import { eq } from "drizzle-orm";
 
-export const getAllWorkspaces = async () => {
-	return await db.select().from(workspacesTable);
+export const getAllWorkspaces = async (userId: number) => {
+	return await db
+		.select()
+		.from(workspacesTable)
+		.where(eq(workspacesTable.userId, userId));
 };
 
 export const deleteWorkspace = async (id: number) => {
@@ -21,8 +24,15 @@ export const updateWorkspace = async (
 		.where(eq(workspacesTable.id, id));
 };
 
-export const createWorkspace = async (name: string, model: string) => {
-	const newWorkspace = { name, model };
-	const result = (await db.insert(workspacesTable).values(newWorkspace)) as any;
-	return result?.lastInsertRowid as number;
+export const createWorkspace = async (
+	name: string,
+	model: string,
+	userId: number,
+) => {
+	const newWorkspace = { name, model, userId };
+	const result = await db
+		.insert(workspacesTable)
+		.values(newWorkspace)
+		.returning();
+	return result[0];
 };

@@ -1,38 +1,30 @@
+import { remove } from "lodash-es";
 import { makeAutoObservable, runInAction } from "mobx";
-import { generateNewId, getTimestamp } from "../utils/utils";
+import { api } from "../api/api";
+import { resolvePromise } from "../utils/utils";
 import { AiStore } from "./ai.store";
 import { MessageStore } from "./message.store";
 import type { Chat, Message } from "./types";
 import type { WorkspaceStore } from "./workspace.store";
 
-export class ChatStore implements Chat {
-	private _messages: Map<Message["id"], MessageStore>;
+export class ChatStore {
+	private _aiStore: AiStore;
 
-	public id: number;
-	public name: string;
-	public timestamp: number;
-	public workspaceId: number;
-
+	public data: Chat;
 	public workspace: WorkspaceStore;
+	public messageStores: MessageStore[];
 
-	constructor(workspaceStore: WorkspaceStore) {
-		this._messages = new Map();
-
+	constructor(data: Chat, workspaceStore: WorkspaceStore) {
+		this._aiStore = new AiStore();
+		this.messageStores = [];
+		this.data = data;
 		this.workspace = workspaceStore;
-		this.id = generateNewId(this.workspace.root.allChats);
-		this.name = "";
-		this.timestamp = getTimestamp();
-		this.workspaceId = this.workspace.id;
 
 		makeAutoObservable(this);
 	}
 
 	public get messages() {
-		return Array.from(this._messages.values());
-	}
-
-	private get _aiStore() {
-		return this.workspace.root.aiStore;
+		return this.messageStores.map((m) => m.data);
 	}
 
 	public get isStreaming() {
@@ -64,7 +56,15 @@ export class ChatStore implements Chat {
 				const title = `${parsedObject.emoji} ${parsedObject.title}`;
 
 				runInAction(() => {
-					this.name = title;
+					this.data.name = title;
+
+					resolvePromise({
+						promise: () => api.updateChatName(this.data.id, title),
+						resolve: () => {},
+						reject: () => {
+							console.error("Chat not updated");
+						},
+					});
 				});
 			} else {
 				console.error("Объект JSON не найден");
@@ -72,12 +72,21 @@ export class ChatStore implements Chat {
 		}
 	}
 
-	public deleteMessage(msg: Message) {
-		this._messages.delete(msg.id);
-	}
+	public deleteMessages = async (messageIds: number[]) => {
+		return resolvePromise({
+			promise: () => api.deleteMessages(messageIds),
+			resolve: () => {
+				for (const messageId of messageIds) {
+					remove(this.messageStores, (m) => m.data.id === messageId);
+				}
+			},
+		});
+	};
 
-	public onEditMessage = (messageId: number, newContent: string) => {
-		const editedMessage = this._messages.get(messageId);
+	public onEditMessage = async (messageId: number, newContent: string) => {
+		const editedMessage = this.messageStores.find(
+			(m) => m.data.id === messageId,
+		);
 
 		if (!editedMessage) {
 			console.error("Message not found");
@@ -87,48 +96,53 @@ export class ChatStore implements Chat {
 		// Update the message content in the local store
 		editedMessage.setContent(newContent);
 
-		// this._messages.set(messageId, editedMessage);
-
 		// Get all messages after the edited message
-		const messagesToDelete = this.messages.filter(
-			(msg) => msg.timestamp > editedMessage.timestamp,
-		);
+		const messagesToDeleteIds = this.messages
+			.filter((msg) => msg.id > messageId)
+			.map((m) => m.id);
 
 		// Delete messages after the edited one
-		for (const msg of messagesToDelete) {
-			this.deleteMessage(msg);
-		}
+		await this.deleteMessages(messagesToDeleteIds);
+		await resolvePromise({
+			promise: () => api.updateMessage(messageId, newContent),
+			resolve: () => {},
+			reject: () => {
+				console.error("Message not updated");
+			},
+		});
 
 		this._sendMessagesToAi();
 	};
 
-	public serialize = (): Chat => {
-		return {
-			id: this.id,
-			name: this.name,
-			timestamp: this.timestamp,
-			workspaceId: this.workspaceId,
-		};
-	};
-
 	public deserialize = (chat: Chat, messages: Message[]) => {
-		this.id = chat.id;
-		this.name = chat.name;
-		this.timestamp = chat.timestamp;
+		this.data = chat;
 
 		messages
 			.filter((m) => m.chatId === chat.id)
 			.forEach((message) => {
-				const messageStore = new MessageStore(this);
-				messageStore.deserialize(message);
-
-				this._messages.set(message.id, messageStore);
+				const messageStore = new MessageStore(message, this);
+				this.messageStores.push(messageStore);
 			});
 	};
 
-	public inputMessage = (content: string) => {
-		this._addNewMessage(content, "user");
-		this._sendMessagesToAi();
+	public inputMessage = async (content: string) => {
+		const msgStore = this._addNewMessage(content, "user");
+
+		return resolvePromise({
+			promise: () =>
+				api.addMessage({
+					chatId: this.data.id,
+					content,
+					role: "user",
+				}),
+			resolve: ({ data }) => {
+				this._replaceDataForMessage(msgStore, data);
+				this._sendMessagesToAi();
+			},
+			reject: () => {
+				remove(this.messageStores, (m) => m.data.id === msgStore.data.id);
+			},
+		});
 	};
 
 	private _prepareMessagesForAi = (messages: Message[]) => {
@@ -139,35 +153,58 @@ export class ChatStore implements Chat {
 		return messagesForAi;
 	};
 
-	public pushMessage = (content: string, role: Message["role"]) => {
-		this._addNewMessage(content, role);
-	};
-
 	private _addNewMessage = (content: string, role: Message["role"]) => {
-		const message = new MessageStore(this);
+		const msg: Message = {
+			id: -1,
+			content,
+			role,
+			chatId: this.data.id,
+			timestamp: Date.now(),
+		};
 
-		message.setContent(content);
-		message.setRole(role);
+		const messageStore = new MessageStore(msg, this);
+		this.messageStores.push(messageStore);
 
-		this._messages.set(message.id, message);
-
-		return message;
+		return messageStore;
 	};
 
 	private _sendMessagesToAi = async () => {
 		const messageHistory = this._prepareMessagesForAi(this.messages);
 		const messageFromAi = this._addNewMessage("", "assistant");
 
-		const aiFinalAnswer = await this._aiStore.sendMessage(
+		await this._aiStore.sendMessage(
 			messageHistory,
-			this.workspace.model,
+			this.workspace.data.model,
 			messageFromAi.setContent,
 		);
 
+		await resolvePromise({
+			promise: () =>
+				api.addMessage({
+					chatId: this.data.id,
+					content: messageFromAi.data.content,
+					role: "assistant",
+				}),
+			resolve: ({ data }) => {
+				this._replaceDataForMessage(messageFromAi, data);
+			},
+		});
+
 		// check for update title of this chat
-		if (aiFinalAnswer && this._messages.size >= 2 && !this.name) {
+		const emptyNameOfChat = this.data.name === "";
+		const enoughMessages = this.messageStores.length >= 2;
+
+		if (emptyNameOfChat && enoughMessages) {
 			this._updateChatTitle();
 		}
+	};
+
+	private _replaceDataForMessage = (
+		msgStore: MessageStore,
+		updatedMsg: Message,
+	) => {
+		msgStore.data.id = updatedMsg.id;
+		msgStore.data.timestamp = updatedMsg.timestamp;
 	};
 
 	public stopStreaming = () => {

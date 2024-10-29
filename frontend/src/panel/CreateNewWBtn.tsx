@@ -1,7 +1,6 @@
-import { Button } from "@mui/joy";
-import clsx from "clsx";
-import { IoIosAdd } from "react-icons/io";
+import LoadingButton from "@mui/lab/LoadingButton";
 import { useNavigate } from "react-router";
+import { usePromise } from "../hooks/usePromise";
 import { routes } from "../router";
 import { useRootStore } from "../store/root.store";
 import type { VitalProps } from "../utils/types";
@@ -12,16 +11,21 @@ export const CreateNewWBtn = (props: CreateNewWBtnProps) => {
 	const navigate = useNavigate();
 	const rootStore = useRootStore();
 
-	return (
-		<Button
-			onClick={() => {
-				const store = rootStore.createNewWorkspace();
+	const onCreateWorkspace = usePromise({
+		func: rootStore.createWorkspaceAction,
+		resolve: (response) => {
+			navigate(routes.workspace(response?.data.id));
+		},
+	});
 
-				navigate(routes.workspace(store.id));
+	return (
+		<LoadingButton
+			onClick={() => {
+				onCreateWorkspace.promise();
 			}}
-			startDecorator={<IoIosAdd size={22} />}
-			className={clsx("", props.className)}
-			size="md"
+			// startDecorator={<IoIosAdd size={22} />}
+			// className={clsx("", props.className)}
+			loading={onCreateWorkspace.loading}
 			variant="outlined"
 			sx={{
 				background: "none",
@@ -39,6 +43,6 @@ export const CreateNewWBtn = (props: CreateNewWBtnProps) => {
 			}}
 		>
 			Create new space
-		</Button>
+		</LoadingButton>
 	);
 };

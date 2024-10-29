@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../config/database";
-import { chatsTable } from "../db/schema";
+import { type Message, chatsTable } from "../db/schema";
+import { addMessage, getAllMessages } from "./message.service";
 
 export const addChat = async (workspaceId: number, name: string) => {
 	return await db
@@ -20,7 +21,33 @@ export const updateChatName = async (id: number, newName: string) => {
 		.where(eq(chatsTable.id, id));
 };
 
-// New function to retrieve all chats
-export const getAllChats = async () => {
-	return await db.select().from(chatsTable);
+export const getAllChats = async (workspaceId: number) => {
+	return await db
+		.select()
+		.from(chatsTable)
+		.where(eq(chatsTable.workspaceId, workspaceId));
+};
+
+export const getChat = async (id: number) => {
+	const chats = await db.select().from(chatsTable).where(eq(chatsTable.id, id));
+	return chats[0];
+};
+
+export const forkChat = async (chatId: number, messageId: number) => {
+	const donorChat = await getChat(chatId);
+	const newChat = await addChat(donorChat.workspaceId, "");
+	const newChatId = newChat[0].id;
+
+	const messages = await getAllMessages(chatId);
+	const msgsForCopy = messages.filter((msg) => msg.id <= messageId);
+
+	const msgs: Message[] = [];
+
+	for await (const msg of msgsForCopy) {
+		const addedMsg = await addMessage(newChatId, msg.content, msg.role);
+
+		msgs.push(addedMsg[0]);
+	}
+
+	return { chat: newChat[0], messages: msgs };
 };

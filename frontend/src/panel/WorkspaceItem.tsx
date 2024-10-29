@@ -21,22 +21,22 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 
 	const urlWorkspaceId = useUrlWorkspaceId();
 
-	const isActive = workspaceStore.id === urlWorkspaceId;
+	const isActive = workspaceStore.data.id === urlWorkspaceId;
 
-	const openWorkspace = (wId: number) => {
+	const openWorkspace = (workspaceId: number) => {
 		if (isActive) {
 			return;
 		}
 
-		let route = routes.workspace(wId);
+		let route = routes.workspace(workspaceId);
 
-		const targetWorkspace = workspaceStore.root.getWorkspace(wId);
+		const targetWorkspace = workspaceStore.root.getWorkspace(workspaceId);
 		const chatsTargetWorkspace = targetWorkspace.chats;
 		const lastChatTargetWorkspace =
 			chatsTargetWorkspace[chatsTargetWorkspace.length - 1];
 
 		if (lastChatTargetWorkspace) {
-			route = routes.chat(wId, lastChatTargetWorkspace.id);
+			route = routes.chat(workspaceId, lastChatTargetWorkspace.data.id);
 		}
 
 		navigate(route);
@@ -44,7 +44,7 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 
 	return (
 		<div
-			onClick={() => openWorkspace(workspaceStore.id)}
+			onClick={() => openWorkspace(workspaceStore.data.id)}
 			className={clsx(
 				isActive ? "bg-[var(--workspace-active)]" : "opacity-70",
 				"border-[var(--workspace-active)] border",
@@ -59,14 +59,14 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 		>
 			{isActive ? <RiApps2Fill /> : <RiApps2Line />}
 			<span className={clsx("ml-2", "flex-1", "line-clamp-1")}>
-				{workspaceStore.name || INIT_WORKSPACE_TITLE}
+				{workspaceStore.data.name || INIT_WORKSPACE_TITLE}
 			</span>
 
 			<div className={clsx("opacity-0 group-hover/item:opacity-80")}>
 				<IconWrapper
 					onClick={(e) => {
 						e.stopPropagation();
-						navigate(routes.settingsWorkspace(workspaceStore.id));
+						navigate(routes.settingsWorkspace(workspaceStore.data.id));
 					}}
 				>
 					<IoIosSettings size={18} />

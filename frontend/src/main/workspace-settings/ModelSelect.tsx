@@ -1,29 +1,51 @@
 import { Autocomplete, FormControl, FormLabel } from "@mui/joy";
+import LoadingButton from "@mui/lab/LoadingButton";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import { type FC, useState } from "react";
+import { type FC, useMemo, useState } from "react";
+import { usePromise } from "../../hooks/usePromise";
 import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
 import { useRootStore } from "../../store/root.store";
 import type { Model } from "../../store/types";
+import { DEFAULT_MODEL } from "../../utils/constants";
 import type { VitalProps } from "../../utils/types";
 
 type ModelSelectProps = {} & VitalProps;
 
 export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
-	const store = useRootStore();
+	const rootStore = useRootStore();
 	const urlWorkspaceId = useUrlWorkspaceId();
-	const workspace = store.getWorkspace(urlWorkspaceId);
-	const models = store.aiStore.models;
+	const workspace = rootStore.getWorkspace(urlWorkspaceId);
+	const models = rootStore.aiStore.models;
+	const currentModel = workspace.data.model || DEFAULT_MODEL;
 
 	const [open, setOpen] = useState(false);
-	const [value, setValue] = useState<Model | null>(() => {
-		const modelId = workspace.model;
+	const [value, setValue] = useState<Model>(() => {
+		const model = models.find((m) => m.id === currentModel);
 
-		return models.find((model) => model.id === modelId) || null;
+		if (!model) {
+			throw new Error("Model not found");
+		}
+
+		return model;
+	});
+
+	const chanched = useMemo(() => {
+		return currentModel !== value.id;
+	}, [currentModel, value]);
+
+	const updateWorkspace = usePromise({
+		func: () =>
+			rootStore.updateWorkspaceAction(urlWorkspaceId, {
+				model: value ? value.id : "",
+			}),
+		resolve: () => {
+			// Handle success if needed
+		},
 	});
 
 	return (
-		<FormControl id="model-select" className={clsx("", props.className)}>
+		<FormControl id="model-select" className={clsx("flex", props.className)}>
 			<FormLabel sx={{ color: "inherit" }}>Select AI Model</FormLabel>
 			<Autocomplete
 				sx={{ width: 300 }}
@@ -32,13 +54,13 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 				onClose={() => setOpen(false)}
 				isOptionEqualToValue={(option, value) => option.id === value.id}
 				options={models}
+				disabled={updateWorkspace.loading}
 				getOptionLabel={(option) => option.name}
 				value={value}
 				onChange={(event, newValue) => {
-					setValue(newValue);
-					workspace.updateWorkspace({
-						model: newValue ? newValue.id : "",
-					});
+					if (newValue) {
+						setValue(newValue);
+					}
 				}}
 				renderOption={(props, option) => (
 					<li
@@ -62,6 +84,17 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 					</li>
 				)}
 			/>
+
+			{chanched && (
+				<LoadingButton
+					loading={updateWorkspace.loading}
+					onClick={() => {
+						updateWorkspace.promise();
+					}}
+				>
+					Save
+				</LoadingButton>
+			)}
 		</FormControl>
 	);
 });

@@ -31,7 +31,6 @@ export default class AuthStore {
 
 	private _setToken = (token: string) => {
 		localStorageUtils.setToken(token);
-		// rootStore.isAuthentificated = true;
 	};
 }
 
