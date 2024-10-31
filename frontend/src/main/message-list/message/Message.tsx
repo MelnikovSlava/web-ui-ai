@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
+import { usePromise } from "../../../hooks/usePromise";
 import type { MessageStore } from "../../../store/message.store";
 import { LoaderDots } from "../../../ui-kit/LoaderDots";
 import type { VitalProps } from "../../../utils/types";
@@ -20,11 +21,13 @@ export const Message = observer((props: MessageProps) => {
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 
-	const onSubmitEdited = (newContent: string) => {
-		messageStore.chatStore.onEditMessage(props.msg.data.id, newContent);
-
-		setIsEditing(false);
-	};
+	const onEdit = usePromise({
+		func: (newContent) =>
+			messageStore.chatStore.onEditMessage(props.msg.data.id, newContent),
+		resolve: () => {
+			setIsEditing(false);
+		},
+	});
 
 	let content: any;
 
@@ -33,7 +36,7 @@ export const Message = observer((props: MessageProps) => {
 			<MsgEditing
 				msg={props.msg.data}
 				onCancel={() => setIsEditing(false)}
-				onSubmit={onSubmitEdited}
+				onSubmit={onEdit.promise}
 			/>
 		);
 	} else {

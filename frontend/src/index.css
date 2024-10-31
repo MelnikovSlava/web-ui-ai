@@ -2,6 +2,7 @@
 @import "./styles/code.css";
 @import "./styles/themes.css";
 @import "./styles/scroll.css";
+@import "./styles/loader-dots.css";
 
 @tailwind base;
 @tailwind components;

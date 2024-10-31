@@ -13,6 +13,7 @@ export default function CheckWorkspaceExist(props: VitalProps) {
 
 	if (!exist) {
 		navigate(routes.root, { replace: true });
+		return null;
 	}
 
 	return <Outlet />;

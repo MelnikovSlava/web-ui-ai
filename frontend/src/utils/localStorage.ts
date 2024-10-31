@@ -13,16 +13,20 @@ export const localStorageUtils = {
 		return width ? Number.parseInt(width, 10) : null;
 	},
 
-	getToken: () => {
-		return localStorage.getItem(TOKEN);
-	},
-
 	getKey: () => {
 		return localStorage.getItem(OPENROUTER_KEY);
 	},
 
 	setKey: (value: string) => {
 		return localStorage.setItem(OPENROUTER_KEY, value);
+	},
+
+	removeToken: () => {
+		return localStorage.removeItem(TOKEN);
+	},
+
+	getToken: () => {
+		return localStorage.getItem(TOKEN);
 	},
 
 	setToken: (value: string) => {

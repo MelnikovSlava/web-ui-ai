@@ -1,4 +1,5 @@
 import LoadingButton from "@mui/lab/LoadingButton";
+import { FormControl, FormLabel, TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
@@ -6,20 +7,18 @@ import { useGetWorkspace } from "../../hooks/useGetWorkspace";
 import { usePromise } from "../../hooks/usePromise";
 import { INIT_WORKSPACE_TITLE } from "../../utils/constants";
 import type { VitalProps } from "../../utils/types";
-import { FormControl, FormLabel, TextField } from "@mui/material";
 
 type TitleChangeProps = {} & VitalProps;
 
 export const TitleChange = observer((props: TitleChangeProps) => {
 	const workspaceStore = useGetWorkspace();
+	const initTitle = workspaceStore.data.name || INIT_WORKSPACE_TITLE;
 
-	const [title, setTitle] = useState(
-		workspaceStore.data.name || INIT_WORKSPACE_TITLE,
-	);
+	const [title, setTitle] = useState(initTitle);
 
-	const chanched = useMemo(() => {
-		return workspaceStore.data.name !== title;
-	}, [workspaceStore.data.name, title]);
+	const changed = useMemo(() => {
+		return initTitle !== title;
+	}, [initTitle, title]);
 
 	const updateWorkspace = usePromise({
 		func: () =>
@@ -32,25 +31,28 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 	});
 
 	return (
-		<FormControl className={clsx("flex")}>
+		<FormControl>
 			<FormLabel sx={{ color: "inherit" }}>Title</FormLabel>
-			<TextField
-				value={title}
-				disabled={updateWorkspace.loading}
-				onChange={(e) => {
-					setTitle(e.target.value);
-				}}
-			/>
-			{chanched && (
-				<LoadingButton
-					loading={updateWorkspace.loading}
-					onClick={() => {
-						updateWorkspace.promise();
+			<div className={clsx("flex")}>
+				<TextField
+					value={title}
+					disabled={updateWorkspace.loading}
+					onChange={(e) => {
+						setTitle(e.target.value);
 					}}
-				>
-					Save
-				</LoadingButton>
-			)}
+				/>
+				{changed && (
+					<LoadingButton
+						variant="contained"
+						loading={updateWorkspace.loading}
+						onClick={() => {
+							updateWorkspace.promise();
+						}}
+					>
+						Save
+					</LoadingButton>
+				)}
+			</div>
 		</FormControl>
 	);
 });

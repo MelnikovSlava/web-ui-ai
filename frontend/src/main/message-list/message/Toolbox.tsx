@@ -39,6 +39,10 @@ export const Toolbox = observer((props: ToolboxProps) => {
 		},
 	});
 
+	const onDelete = usePromise({
+		func: () => messageStore.chatStore.deleteMessages([messageStore.data.id]),
+	});
+
 	const items = [
 		{
 			icon: <TbCopy size={SIZE} />,
@@ -66,8 +70,7 @@ export const Toolbox = observer((props: ToolboxProps) => {
 		},
 		{
 			icon: <RiDeleteBinLine size={SIZE} />,
-			onClick: () =>
-				messageStore.chatStore.deleteMessages([messageStore.data.id]),
+			onClick: () => onDelete.promise(),
 			show: true,
 		},
 	];

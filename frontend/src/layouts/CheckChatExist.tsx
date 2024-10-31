@@ -23,4 +23,6 @@ export default function CheckChatExist(props: VitalProps) {
 	} else {
 		navigate(routes.root, { replace: true });
 	}
+
+	return null;
 }

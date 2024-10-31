@@ -93,9 +93,6 @@ export class ChatStore {
 			return;
 		}
 
-		// Update the message content in the local store
-		editedMessage.setContent(newContent);
-
 		// Get all messages after the edited message
 		const messagesToDeleteIds = this.messages
 			.filter((msg) => msg.id > messageId)
@@ -105,7 +102,10 @@ export class ChatStore {
 		await this.deleteMessages(messagesToDeleteIds);
 		await resolvePromise({
 			promise: () => api.updateMessage(messageId, newContent),
-			resolve: () => {},
+			resolve: () => {
+				// Update the message content in the local store
+				editedMessage.setContent(newContent);
+			},
 			reject: () => {
 				console.error("Message not updated");
 			},

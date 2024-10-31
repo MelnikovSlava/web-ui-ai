@@ -1,11 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import { Auth } from "./auth/Auth";
 import { KeyForm } from "./key/KeyForm";
+import { AuthRedirect } from "./layouts/AuthRedirect";
 import { AuthRequired } from "./layouts/AuthRequired";
 import CheckChatExist from "./layouts/CheckChatExist";
 import CheckWorkspaceExist from "./layouts/CheckWorkspaceExist";
 import { DataFetcher } from "./layouts/DataFetcher";
 import { KeyHandler } from "./layouts/KeyHandler";
+import { KeyRedirect } from "./layouts/KeyRedirect";
 import { Root } from "./layouts/Root";
 import { Content } from "./layouts/content/Content";
 import { Chat } from "./main/message-list/Chat";
@@ -15,7 +17,7 @@ import { WorkspaceSettings } from "./main/workspace-settings/WorkspaceSettings";
 export const routes = {
 	root: "/",
 	auth: "/auth",
-	key: "/auth/key",
+	key: "/key",
 	home: "/home",
 
 	workspace: (wId: any = ":workspaceId") => `/workspace/${wId}`,
@@ -33,15 +35,25 @@ export const router = createBrowserRouter([
 		// errorElement: <ErrorAppHandler />,
 		children: [
 			{
-				path: routes.auth,
-				element: <Auth />,
+				element: <AuthRedirect />,
+				children: [
+					{
+						path: routes.auth,
+						element: <Auth />,
+					},
+				],
 			},
 			{
 				element: <AuthRequired />,
 				children: [
 					{
-						path: routes.key,
-						element: <KeyForm />,
+						element: <KeyRedirect />,
+						children: [
+							{
+								path: routes.key,
+								element: <KeyForm />,
+							},
+						],
 					},
 					{
 						element: <KeyHandler />,

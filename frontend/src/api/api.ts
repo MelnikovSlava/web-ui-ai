@@ -48,6 +48,7 @@ class Api {
 			(response) => response,
 			(error) => {
 				if (error.response?.status === 401) {
+					localStorageUtils.removeToken();
 					router.navigate(routes.auth);
 				}
 				const message = error.response?.data?.message || error.message;
