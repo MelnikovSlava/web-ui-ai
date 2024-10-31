@@ -56,4 +56,5 @@ jobs:
             docker rmi backend:latest || true
             docker load < image.tar.gz
             rm image.tar.gz || true
+            rm -rf ./static/* || true
             docker-compose up -d

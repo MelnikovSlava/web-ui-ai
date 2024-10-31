@@ -9,10 +9,10 @@ services:
       - "80:80"
       - "8443:8443"
     volumes:
+      - ./static:/var/www/html/static:ro
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
       - caddy_config:/config
-      - backend_static:/var/www/html/static:ro
     networks:
       - app_network
     depends_on:
@@ -28,14 +28,13 @@ services:
       - .env
     volumes:
       - ./database:/app/database
-      - backend_static:/app/static
+      - ./static:/app/static
     networks:
       - app_network
 
 volumes:
   caddy_data:
   caddy_config:
-  backend_static:
   
 networks:
   app_network:
