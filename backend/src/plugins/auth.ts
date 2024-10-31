@@ -1,14 +1,14 @@
 import type { Plugin, Server } from "@hapi/hapi";
+import { eq } from "drizzle-orm";
+import { envVariables } from "../config";
 import { db } from "../config/database";
 import { usersTable } from "../db/schema";
-import { eq } from "drizzle-orm";
-import { config } from "../config";
 
 export const authPlugin: Plugin<null> = {
 	name: "auth",
 	register: async (server: Server) => {
 		server.auth.strategy("jwt", "jwt", {
-			keys: config.jwtSecret,
+			keys: envVariables.jwtSecret,
 			verify: {
 				aud: false,
 				iss: false,

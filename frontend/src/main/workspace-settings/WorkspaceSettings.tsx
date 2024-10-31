@@ -1,4 +1,4 @@
-import {} from "@mui/joy";
+import LoadingButton from "@mui/lab/LoadingButton";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import {} from "react";
@@ -6,23 +6,24 @@ import { useNavigate } from "react-router";
 import { usePromise } from "../../hooks/usePromise";
 import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
 import { MainLayout } from "../../layouts/MainLayout";
+import { PageBottom } from "../../layouts/containers/PageBottom";
 import { routes } from "../../router";
 import { useRootStore } from "../../store/root.store";
-import { IButton } from "../../ui-kit/IButton";
 import { ModelSelect } from "./ModelSelect";
 import { TitleChange } from "./TitleChange";
+import { PageContainer } from "../../layouts/containers/PageContainer";
 
 export const WorkspaceSettings = observer(() => {
 	const rootStore = useRootStore();
-	const navigate = useNavigate();
 	const urlWorkspaceId = useUrlWorkspaceId();
+	const navigate = useNavigate();
 
 	const deleteWorkspace = usePromise({
 		func: async () => {
 			const msg = "Are you sure you want to delete this workspace?";
 
 			if (window.confirm(msg)) {
-				let route = routes.root;
+				let route = routes.home;
 
 				const otherWorkspaces = rootStore.allWorkspaces.filter(
 					(w) => w.data.id !== urlWorkspaceId,
@@ -33,34 +34,36 @@ export const WorkspaceSettings = observer(() => {
 					route = routes.workspace(lastWorkspace.data.id);
 				}
 
-				navigate(route);
+				rootStore.deleteWorkspaceAction(urlWorkspaceId);
 
-				await rootStore.deleteWorkspaceAction(urlWorkspaceId);
+				navigate(route, { replace: true });
 			}
 		},
 	});
 
 	return (
-		<MainLayout className={clsx("p-4")}>
-			<h1 className={clsx("text-[28px] font-bold")}>Workspace Settings</h1>
+		<MainLayout>
+			<PageContainer>
+				<h1 className={clsx("text-[28px] font-bold")}>Workspace Settings</h1>
 
-			<div className={clsx("flex flex-1 flex-col")}>
-				<TitleChange />
+				<div className={clsx("flex flex-1 flex-col")}>
+					<TitleChange />
 
-				<ModelSelect className={clsx("mt-4")} />
-			</div>
+					<ModelSelect className={clsx("mt-4")} />
+				</div>
+			</PageContainer>
 
-			<div className={clsx("flex")}>
-				<IButton
-					title="Delete workspace"
-					variant="outlined"
-					color="danger"
-					className={clsx("h-[38px]", "!ml-2", "")}
-					size="md"
+			<PageBottom>
+				<LoadingButton
+					variant="contained"
+					className={clsx("!ml-2")}
+					size="medium"
 					onClick={deleteWorkspace.promise}
 					loading={deleteWorkspace.loading}
-				/>
-			</div>
+				>
+					Delete workspace
+				</LoadingButton>
+			</PageBottom>
 		</MainLayout>
 	);
 });

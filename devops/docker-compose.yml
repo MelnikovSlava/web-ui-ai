@@ -10,9 +10,21 @@ services:
       - "8443:8443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
-      - ./dist:/var/www/html/dist
       - caddy_data:/data
       - caddy_config:/config
+    depends_on:
+      - backend
+
+  backend:
+    container_name: backend
+    image: backend:latest
+    restart: always
+    ports:
+      - "4000:4000"
+    env_file:
+      - .env
+    volumes:
+      - ./database:/app/database
 
 volumes:
   caddy_data:

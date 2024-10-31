@@ -45,6 +45,10 @@ export class WorkspaceStore {
 		this._chats.set(chatStore.data.id, chatStore);
 	};
 
+	public existsChat = (id: number) => {
+		return this._chats.has(id);
+	};
+
 	public getChat = (chatId: number) => {
 		const chat = this._chats.get(chatId);
 

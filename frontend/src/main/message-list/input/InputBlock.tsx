@@ -1,12 +1,12 @@
-import { Textarea } from "@mui/joy";
+import { TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import React, { useEffect, useState } from "react";
 import { LuSend } from "react-icons/lu";
+import { useChatStore } from "../../../hooks/useChatStore";
 import { usePromise } from "../../../hooks/usePromise";
 import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 import type { VitalProps } from "../../../utils/types";
-import { useChatStore } from "../useChatStore";
 import { StopBtn } from "./StopBtn";
 
 type InputBlockProps = {} & VitalProps;
@@ -39,7 +39,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 		chatStore.stopStreaming();
 	};
 
-	const handleKeyDown = (e) => {
+	const handleKeyDown = (e: any) => {
 		if (e.key === "Enter" && !e.shiftKey) {
 			e.preventDefault();
 			onSend.promise();
@@ -48,9 +48,9 @@ export const InputBlock = observer((props: InputBlockProps) => {
 
 	return (
 		<div className="relative w-full max-w-[var(--chat-content-width)] mx-auto">
-			<Textarea
+			<TextField
 				slotProps={{
-					textarea: {
+					input: {
 						ref: refTextarea,
 					},
 				}}
@@ -63,7 +63,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 				variant="outlined"
 				disabled={chatStore.isStreaming}
 				// disabled={true}
-				size="sm"
+				// size="sm"
 				sx={{
 					"--Textarea-radius": "9px",
 					"--Textarea-gap": "9px",

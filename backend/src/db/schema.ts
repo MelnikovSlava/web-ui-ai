@@ -35,10 +35,6 @@ export const messagesTable = sqliteTable("messages", {
 });
 
 export type User = typeof usersTable.$inferSelect;
-export type NewUser = typeof usersTable.$inferInsert;
 export type Workspace = typeof workspacesTable.$inferSelect;
-export type NewWorkspace = typeof workspacesTable.$inferInsert;
 export type Chat = typeof chatsTable.$inferSelect;
-export type NewChat = typeof chatsTable.$inferInsert;
 export type Message = typeof messagesTable.$inferSelect;
-export type NewMessage = typeof messagesTable.$inferInsert;

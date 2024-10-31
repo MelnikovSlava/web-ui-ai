@@ -17,42 +17,37 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install bun
-        uses: oven-sh/setup-bun@v2
+      - name: Build Docker image
+        run: docker build -t backend:latest .
 
-      - name: Install deps
-        run: bun install
-
-      - name: Build frontend
-        run: bun run build
-
-      - name: Archive files
-        run: tar -czf dist.tar.gz dist
+      - name: Save Docker image
+        run: docker save backend:latest | gzip > image.tar.gz
       
-      - name: Update Caddyfile with HOST
-        run: |
-          sed -i 's/{$HOST}/${{ secrets.HOST }}/g' Caddyfile
+      # - name: Update Caddyfile with HOST
+      #   run: |
+      #     sed -i 's/{$HOST}/${{ secrets.HOST }}/g' Caddyfile
 
-      - name: Upload files to server
-        uses: appleboy/scp-action@v0.1.4
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSHKEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          source: "Caddyfile, docker-compose.yml, dist.tar.gz"
-          target: ${{ secrets.PATH_APP }}
+      # - name: Upload files to server
+      #   uses: appleboy/scp-action@v0.1.4
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USERNAME }}
+      #     key: ${{ secrets.SERVER_SSHKEY }}
+      #     port: ${{ secrets.SERVER_PORT }}
+      #     source: "Caddyfile, docker-compose.yml, image.tar.gz"
+      #     target: ${{ secrets.PATH_APP }}
 
-      - name: Deploy to server
-        uses: appleboy/ssh-action@v0.1.5
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          key: ${{ secrets.SERVER_SSHKEY }}
-          port: ${{ secrets.SERVER_PORT }}
-          script: |
-            cd ${{ secrets.PATH_APP }}
-            docker-compose down
-            tar -xzf dist.tar.gz -C .
-            rm dist.tar.gz
-            docker-compose up -d
+      # - name: Deploy to server
+      #   uses: appleboy/ssh-action@v0.1.5
+      #   with:
+      #     host: ${{ secrets.SERVER_HOST }}
+      #     username: ${{ secrets.SERVER_USERNAME }}
+      #     key: ${{ secrets.SERVER_SSHKEY }}
+      #     port: ${{ secrets.SERVER_PORT }}
+      #     script: |
+      #       cd ${{ secrets.PATH_APP }}
+      #       docker-compose down
+      #       docker rmi nextjs:latest || true
+      #       docker load < image.tar.gz
+      #       rm image.tar.gz
+      #       docker-compose up -d

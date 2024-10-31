@@ -1,22 +1,20 @@
-import { Autocomplete, FormControl, FormLabel } from "@mui/joy";
 import LoadingButton from "@mui/lab/LoadingButton";
+import { Autocomplete, FormControl, FormLabel, TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { type FC, useMemo, useState } from "react";
 import { usePromise } from "../../hooks/usePromise";
-import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
-import { useRootStore } from "../../store/root.store";
+import { rootStore } from "../../store/root.store";
 import type { Model } from "../../store/types";
 import { DEFAULT_MODEL } from "../../utils/constants";
 import type { VitalProps } from "../../utils/types";
+import { useGetWorkspace } from "../../hooks/useGetWorkspace";
 
 type ModelSelectProps = {} & VitalProps;
 
 export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
-	const rootStore = useRootStore();
-	const urlWorkspaceId = useUrlWorkspaceId();
-	const workspace = rootStore.getWorkspace(urlWorkspaceId);
-	const models = rootStore.aiStore.models;
+	const workspace = useGetWorkspace();
+	const models = workspace.root.aiStore.models;
 	const currentModel = workspace.data.model || DEFAULT_MODEL;
 
 	const [open, setOpen] = useState(false);
@@ -36,7 +34,7 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 
 	const updateWorkspace = usePromise({
 		func: () =>
-			rootStore.updateWorkspaceAction(urlWorkspaceId, {
+			rootStore.updateWorkspaceAction(workspace.data.id, {
 				model: value ? value.id : "",
 			}),
 		resolve: () => {
@@ -57,6 +55,7 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 				disabled={updateWorkspace.loading}
 				getOptionLabel={(option) => option.name}
 				value={value}
+				renderInput={(params) => <TextField {...params} />}
 				onChange={(event, newValue) => {
 					if (newValue) {
 						setValue(newValue);

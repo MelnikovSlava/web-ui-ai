@@ -15,8 +15,9 @@ export class SettingsStore {
 		makeAutoObservable(this);
 	}
 
-	public setKey = (token: string) => {
-		this.key = token;
+	public setKey = (key: string) => {
+		localStorageUtils.setKey(key);
+		this.key = key;
 	};
 
 	public applySettings = () => {

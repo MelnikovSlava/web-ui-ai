@@ -58,6 +58,10 @@ export class RootStore {
 		});
 	};
 
+	public existsWorkspace = (id: number) => {
+		return this.workspaces.has(id);
+	};
+
 	public getWorkspace = (id: number) => {
 		const workspace = this.workspaces.get(id);
 

@@ -7,7 +7,7 @@ const envSchema = z.object({
 	NODE_ENV: z
 		.enum(["development", "production", "test"])
 		.default("development"),
-	PORT: z.string().default("3000").transform(Number),
+	PORT: z.string().default("4000").transform(Number),
 	DB_FILE_NAME: z.string(),
 	JWT_SECRET: z.string(),
 });
@@ -20,11 +20,11 @@ if (!envParseResult.success) {
 	);
 }
 
-export const config = {
+export const envVariables = {
 	env: envParseResult.data.NODE_ENV,
 	port: envParseResult.data.PORT,
 	dbFileName: envParseResult.data.DB_FILE_NAME,
 	jwtSecret: envParseResult.data.JWT_SECRET,
 };
 
-export type Config = typeof config;
+export type EnvVariables = typeof envVariables;

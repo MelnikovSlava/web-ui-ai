@@ -1,20 +1,16 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import {} from "react";
+import { useChatStore } from "../../hooks/useChatStore";
 import ListContainer from "../../layouts/ListContainer";
 import { MainLayout } from "../../layouts/MainLayout";
 import { Created } from "./Created";
 import { Empty } from "./Empty";
 import { InputBlock } from "./input/InputBlock";
 import { Message } from "./message/Message";
-import { useChatStore } from "./useChatStore";
 
 export const Chat = observer(() => {
 	const chatStore = useChatStore();
-
-	if (!chatStore) {
-		return null;
-	}
 
 	return (
 		<MainLayout

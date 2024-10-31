@@ -1,24 +1,13 @@
-import { observer } from "mobx-react-lite";
-import {} from "react";
-import { useRootStore } from "../store/root.store";
-import { localStorageUtils } from "../utils/localStorage";
-import type { VitalProps } from "../utils/types";
+import { Navigate, Outlet } from "react-router";
+import { useOpenrouterKey } from "../hooks/useOpenrouterKey";
+import { routes } from "../router";
 
-type KeyHandlerProps = {} & VitalProps;
-
-export const KeyHandler = observer((props: KeyHandlerProps) => {
-	const store = useRootStore();
-	const key = store.settingsStore.key;
+export const KeyHandler = () => {
+	const key = useOpenrouterKey();
 
 	if (!key) {
-		const key = prompt("OpenRouter key:");
-
-		if (key) {
-			localStorageUtils.setKey(key);
-		} else {
-			return <h1>OpenRouter key is required. Update for input key again.</h1>;
-		}
+		return <Navigate to={routes.key} replace />;
 	}
 
-	return props.children;
-});
+	return <Outlet />;
+};

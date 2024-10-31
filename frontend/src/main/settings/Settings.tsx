@@ -1,13 +1,14 @@
-import { Tab, Tabs } from "@mui/material";
+import { Button, Tab, Tabs } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { MainLayout } from "../../layouts/MainLayout";
+import { PageBottom } from "../../layouts/containers/PageBottom";
 import { useRootStore } from "../../store/root.store";
-import { IButton } from "../../ui-kit/IButton";
 import { TabAppearance } from "./TabAppearance";
 import { TabCommon } from "./TabCommon";
 import { TabModels } from "./TabModels";
+import { PageContainer } from "../../layouts/containers/PageContainer";
 
 export const Settings = observer(() => {
 	const store = useRootStore();
@@ -33,9 +34,7 @@ export const Settings = observer(() => {
 
 	return (
 		<MainLayout className={clsx("")}>
-			<section
-				className={clsx("px-6 pt-7", "flex-1 flex flex-col", "overflow-hidden")}
-			>
+			<PageContainer>
 				<h1 className={clsx("text-[28px] font-bold", "mb-5")}>Settings</h1>
 
 				<Tabs
@@ -56,22 +55,17 @@ export const Settings = observer(() => {
 						{item.content}
 					</div>
 				))}
-			</section>
+			</PageContainer>
 
-			<div
-				className={clsx(
-					"flex border-t-[var(--main-border)] border-t",
-					"py-4 px-6",
-					"w-full",
-				)}
-			>
-				<IButton
-					title="Apply"
-					className={clsx("h-[38px]", "!bg-white !text-black", "")}
-					size="md"
+			<PageBottom>
+				<Button
+					variant="contained"
+					size="medium"
 					onClick={store.settingsStore.applySettings}
-				/>
-			</div>
+				>
+					Apply
+				</Button>
+			</PageBottom>
 		</MainLayout>
 	);
 });

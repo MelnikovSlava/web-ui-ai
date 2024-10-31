@@ -1,6 +1,4 @@
-import { FormControl, FormLabel } from "@mui/joy";
-import Option from "@mui/joy/Option";
-import Select from "@mui/joy/Select";
+import { FormControl, FormLabel, MenuItem, Select } from "@mui/material";
 import { useState } from "react";
 import {
 	type Theme,
@@ -33,13 +31,16 @@ export const SelectTheme = (props: SelectThemeProps) => {
 			<Select
 				value={theme}
 				variant="outlined"
-				onChange={(e, value) => handleChange(value || "default")}
+				onChange={(e) => {
+					const value = (e.target.value as Theme) || "default";
+					handleChange(value);
+				}}
 			>
 				{items.map((item) => {
 					return (
-						<Option key={item.value} value={item.value}>
+						<MenuItem key={item.value} value={item.value}>
 							{item.label}
-						</Option>
+						</MenuItem>
 					);
 				})}
 			</Select>

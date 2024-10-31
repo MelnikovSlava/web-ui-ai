@@ -2,8 +2,8 @@ import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { useRootStore } from "../../store/root.store";
-import { IInput } from "../../ui-kit/IInput";
 import type { VitalProps } from "../../utils/types";
+import { FormControl, TextField } from "@mui/material";
 
 type TabModelsProps = {} & VitalProps;
 
@@ -18,13 +18,16 @@ export const TabModels = observer((props: TabModelsProps) => {
 
 	return (
 		<div className={clsx("w-full", props.className)}>
-			<IInput
-				value={value}
-				onChange={(e) => {
-					setValue(e.target.value);
-				}}
-				className={clsx("mb-4")}
-			/>
+			<FormControl>
+				{/* <FormLabel sx={{ color: "inherit" }}>{props.label}</FormLabel> */}
+				<TextField
+					value={value}
+					onChange={(e) => {
+						setValue(e.target.value);
+					}}
+					className={clsx("mb-4")}
+				/>
+			</FormControl>
 
 			<table
 				className={clsx(

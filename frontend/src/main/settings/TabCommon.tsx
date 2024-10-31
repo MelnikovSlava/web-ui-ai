@@ -1,4 +1,3 @@
-import {} from "@mui/joy";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import {} from "react";

@@ -1,7 +1,8 @@
 {
   "scripts": {
     "migrate": "npx drizzle-kit push",
-    "start": "bun ./src/server.ts --watch"
+    "start": "bun ./src/server.ts",
+    "dev": "bun ./src/server.ts --watch"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
@@ -15,12 +16,13 @@
   "dependencies": {
     "@hapi/hapi": "21.3.10",
     "@hapi/jwt": "3.2.0",
-    "@libsql/client": "^0.14.0",
+    "@libsql/client": "0.14.0",
+    "@libsql/linux-x64-gnu": "0.4.6",
     "bcrypt": "5.1.1",
     "dotenv": "16.4.5",
-    "drizzle-orm": "^0.35.2",
+    "drizzle-orm": "0.35.2",
     "joi": "17.13.3",
-    "jsonwebtoken": "^9.0.2",
-    "zod": "^3.23.8"
+    "jsonwebtoken": "9.0.2",
+    "zod": "3.23.8"
   }
 }

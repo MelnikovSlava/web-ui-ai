@@ -53,12 +53,16 @@ export const MsgContent = observer((props: MsgContentProps) => {
 		}),
 		{
 			renderer: {
-				link: (href: string, title: string, text: string) => {
+				link: (
+					href: string,
+					title: string | null | undefined,
+					text: string,
+				) => {
 					return Renderer.prototype.link
 						?.apply(this, [href, title, text])
 						.replace("<a", "<a target='_blank'");
 				},
-				code: (code: string, lang: string) => {
+				code: (code: string, lang: string | undefined) => {
 					return `
 				  <div class="relative code-block group/item overflow-auto">
 				    <button class='text-xs copy-action hidden group-hover/item:block p-2 rounded-lg absolute z-10 top-4 right-2 bg-gray-600 border-gray-400 border opacity-20 hover:opacity-100 active:opacity-30'>

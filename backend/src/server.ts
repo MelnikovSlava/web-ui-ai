@@ -1,14 +1,14 @@
 import Hapi from "@hapi/hapi";
+import { envVariables } from "./config";
 import { authPlugin } from "./plugins/auth";
 import { authRoutes } from "./routes/auth";
-import workspaceRoutes from "./routes/workspace"; // Import the workspace routes
-import { config } from "./config";
-import messageRoutes from "./routes/messages";
 import chatRoutes from "./routes/chats";
+import messageRoutes from "./routes/messages";
+import workspaceRoutes from "./routes/workspace"; // Import the workspace routes
 
 const init = async () => {
 	const server = Hapi.server({
-		port: config.port,
+		port: envVariables.port,
 		host: "localhost",
 		routes: {
 			cors: true,

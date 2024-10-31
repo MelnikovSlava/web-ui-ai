@@ -1,20 +1,17 @@
-import { FormControl, FormLabel, Input } from "@mui/joy";
 import LoadingButton from "@mui/lab/LoadingButton";
+import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
+import { useGetWorkspace } from "../../hooks/useGetWorkspace";
 import { usePromise } from "../../hooks/usePromise";
-import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
-import { useRootStore } from "../../store/root.store";
 import { INIT_WORKSPACE_TITLE } from "../../utils/constants";
 import type { VitalProps } from "../../utils/types";
-import clsx from "clsx";
+import { FormControl, FormLabel, TextField } from "@mui/material";
 
 type TitleChangeProps = {} & VitalProps;
 
 export const TitleChange = observer((props: TitleChangeProps) => {
-	const rootStore = useRootStore();
-	const urlWorkspaceId = useUrlWorkspaceId();
-	const workspaceStore = rootStore.getWorkspace(urlWorkspaceId);
+	const workspaceStore = useGetWorkspace();
 
 	const [title, setTitle] = useState(
 		workspaceStore.data.name || INIT_WORKSPACE_TITLE,
@@ -26,7 +23,7 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 
 	const updateWorkspace = usePromise({
 		func: () =>
-			rootStore.updateWorkspaceAction(urlWorkspaceId, {
+			workspaceStore.root.updateWorkspaceAction(workspaceStore.data.id, {
 				name: title,
 			}),
 		resolve: () => {
@@ -37,7 +34,7 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 	return (
 		<FormControl className={clsx("flex")}>
 			<FormLabel sx={{ color: "inherit" }}>Title</FormLabel>
-			<Input
+			<TextField
 				value={title}
 				disabled={updateWorkspace.loading}
 				onChange={(e) => {

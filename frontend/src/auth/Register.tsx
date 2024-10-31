@@ -22,7 +22,7 @@ export const Register = () => {
 	const registerPromise = usePromise({
 		func: authStore.registrationAction,
 		resolve: () => {
-			navigate(routes.root);
+			navigate(routes.root, { replace: true });
 		},
 		showError: false,
 		reject: (error: any) => {

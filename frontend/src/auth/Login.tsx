@@ -22,7 +22,7 @@ export const Login = () => {
 	const loginPromise = usePromise({
 		func: authStore.loginAction,
 		resolve: () => {
-			navigate(routes.root);
+			navigate(routes.root, { replace: true });
 		},
 		showError: false,
 		reject: (error: any) => {
