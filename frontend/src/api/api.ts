@@ -2,6 +2,7 @@ import axios, { type AxiosInstance } from "axios";
 import { router, routes } from "../router";
 import type { Chat, Data, Message, Workspace } from "../store/types";
 import { localStorageUtils } from "../utils/localStorage";
+import { setupAxiosLogging } from "../utils/log";
 
 export type TokenResponse = {
 	token: string;
@@ -33,6 +34,10 @@ class Api {
 				"Content-Type": "application/json",
 			},
 		});
+
+		if (this._dev) {
+			setupAxiosLogging(this._axios);
+		}
 
 		this._axios.interceptors.request.use((config) => {
 			const token = localStorageUtils.getToken();
