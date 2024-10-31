@@ -27,6 +27,11 @@ jobs:
         run: |
           sed -i 's/{$HOST}/${{ secrets.HOST }}/g' devops/Caddyfile
 
+      - name: Copy files to workspace root
+        run: |
+          cp devops/Caddyfile ./Caddyfile
+          cp devops/docker-compose.yml ./docker-compose.yml
+
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.4
         with:
@@ -34,9 +39,9 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSHKEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "devops/Caddyfile, devops/docker-compose.yml, image.tar.gz"
+          source: "Caddyfile, docker-compose.yml, image.tar.gz"
           target: ${{ secrets.PATH_APP }}
-          strip_components: 1
+          overwrite: true
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.5
