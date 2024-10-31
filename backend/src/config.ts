@@ -4,9 +4,7 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
-	NODE_ENV: z
-		.enum(["development", "production", "test"])
-		.default("development"),
+	NODE_ENV: z.enum(["development", "production", "test"]),
 	PORT: z.string().default("4000").transform(Number),
 	DB_FILE_NAME: z.string().default("file:database/database.sqlite"),
 	JWT_SECRET: z.string(),
@@ -21,6 +19,7 @@ if (!envParseResult.success) {
 }
 
 export const envVariables = {
+	nodeEnv: envParseResult.data.NODE_ENV,
 	env: envParseResult.data.NODE_ENV,
 	port: envParseResult.data.PORT,
 	dbFileName: envParseResult.data.DB_FILE_NAME,
