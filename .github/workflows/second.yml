@@ -36,6 +36,7 @@ jobs:
           port: ${{ secrets.SERVER_PORT }}
           source: "devops/Caddyfile, devops/docker-compose.yml, image.tar.gz"
           target: ${{ secrets.PATH_APP }}
+          strip_components: 1
 
       - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.5
