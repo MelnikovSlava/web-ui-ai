@@ -1,7 +1,7 @@
-import { TextField } from "@mui/material";
+import { InputAdornment, TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { LuSend } from "react-icons/lu";
 import { useChatStore } from "../../../hooks/useChatStore";
 import { usePromise } from "../../../hooks/usePromise";
@@ -31,6 +31,10 @@ export const InputBlock = observer((props: InputBlockProps) => {
 		// },
 	});
 
+	const disabled = useMemo(() => {
+		return isStreaming;
+	}, [isStreaming]);
+
 	useEffect(() => {
 		refTextarea?.current?.focus();
 	}, [chatStore, isStreaming]);
@@ -52,6 +56,37 @@ export const InputBlock = observer((props: InputBlockProps) => {
 				slotProps={{
 					input: {
 						ref: refTextarea,
+						endAdornment: (
+							<InputAdornment position="end">
+								<div
+									className={clsx(
+										// "absolute top-[5.5px] right-[6px]",
+										// "border-b-orange-300 border",
+									)}
+								>
+									{isStreaming ? (
+										<StopBtn onClick={handleStopStreaming} />
+									) : (
+										<HoverWrapper
+											disabled={disabled}
+											className={clsx(
+												"flex items-center justify-center",
+												"h-[36px] w-[36px]",
+											)}
+										>
+											<LuSend
+												onClick={() => {
+													if (!disabled) {
+														onSend.promise();
+													}
+												}}
+												size={22}
+											/>
+										</HoverWrapper>
+									)}
+								</div>
+							</InputAdornment>
+						),
 					},
 				}}
 				autoFocus
@@ -60,53 +95,19 @@ export const InputBlock = observer((props: InputBlockProps) => {
 				onChange={(e) => setInput(e.target.value)}
 				onKeyDown={handleKeyDown}
 				maxRows={20}
+				multiline
 				variant="outlined"
-				disabled={chatStore.isStreaming}
-				// disabled={true}
+				disabled={disabled}
 				// size="sm"
 				sx={{
-					"--Textarea-radius": "9px",
-					"--Textarea-gap": "9px",
-					"--Textarea-focusedThickness": "2px",
-					"--_Textarea-focusedHighlight": "var(--input-ring)",
-					// "--Textarea-minHeight": "50px",
+					"& .MuiOutlinedInput-root": {
+						borderRadius: "9px",
+						padding: "4px 10px 4px 4px",
+					},
 
 					width: "100%",
-					padding: "12px",
-					background: "none",
-					color: "inherit",
-					borderColor: "var(--main-border)",
-
-					"&.Mui-disabled": {
-						borderColor: "var(--main-border)",
-						opacity: "50%",
-					},
 				}}
 			/>
-			<div
-				className={clsx(
-					"absolute top-[5.5px] right-[6px]",
-					// "border-b-orange-300 border",
-				)}
-			>
-				{isStreaming ? (
-					<StopBtn onClick={handleStopStreaming} />
-				) : (
-					<HoverWrapper
-						className={clsx(
-							"flex items-center justify-center",
-							"h-[36px] w-[36px]",
-						)}
-					>
-						<LuSend
-							onClick={() => {
-								onSend.promise();
-							}}
-							size={22}
-						/>
-					</HoverWrapper>
-				)}
-			</div>
 		</div>
 	);
 });

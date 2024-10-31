@@ -23,6 +23,7 @@ body[data-theme="default"] {
   --main-border: #3D444D;
   --panel-background: #202830;
   --sidebar-background: #202830;
+  --primary-color: #D7BA7D;
 
   /* workspace */
   --workspace-active: #2A313C;
@@ -62,6 +63,7 @@ body[data-theme="ocean"] {
   --main-border: #1F2937;
   --panel-background: #141C2B;
   --sidebar-background: #141C2B;
+  --primary-color: #1A56DB;
 
   /* workspace */
   --workspace-active: #374151;
@@ -102,6 +104,7 @@ body[data-theme="lucide"] {
   --main-border: #2E2E32;
   --panel-background: #161618;
   --sidebar-background: #161618;
+  --primary-color: #F67273;
 
   /* workspace */
   --workspace-active: #282A2F;

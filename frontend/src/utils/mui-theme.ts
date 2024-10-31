@@ -2,19 +2,20 @@ import { createTheme } from "@mui/material/styles";
 
 export const muiTheme = createTheme({
 	palette: {
-		mode: "light",
+		// mode: "dark",
 		primary: {
-			main: "#18181b", // Zinc-900
-			light: "#27272a", // Zinc-800
-			dark: "#09090b", // Zinc-950
+			main: "#D7BA7D", // Zinc-900
+			// main: "#18181b", // Zinc-900
+			// light: "#27272a", // Zinc-800
+			// dark: "#09090b", // Zinc-950
 		},
-		background: {
-			default: "#ffffff",
-			paper: "#ffffff",
-		},
+		// background: {
+		// 	default: "#ffffff",
+		// 	paper: "#ffffff",
+		// },
 		text: {
-			primary: "#18181b",
-			secondary: "#71717a", // Zinc-500
+			primary: "#D1D7E0",
+			// secondary: "#71717a", // Zinc-500
 		},
 	},
 	typography: {
@@ -28,12 +29,15 @@ export const muiTheme = createTheme({
 		MuiButton: {
 			styleOverrides: {
 				root: {
+					boxShadow: "none",
 					borderRadius: "6px",
 					padding: "8px 16px",
 					fontSize: "14px",
 					lineHeight: "20px",
 					transition: "all 0.2s",
+
 					"&:hover": {
+						boxShadow: "none",
 						backgroundColor: "#27272a",
 						opacity: 0.9,
 					},
@@ -62,14 +66,14 @@ export const muiTheme = createTheme({
 						borderRadius: "6px",
 						backgroundColor: "transparent",
 						"& fieldset": {
-							borderColor: "#e4e4e7",
+							// borderColor: "#e4e4e7",
 						},
 						"&:hover fieldset": {
-							borderColor: "#a1a1aa", // Zinc-400
+							// borderColor: "#a1a1aa", // Zinc-400
 						},
 						"&.Mui-focused fieldset": {
-							borderColor: "#18181b",
-							borderWidth: "1px",
+							// borderColor: "#18181b",
+							// borderWidth: "1px",
 						},
 					},
 					"& .MuiInputBase-input": {

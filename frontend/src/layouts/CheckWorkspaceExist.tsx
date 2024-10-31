@@ -1,4 +1,4 @@
-import { Outlet, useNavigate } from "react-router";
+import { Navigate, Outlet } from "react-router";
 import { useUrlWorkspaceId } from "../hooks/useUrlWorkspaceId";
 import { routes } from "../router";
 import { useRootStore } from "../store/root.store";
@@ -9,11 +9,8 @@ export default function CheckWorkspaceExist(props: VitalProps) {
 	const workspaceId = useUrlWorkspaceId();
 	const exist = rootStore.existsWorkspace(workspaceId);
 
-	const navigate = useNavigate();
-
 	if (!exist) {
-		navigate(routes.root, { replace: true });
-		return null;
+		return <Navigate to={routes.root} replace />;
 	}
 
 	return <Outlet />;
