@@ -25,7 +25,7 @@ jobs:
       
       - name: Update Caddyfile with HOST
         run: |
-          sed -i 's/{$HOST}/${{ secrets.HOST }}/g' Caddyfile
+          sed -i 's/{$HOST}/${{ secrets.HOST }}/g' devops/Caddyfile
 
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.4
@@ -34,7 +34,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSHKEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "Caddyfile, docker-compose.yml, image.tar.gz"
+          source: "devops/Caddyfile, devops/docker-compose.yml, image.tar.gz"
           target: ${{ secrets.PATH_APP }}
 
       - name: Deploy to server
