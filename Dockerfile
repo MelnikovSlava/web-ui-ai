@@ -10,13 +10,13 @@ FROM oven/bun:canary-alpine AS runner
 WORKDIR /app
 
 # Install required system dependencies
-# RUN apk add --no-cache \
-#     python3 \
-#     make \
-#     g++ \
-#     gcc \
-#     libstdc++ \
-#     linux-headers
+RUN apk add --no-cache \
+    python3 \
+    make \
+    g++ \
+    gcc \
+    libstdc++ \
+    linux-headers
 
 # Copy frontend build
 COPY --from=frontend-build /app/dist ./static
