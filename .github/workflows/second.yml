@@ -50,5 +50,5 @@ jobs:
             docker-compose down
             docker rmi backend:latest || true
             docker load < image.tar.gz
-            rm image.tar.gz
+            rm image.tar.gz || true
             docker-compose up -d
