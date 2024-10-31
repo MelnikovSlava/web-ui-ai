@@ -3,10 +3,10 @@ name: Build Web UI
 on:
   pull_request:
     branches:
-      - main
+      - second
   push:
     branches:
-      - main
+      - second
 
 jobs:
   deploy:
