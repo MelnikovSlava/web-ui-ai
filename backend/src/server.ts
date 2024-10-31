@@ -9,7 +9,8 @@ import workspaceRoutes from "./routes/workspace"; // Import the workspace routes
 const init = async () => {
 	const server = Hapi.server({
 		port: envVariables.port,
-		host: "localhost",
+		// host: "localhost",
+		host: "0.0.0.0",
 		routes: {
 			cors: true,
 		},
