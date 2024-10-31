@@ -8,7 +8,7 @@ const envSchema = z.object({
 		.enum(["development", "production", "test"])
 		.default("development"),
 	PORT: z.string().default("4000").transform(Number),
-	DB_FILE_NAME: z.string().default("file:database/db.sqlite"),
+	DB_FILE_NAME: z.string().default("file:database/database.sqlite"),
 	JWT_SECRET: z.string(),
 });
 
