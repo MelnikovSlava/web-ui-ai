@@ -8,15 +8,23 @@
         -Server
     }
 
+    # Reverse proxy for API requests 
+    handle /api/* {
+        reverse_proxy backend:4000
+    }
+
     # Set the root directory for serving files
-    root /var/www/html/dist
+    # Handle static files from backend container
+    handle /* {
+        root * /var/www/html/static
+        
+        # Try to serve the requested file, then directory, then fall back to index.html
+        # This is useful for single-page applications (SPAs)
+        try_files {path} {path}/ /index.html
 
-    # Try to serve the requested file, then directory, then fall back to index.html
-    # This is useful for single-page applications (SPAs)
-    try_files {path} {path}/ /index.html
-
-    # Enable static file serving
-    file_server
+        # Enable static file serving
+        file_server
+    }
 }
 
 # Handle requests on port 80 (HTTP)
@@ -26,3 +34,4 @@
     # This allows the ACME challenge to succeed
     respond "OK" 200
 }
+
