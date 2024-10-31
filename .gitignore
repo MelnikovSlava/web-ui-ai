@@ -13,4 +13,3 @@ dist/
 .idea
 
 .env
-/backend/database/*
