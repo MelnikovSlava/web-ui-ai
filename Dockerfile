@@ -1,11 +1,3 @@
-# Build frontend
-FROM oven/bun:canary-alpine AS frontend-build
-WORKDIR /app
-COPY frontend/ .
-RUN bun install
-RUN bun run build
-
-# Final stage
 FROM oven/bun:canary-alpine AS runner
 WORKDIR /app
 
@@ -17,9 +9,6 @@ RUN apk add --no-cache \
     gcc \
     libstdc++ \
     linux-headers
-
-# Copy frontend build
-COPY --from=frontend-build /app/dist ./static
 
 # Copy backend files
 COPY backend/ .

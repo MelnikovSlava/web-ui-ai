@@ -17,6 +17,18 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v1
+        with:
+          bun-version: latest
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          bun install
+          bun run build
+          cd ..
+
       - name: Build Docker image
         run: docker build -t backend:latest .
 
@@ -31,6 +43,8 @@ jobs:
         run: |
           cp devops/Caddyfile ./Caddyfile
           cp devops/docker-compose.yml ./docker-compose.yml
+          mkdir -p static
+          cp -r frontend/dist/* static/
 
       - name: Upload files to server
         uses: appleboy/scp-action@v0.1.4
@@ -39,7 +53,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           key: ${{ secrets.SERVER_SSHKEY }}
           port: ${{ secrets.SERVER_PORT }}
-          source: "Caddyfile, docker-compose.yml, image.tar.gz"
+          source: "Caddyfile, docker-compose.yml, image.tar.gz, static/"
           target: ${{ secrets.PATH_APP }}
           overwrite: true
 
@@ -56,5 +70,4 @@ jobs:
             docker rmi backend:latest || true
             docker load < image.tar.gz
             rm image.tar.gz || true
-            rm -rf ./static/* || true
             docker-compose up -d
