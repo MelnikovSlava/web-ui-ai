@@ -9,13 +9,13 @@
     }
 
     # Reverse proxy for API requests 
-    handle /api/* {
-        reverse_proxy backend:4000
+    route {
+        reverse_proxy /api/* backend:4000
     }
 
     # Set the root directory for serving files
     # Handle static files from backend container
-    handle /* {
+    route {
         root * /var/www/html/static
         
         # Try to serve the requested file, then directory, then fall back to index.html
