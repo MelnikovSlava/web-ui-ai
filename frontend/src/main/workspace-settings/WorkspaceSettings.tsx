@@ -7,11 +7,11 @@ import { usePromise } from "../../hooks/usePromise";
 import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
 import { MainLayout } from "../../layouts/MainLayout";
 import { PageBottom } from "../../layouts/containers/PageBottom";
+import { PageContainer } from "../../layouts/containers/PageContainer";
 import { routes } from "../../router";
 import { useRootStore } from "../../store/root.store";
 import { ModelSelect } from "./ModelSelect";
 import { TitleChange } from "./TitleChange";
-import { PageContainer } from "../../layouts/containers/PageContainer";
 
 export const WorkspaceSettings = observer(() => {
 	const rootStore = useRootStore();
@@ -25,7 +25,7 @@ export const WorkspaceSettings = observer(() => {
 			if (window.confirm(msg)) {
 				let route = routes.home;
 
-				const otherWorkspaces = rootStore.allWorkspaces.filter(
+				const otherWorkspaces = rootStore.workspaces.filter(
 					(w) => w.data.id !== urlWorkspaceId,
 				);
 

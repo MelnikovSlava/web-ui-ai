@@ -11,26 +11,32 @@ export default class AuthStore {
 
 	public reset = () => {};
 
-	public registrationAction = (data: Parameters<typeof api.register>[0]) => {
+	public registrationAction = (params: Parameters<typeof api.register>[0]) => {
 		return resolvePromise({
-			promise: () => api.register(data),
+			promise: () => api.register(params),
 			resolve: ({ data }) => {
 				this._setToken(data.token);
+				this._setSecret(params.password);
 			},
 		});
 	};
 
-	public loginAction = (data: Parameters<typeof api.login>[0]) => {
+	public loginAction = (params: Parameters<typeof api.login>[0]) => {
 		return resolvePromise({
-			promise: () => api.login(data),
+			promise: () => api.login(params),
 			resolve: ({ data }) => {
 				this._setToken(data.token);
+				this._setSecret(params.password);
 			},
 		});
 	};
 
 	private _setToken = (token: string) => {
 		localStorageUtils.setToken(token);
+	};
+
+	private _setSecret = (secret: string) => {
+		localStorageUtils.setSecret(secret);
 	};
 }
 

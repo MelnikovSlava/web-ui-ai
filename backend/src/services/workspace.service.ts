@@ -13,14 +13,17 @@ export const deleteWorkspace = async (id: number) => {
 	await db.delete(workspacesTable).where(eq(workspacesTable.id, id));
 };
 
-export const updateWorkspace = async (
-	id: number,
-	newName: string,
-	newModel: string,
-) => {
+export const updateWorkspaceModel = async (id: number, newModel: string) => {
 	await db
 		.update(workspacesTable)
-		.set({ name: newName, model: newModel })
+		.set({ model: newModel })
+		.where(eq(workspacesTable.id, id));
+};
+
+export const updateWorkspaceName = async (id: number, newName: string) => {
+	await db
+		.update(workspacesTable)
+		.set({ name: newName })
 		.where(eq(workspacesTable.id, id));
 };
 

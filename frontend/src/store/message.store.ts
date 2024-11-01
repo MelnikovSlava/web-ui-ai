@@ -1,4 +1,5 @@
 import { makeAutoObservable } from "mobx";
+import { decrypt } from "../utils/encryptor";
 import type { ChatStore } from "./chat.store";
 import type { Message } from "./types";
 
@@ -21,11 +22,10 @@ export class MessageStore {
 		this.data.role = role;
 	};
 
-	// public deserialize = (message: Message) => {
-	// 	this.id = message.id;
-	// 	this.content = message.content;
-	// 	this.timestamp = message.timestamp;
-	// 	this.role = message.role;
-	// 	this.chatId = message.chatId;
-	// };
+	public deserialize = (message: Message) => {
+		this.data = {
+			...message,
+			content: decrypt(message.content),
+		};
+	};
 }

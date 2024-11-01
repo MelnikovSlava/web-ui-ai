@@ -3,12 +3,12 @@ import { Autocomplete, FormControl, FormLabel, TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { type FC, useMemo, useState } from "react";
+import { useGetWorkspace } from "../../hooks/useGetWorkspace";
 import { usePromise } from "../../hooks/usePromise";
 import { rootStore } from "../../store/root.store";
 import type { Model } from "../../store/types";
 import { DEFAULT_MODEL } from "../../utils/constants";
 import type { VitalProps } from "../../utils/types";
-import { useGetWorkspace } from "../../hooks/useGetWorkspace";
 
 type ModelSelectProps = {} & VitalProps;
 
@@ -32,11 +32,12 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 		return currentModel !== value.id;
 	}, [currentModel, value]);
 
-	const updateWorkspace = usePromise({
+	const onUpdate = usePromise({
 		func: () =>
-			rootStore.updateWorkspaceAction(workspace.data.id, {
-				model: value ? value.id : "",
-			}),
+			rootStore.updateWorkspaceModelAction(
+				workspace.data.id,
+				value ? value.id : "",
+			),
 		resolve: () => {
 			// Handle success if needed
 		},
@@ -52,7 +53,7 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 				onClose={() => setOpen(false)}
 				isOptionEqualToValue={(option, value) => option.id === value.id}
 				options={models}
-				disabled={updateWorkspace.loading}
+				disabled={onUpdate.loading}
 				getOptionLabel={(option) => option.name}
 				value={value}
 				renderInput={(params) => <TextField {...params} />}
@@ -86,9 +87,9 @@ export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 
 			{chanched && (
 				<LoadingButton
-					loading={updateWorkspace.loading}
+					loading={onUpdate.loading}
 					onClick={() => {
-						updateWorkspace.promise();
+						onUpdate.promise();
 					}}
 				>
 					Save

@@ -82,12 +82,12 @@ class Api {
 		return this._axios.delete(`/workspace/${id}/delete`);
 	};
 
-	public updateWorkspace = (params: {
-		id: number;
-		newName: string;
-		newModel: string;
-	}) => {
-		return this._axios.put("/workspace/update", params);
+	public updateWorkspaceModel = (params: { id: number; model: string }) => {
+		return this._axios.put("/workspace/update-model", params);
+	};
+
+	public updateWorkspaceName = (params: { id: number; name: string }) => {
+		return this._axios.put("/workspace/update-name", params);
 	};
 
 	public createChat = (params: { name: string; workspaceId: number }) => {

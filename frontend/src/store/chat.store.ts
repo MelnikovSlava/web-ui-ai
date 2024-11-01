@@ -1,5 +1,6 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import { api } from "../api/api";
+import { decrypt, encrypt } from "../utils/encryptor";
 import { resolvePromise } from "../utils/utils";
 import { AiStore } from "./ai.store";
 import { MessageStore } from "./message.store";
@@ -58,7 +59,10 @@ export class ChatStore {
 					this.data.name = title;
 
 					resolvePromise({
-						promise: () => api.updateChatName(this.data.id, title),
+						promise: () => {
+							const encrypted = encrypt(title);
+							return api.updateChatName(this.data.id, encrypted);
+						},
 						resolve: () => {},
 						reject: () => {
 							console.error("Chat not updated");
@@ -100,7 +104,10 @@ export class ChatStore {
 		}
 
 		await resolvePromise({
-			promise: () => api.updateMessage(messageId, newContent),
+			promise: () => {
+				const encrypted = encrypt(newContent);
+				return api.updateMessage(messageId, encrypted);
+			},
 			resolve: () => {
 				editedMessage.setContent(newContent);
 			},
@@ -113,25 +120,27 @@ export class ChatStore {
 	};
 
 	public deserialize = (chat: Chat, messages: Message[]) => {
-		this.data = chat;
+		this.data = { ...chat, name: decrypt(chat.name) };
 
 		messages
 			.filter((m) => m.chatId === chat.id)
 			.forEach((message) => {
-				this._addNewMessage(message);
+				this._createMessage(message);
 			});
 	};
 
 	public inputMessage = async (content: string) => {
 		return resolvePromise({
-			promise: () =>
-				api.addMessage({
+			promise: () => {
+				const encrypted = encrypt(content);
+				return api.addMessage({
 					chatId: this.data.id,
-					content,
+					content: encrypted,
 					role: "user",
-				}),
+				});
+			},
 			resolve: ({ data }) => {
-				this._addNewMessage(data);
+				this._createMessage(data);
 				this._sendMessagesToAi();
 			},
 		});
@@ -145,8 +154,9 @@ export class ChatStore {
 		return messagesForAi;
 	};
 
-	private _addNewMessage = (msg: Message) => {
+	private _createMessage = (msg: Message) => {
 		const messageStore = new MessageStore(msg, this);
+		messageStore.deserialize(msg);
 		this.messageStores.set(messageStore.data.id, messageStore);
 
 		return messageStore;
@@ -163,7 +173,7 @@ export class ChatStore {
 			timestamp: Date.now(),
 		};
 
-		const messageFromAi = this._addNewMessage(msg);
+		const messageFromAi = this._createMessage(msg);
 
 		await this._aiStore.sendMessage(
 			messageHistory,
@@ -172,18 +182,17 @@ export class ChatStore {
 		);
 
 		await resolvePromise({
-			promise: () =>
-				api.addMessage({
+			promise: () => {
+				const encrypted = encrypt(messageFromAi.data.content);
+				return api.addMessage({
 					chatId: this.data.id,
-					content: messageFromAi.data.content,
+					content: encrypted,
 					role: "assistant",
-				}),
+				});
+			},
 			resolve: ({ data }) => {
 				this.messageStores.delete(messageFromAi.data.id);
-				this._addNewMessage(data);
-				// this._replaceDataForMessage(messageFromAi, data);
-				// messageFromAi.data.id = data.id;
-				// messageFromAi.data.timestamp = data.timestamp;
+				this._createMessage(data);
 			},
 		});
 

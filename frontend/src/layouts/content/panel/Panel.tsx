@@ -23,7 +23,7 @@ export const Panel = observer(() => {
 			)}
 		>
 			<div className={clsx("panel-list flex-1")}>
-				{rootStore.allWorkspaces.map((workspace) => (
+				{rootStore.workspaces.map((workspace) => (
 					<Accordion
 						key={workspace.data.id}
 						title={<WorkspaceItem workspace={workspace} />}

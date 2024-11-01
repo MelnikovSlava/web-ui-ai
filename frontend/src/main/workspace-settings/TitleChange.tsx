@@ -20,11 +20,12 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 		return initTitle !== title;
 	}, [initTitle, title]);
 
-	const updateWorkspace = usePromise({
+	const onUpdate = usePromise({
 		func: () =>
-			workspaceStore.root.updateWorkspaceAction(workspaceStore.data.id, {
-				name: title,
-			}),
+			workspaceStore.root.updateWorkspaceNameAction(
+				workspaceStore.data.id,
+				title,
+			),
 		resolve: () => {
 			// Handle success if needed
 		},
@@ -36,7 +37,7 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 			<div className={clsx("flex")}>
 				<TextField
 					value={title}
-					disabled={updateWorkspace.loading}
+					disabled={onUpdate.loading}
 					onChange={(e) => {
 						setTitle(e.target.value);
 					}}
@@ -44,9 +45,9 @@ export const TitleChange = observer((props: TitleChangeProps) => {
 				{changed && (
 					<LoadingButton
 						variant="contained"
-						loading={updateWorkspace.loading}
+						loading={onUpdate.loading}
 						onClick={() => {
-							updateWorkspace.promise();
+							onUpdate.promise();
 						}}
 					>
 						Save

@@ -11,10 +11,8 @@ export const DataFetcher = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
-		console.log("here");
 		delayPromise(
 			Promise.all([rootStore.getDataAction(), rootStore.aiStore.fetchModels()]),
-			// Promise.all([rootStore.getDataAction()]),
 		).then(() => {
 			setIsLoading(false);
 		});

@@ -1,6 +1,7 @@
 import { makeAutoObservable } from "mobx";
 import { api } from "../api/api";
 import { getStoreContext } from "../hooks/useCreateStore";
+import { decrypt } from "../utils/encryptor";
 import { resolvePromise } from "../utils/utils";
 import { ChatStore } from "./chat.store";
 import type { MessageStore } from "./message.store";
@@ -30,7 +31,10 @@ export class WorkspaceStore {
 		chats: Chat[],
 		messages: Message[],
 	) => {
-		this.data = workspace;
+		this.data = {
+			...workspace,
+			name: decrypt(workspace.name),
+		};
 
 		chats
 			.filter((chat) => chat.workspaceId === workspace.id)

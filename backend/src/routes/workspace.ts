@@ -3,18 +3,13 @@ import Joi from "joi";
 import {
 	createWorkspace,
 	deleteWorkspace,
-	updateWorkspace,
+	updateWorkspaceModel,
+	updateWorkspaceName,
 } from "../services/workspace.service";
 
 interface CreateWorkspacePayload {
 	name: string;
 	model: string;
-}
-
-interface UpdateWorkspacePayload {
-	id: number;
-	newName: string;
-	newModel: string;
 }
 
 const workspaceRoutes = (server) => {
@@ -65,21 +60,40 @@ const workspaceRoutes = (server) => {
 
 	server.route({
 		method: "PUT",
-		path: "/api/workspace/update",
+		path: "/api/workspace/update-model",
 		options: {
 			auth: "jwt",
 			validate: {
 				payload: Joi.object({
 					id: Joi.number().required(),
-					newName: Joi.string().allow("").required(),
-					newModel: Joi.string().allow("").required(),
+					model: Joi.string().allow("").required(),
 				}),
 			},
 		},
 		handler: async (request: Request, h: ResponseToolkit) => {
-			const { id, newName, newModel } =
-				request.payload as UpdateWorkspacePayload;
-			await updateWorkspace(id, newName, newModel);
+			const { id, model } = request.payload as any;
+
+			await updateWorkspaceModel(id, model);
+			return h.response().code(200);
+		},
+	});
+
+	server.route({
+		method: "PUT",
+		path: "/api/workspace/update-name",
+		options: {
+			auth: "jwt",
+			validate: {
+				payload: Joi.object({
+					id: Joi.number().required(),
+					name: Joi.string().allow("").required(),
+				}),
+			},
+		},
+		handler: async (request: Request, h: ResponseToolkit) => {
+			const { id, name } = request.payload as any;
+
+			await updateWorkspaceName(id, name);
 			return h.response().code(200);
 		},
 	});

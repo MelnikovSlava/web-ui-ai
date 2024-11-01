@@ -1,49 +1,32 @@
 import { makeAutoObservable } from "mobx";
 import { api } from "../api/api";
 import {} from "../utils/constants";
+import { encrypt } from "../utils/encryptor";
+import { localStorageUtils } from "../utils/localStorage";
 import { resolvePromise } from "../utils/utils";
 import { AiStore } from "./ai.store";
 import { SettingsStore } from "./settings.store";
 import type { Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
+import { router, routes } from "../router";
 
 export class RootStore {
 	public aiStore: AiStore;
-	public workspaces: Map<Workspace["id"], WorkspaceStore>;
+	private _workspaces: Map<Workspace["id"], WorkspaceStore>;
 
 	public settingsStore: SettingsStore;
 
 	constructor() {
 		this.settingsStore = new SettingsStore(this);
-		this.workspaces = new Map();
+		this._workspaces = new Map();
 		this.aiStore = new AiStore();
 
 		makeAutoObservable(this);
 	}
 
-	public get allWorkspaces() {
-		return Array.from(this.workspaces.values());
+	public get workspaces() {
+		return Array.from(this._workspaces.values());
 	}
-
-	// public get allChats() {
-	// 	const chats: ChatStore[] = [];
-
-	// 	for (const workspace of this.allWorkspaces) {
-	// 		chats.push(...workspace.chats);
-	// 	}
-
-	// 	return chats;
-	// }
-
-	// public get allMessages() {
-	// 	const messages: MessageStore[] = [];
-
-	// 	for (const chat of this.allChats) {
-	// 		messages.push(...chat.messages);
-	// 	}
-
-	// 	return messages;
-	// }
 
 	public getDataAction = async () => {
 		return resolvePromise({
@@ -52,18 +35,18 @@ export class RootStore {
 				data.workspaces.forEach((workspace) => {
 					const store = new WorkspaceStore(workspace, this);
 					store.deserialize(workspace, data.chats, data.messages);
-					this.workspaces.set(workspace.id, store);
+					this._workspaces.set(workspace.id, store);
 				});
 			},
 		});
 	};
 
 	public existsWorkspace = (id: number) => {
-		return this.workspaces.has(id);
+		return this._workspaces.has(id);
 	};
 
 	public getWorkspace = (id: number) => {
-		const workspace = this.workspaces.get(id);
+		const workspace = this._workspaces.get(id);
 
 		if (!workspace) {
 			throw new Error(`Workspace not found: ${id}`);
@@ -73,11 +56,11 @@ export class RootStore {
 	};
 
 	public getChat = (workspaceId: number, chatId: number) => {
-		return this.workspaces.get(workspaceId)?.getChat(chatId);
+		return this._workspaces.get(workspaceId)?.getChat(chatId);
 	};
 
 	public deleteWorkspace = (workspaceId: number) => {
-		this.workspaces.delete(workspaceId);
+		this._workspaces.delete(workspaceId);
 	};
 
 	public createWorkspaceAction = async () => {
@@ -85,7 +68,7 @@ export class RootStore {
 			promise: () => api.createWorkspace({ model: "", name: "" }),
 			resolve: ({ data }) => {
 				const workspaceStore = new WorkspaceStore(data, this);
-				this.workspaces.set(workspaceStore.data.id, workspaceStore);
+				this._workspaces.set(workspaceStore.data.id, workspaceStore);
 			},
 		});
 	};
@@ -93,35 +76,43 @@ export class RootStore {
 	public deleteWorkspaceAction = async (workspaceId: number) => {
 		const workspaceStore = this.getWorkspace(workspaceId);
 
-		this.workspaces.delete(workspaceId);
+		this._workspaces.delete(workspaceId);
 
 		return resolvePromise({
 			promise: () => api.deleteWorkspace(workspaceId),
 			resolve: () => {},
 			reject: () => {
-				this.workspaces.set(workspaceId, workspaceStore);
+				this._workspaces.set(workspaceId, workspaceStore);
 			},
 		});
 	};
 
-	public updateWorkspaceAction = (
-		workspaceId: number,
-		data: { name?: string; model?: string },
-	) => {
+	public updateWorkspaceModelAction = (workspaceId: number, model: string) => {
+		const workspaceStore = this.getWorkspace(workspaceId);
+
+		return resolvePromise({
+			promise: () => api.updateWorkspaceModel({ id: workspaceId, model }),
+			resolve: () => {
+				workspaceStore.data.model = model;
+			},
+		});
+	};
+
+	public updateWorkspaceNameAction = (workspaceId: number, name: string) => {
 		const workspaceStore = this.getWorkspace(workspaceId);
 
 		return resolvePromise({
 			promise: () =>
-				api.updateWorkspace({
-					id: workspaceId,
-					newModel: data.model || workspaceStore.data.model,
-					newName: data.name || workspaceStore.data.name,
-				}),
+				api.updateWorkspaceName({ id: workspaceId, name: encrypt(name) }),
 			resolve: () => {
-				workspaceStore.data.model = data.model || workspaceStore.data.model;
-				workspaceStore.data.name = data.name || workspaceStore.data.name;
+				workspaceStore.data.name = name;
 			},
 		});
+	};
+
+	public logout = () => {
+		localStorageUtils.clearAllSettings();
+		router.navigate(routes.auth);
 	};
 }
 
