@@ -2,7 +2,7 @@
   "scripts": {
     "migrate": "npx drizzle-kit push",
     "start": "bun ./src/server.ts",
-    "dev": "bun ./src/server.ts --watch --ext ts"
+    "dev": "bun --watch ./src/server.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",

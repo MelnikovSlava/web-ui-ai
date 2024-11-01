@@ -6,6 +6,7 @@ import { AuthRequired } from "./layouts/AuthRequired";
 import CheckChatExist from "./layouts/CheckChatExist";
 import CheckWorkspaceExist from "./layouts/CheckWorkspaceExist";
 import { DataFetcher } from "./layouts/DataFetcher";
+import { ErrorAppHandler } from "./layouts/ErrorAppHandler";
 import { KeyHandler } from "./layouts/KeyHandler";
 import { KeyRedirect } from "./layouts/KeyRedirect";
 import { Root } from "./layouts/Root";
@@ -18,7 +19,6 @@ export const routes = {
 	root: "/",
 	auth: "/auth",
 	key: "/key",
-	home: "/home",
 
 	workspace: (wId: any = ":workspaceId") => `/workspace/${wId}`,
 	chat: (wId: any = ":workspaceId", cId: any = ":chatId") =>
@@ -32,7 +32,7 @@ export const routes = {
 export const router = createBrowserRouter([
 	{
 		element: <Root />,
-		// errorElement: <ErrorAppHandler />,
+		errorElement: <ErrorAppHandler />,
 		children: [
 			{
 				element: <AuthRedirect />,

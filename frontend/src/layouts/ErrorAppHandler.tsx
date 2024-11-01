@@ -8,13 +8,11 @@ export const ErrorAppHandler = () => {
 
 	if (error instanceof Response || isRouteErrorResponse(error)) {
 		if (error.status === 401) {
-			return <Navigate to={routes.authStart} />;
+			return <Navigate to={routes.auth} />;
 		}
 
 		if (error.status === 404) {
-			//TODO: this page not found mock with home button
-			return <Navigate to={routes.authStart} />;
-			// desc = "This page doesn't exist!";
+			return <Navigate to={routes.root} />;
 		}
 
 		if (error.status >= 500) {
@@ -22,5 +20,9 @@ export const ErrorAppHandler = () => {
 		}
 	}
 
-	return <ErrorMock desc={desc} center />;
+	return (
+		<div>
+			<h1>Something is wrong</h1>
+		</div>
+	);
 };

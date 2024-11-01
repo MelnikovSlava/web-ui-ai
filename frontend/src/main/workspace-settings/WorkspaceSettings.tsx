@@ -23,7 +23,7 @@ export const WorkspaceSettings = observer(() => {
 			const msg = "Are you sure you want to delete this workspace?";
 
 			if (window.confirm(msg)) {
-				let route = routes.home;
+				let route = routes.root;
 
 				const otherWorkspaces = rootStore.workspaces.filter(
 					(w) => w.data.id !== urlWorkspaceId,

@@ -34,13 +34,13 @@ export const usePromise = <_, K>(params: {
 
 			setData(result);
 			setState("done");
-		} catch (e) {
+		} catch (e: any) {
 			if (reject) {
 				reject(e, showErrorNotif);
 			}
 
 			if (showError) {
-				showErrorNotif(e);
+				showErrorNotif(e?.message);
 			}
 
 			setState("error");
