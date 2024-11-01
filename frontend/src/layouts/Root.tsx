@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { Outlet } from "react-router";
-import { useHotkeysGlobal } from "../hooks/useHotkeys";
+import { useHotkeysGlobal } from "../hooks/hotkeys/useGlobalHotkeys";
 import { SnackBarManager } from "../ui-kit/snackbar/SnackBarManager";
 import { useSetTheme } from "../utils/theme";
 
