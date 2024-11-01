@@ -2,18 +2,19 @@ import { Button, TextField } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { type KeyboardEvent, useRef, useState } from "react";
-import type { Message } from "../../../store/types";
+import type { MessageStore } from "../../../store/message.store";
 import type { VitalProps } from "../../../utils/types";
 
 type MsgEditingProps = {
-	msg: Message;
+	msgStore: MessageStore;
 	onCancel: () => void;
 	onSubmit: (content: string) => void;
 } & VitalProps;
 
 export const MsgEditing = observer((props: MsgEditingProps) => {
-	const hold = useRef(props.msg.content);
-	const [value, setValue] = useState<string>(props.msg.content);
+	const content = props.msgStore.data.content;
+	const hold = useRef(content);
+	const [value, setValue] = useState<string>(content);
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (e.key === "Enter" && !e.shiftKey) {
@@ -35,23 +36,20 @@ export const MsgEditing = observer((props: MsgEditingProps) => {
 				variant="outlined"
 				// size="sm"
 				sx={{
-					"--Textarea-radius": "9px",
-					"--Textarea-gap": "9px",
-					"--Textarea-focusedThickness": "1px",
-					"--_Textarea-focusedHighlight": "var(--input-ring)",
+					"& .MuiOutlinedInput-root": {
+						// borderRadius: "9px",
+					},
 
-					width: "100%",
-					resize: "none",
-					padding: "12px",
 					background: "none",
 					color: "inherit",
-					borderColor: "var(--main-border)",
+					// borderColor: "var(--main-border)",
 					marginBottom: "8px",
 				}}
 			/>
 			<div className={clsx("flex")}>
 				<Button
 					size="small"
+					variant="contained"
 					className={clsx("!mr-2")}
 					onClick={() => props.onSubmit(value)}
 				>

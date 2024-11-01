@@ -10,7 +10,8 @@ export const addMessage = async (
 	return await db
 		.insert(messagesTable)
 		.values({ chatId, content, role, timestamp: Date.now() })
-		.returning();
+		.returning()
+		.get();
 };
 
 export const deleteMessage = async (id: number) => {

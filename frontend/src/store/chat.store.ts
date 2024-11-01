@@ -1,4 +1,3 @@
-import { remove } from "lodash-es";
 import { makeAutoObservable, runInAction } from "mobx";
 import { api } from "../api/api";
 import { resolvePromise } from "../utils/utils";
@@ -12,11 +11,11 @@ export class ChatStore {
 
 	public data: Chat;
 	public workspace: WorkspaceStore;
-	public messageStores: MessageStore[];
+	public messageStores: Map<MessageStore["data"]["id"], MessageStore>;
 
 	constructor(data: Chat, workspaceStore: WorkspaceStore) {
 		this._aiStore = new AiStore();
-		this.messageStores = [];
+		this.messageStores = new Map();
 		this.data = data;
 		this.workspace = workspaceStore;
 
@@ -24,7 +23,7 @@ export class ChatStore {
 	}
 
 	public get messages() {
-		return this.messageStores.map((m) => m.data);
+		return Array.from(this.messageStores.values());
 	}
 
 	public get isStreaming() {
@@ -77,16 +76,14 @@ export class ChatStore {
 			promise: () => api.deleteMessages(messageIds),
 			resolve: () => {
 				for (const messageId of messageIds) {
-					remove(this.messageStores, (m) => m.data.id === messageId);
+					this.messageStores.delete(messageId);
 				}
 			},
 		});
 	};
 
 	public onEditMessage = async (messageId: number, newContent: string) => {
-		const editedMessage = this.messageStores.find(
-			(m) => m.data.id === messageId,
-		);
+		const editedMessage = this.messageStores.get(messageId);
 
 		if (!editedMessage) {
 			console.error("Message not found");
@@ -95,15 +92,16 @@ export class ChatStore {
 
 		// Get all messages after the edited message
 		const messagesToDeleteIds = this.messages
-			.filter((msg) => msg.id > messageId)
-			.map((m) => m.id);
+			.filter((msg) => msg.data.id > messageId)
+			.map((m) => m.data.id);
 
-		// Delete messages after the edited one
-		await this.deleteMessages(messagesToDeleteIds);
+		if (messagesToDeleteIds.length > 0) {
+			await this.deleteMessages(messagesToDeleteIds);
+		}
+
 		await resolvePromise({
 			promise: () => api.updateMessage(messageId, newContent),
 			resolve: () => {
-				// Update the message content in the local store
 				editedMessage.setContent(newContent);
 			},
 			reject: () => {
@@ -120,14 +118,11 @@ export class ChatStore {
 		messages
 			.filter((m) => m.chatId === chat.id)
 			.forEach((message) => {
-				const messageStore = new MessageStore(message, this);
-				this.messageStores.push(messageStore);
+				this._addNewMessage(message);
 			});
 	};
 
 	public inputMessage = async (content: string) => {
-		const msgStore = this._addNewMessage(content, "user");
-
 		return resolvePromise({
 			promise: () =>
 				api.addMessage({
@@ -136,41 +131,39 @@ export class ChatStore {
 					role: "user",
 				}),
 			resolve: ({ data }) => {
-				this._replaceDataForMessage(msgStore, data);
+				this._addNewMessage(data);
 				this._sendMessagesToAi();
-			},
-			reject: () => {
-				remove(this.messageStores, (m) => m.data.id === msgStore.data.id);
 			},
 		});
 	};
 
-	private _prepareMessagesForAi = (messages: Message[]) => {
-		const messagesForAi = messages
-			.sort((a, b) => a.timestamp - b.timestamp)
-			.map((msg) => ({ role: msg.role, content: msg.content }));
+	private _prepareMessagesForAi = (msgStores: MessageStore[]) => {
+		const messagesForAi = msgStores
+			.sort((a, b) => a.data.id - b.data.id)
+			.map((msg) => ({ role: msg.data.role, content: msg.data.content }));
 
 		return messagesForAi;
 	};
 
-	private _addNewMessage = (content: string, role: Message["role"]) => {
-		const msg: Message = {
-			id: -1,
-			content,
-			role,
-			chatId: this.data.id,
-			timestamp: Date.now(),
-		};
-
+	private _addNewMessage = (msg: Message) => {
 		const messageStore = new MessageStore(msg, this);
-		this.messageStores.push(messageStore);
+		this.messageStores.set(messageStore.data.id, messageStore);
 
 		return messageStore;
 	};
 
 	private _sendMessagesToAi = async () => {
 		const messageHistory = this._prepareMessagesForAi(this.messages);
-		const messageFromAi = this._addNewMessage("", "assistant");
+
+		const msg: Message = {
+			id: 10000000000000000,
+			content: "",
+			role: "assistant",
+			chatId: this.data.id,
+			timestamp: Date.now(),
+		};
+
+		const messageFromAi = this._addNewMessage(msg);
 
 		await this._aiStore.sendMessage(
 			messageHistory,
@@ -186,17 +179,24 @@ export class ChatStore {
 					role: "assistant",
 				}),
 			resolve: ({ data }) => {
-				this._replaceDataForMessage(messageFromAi, data);
+				this.messageStores.delete(messageFromAi.data.id);
+				this._addNewMessage(data);
+				// this._replaceDataForMessage(messageFromAi, data);
+				// messageFromAi.data.id = data.id;
+				// messageFromAi.data.timestamp = data.timestamp;
 			},
 		});
 
-		// check for update title of this chat
-		const emptyNameOfChat = this.data.name === "";
-		const enoughMessages = this.messageStores.length >= 2;
-
-		if (emptyNameOfChat && enoughMessages) {
+		if (this._needUpdateChatTitle()) {
 			this._updateChatTitle();
 		}
+	};
+
+	private _needUpdateChatTitle = () => {
+		const emptyNameOfChat = this.data.name === "";
+		const enoughMessages = this.messageStores.size >= 2;
+
+		return emptyNameOfChat && enoughMessages;
 	};
 
 	private _replaceDataForMessage = (

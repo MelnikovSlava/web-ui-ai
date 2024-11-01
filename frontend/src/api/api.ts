@@ -75,11 +75,11 @@ class Api {
 	};
 
 	public createWorkspace = (params: { name: string; model: string }) => {
-		return this._axios.post<Workspace>("/workspace", params);
+		return this._axios.post<Workspace>("/workspace/add", params);
 	};
 
 	public deleteWorkspace = (id: number) => {
-		return this._axios.delete(`/workspace/${id}`);
+		return this._axios.delete(`/workspace/${id}/delete`);
 	};
 
 	public updateWorkspace = (params: {
@@ -87,15 +87,15 @@ class Api {
 		newName: string;
 		newModel: string;
 	}) => {
-		return this._axios.put("/workspace", params);
+		return this._axios.put("/workspace/update", params);
 	};
 
 	public createChat = (params: { name: string; workspaceId: number }) => {
-		return this._axios.post<Chat>("/chats", params);
+		return this._axios.post<Chat>("/chats/add", params);
 	};
 
 	public deleteChat = (chatId: number) => {
-		return this._axios.delete(`/chats/${chatId}`);
+		return this._axios.delete(`/chats/${chatId}/delete`);
 	};
 
 	public forkChat = (chatId: number, messageId: number) => {
@@ -106,7 +106,7 @@ class Api {
 	};
 
 	public updateChatName = (id: number, newName: string) => {
-		return this._axios.put(`/chats/${id}`, { newName });
+		return this._axios.put(`/chats/${id}/update`, { newName });
 	};
 
 	public addMessage = (params: {
@@ -114,19 +114,21 @@ class Api {
 		content: string;
 		role: string;
 	}) => {
-		return this._axios.post<Message>("/messages", params);
+		return this._axios.post<Message>("/messages/add", params);
 	};
 
 	public deleteMessage = (messageId: number) => {
-		return this._axios.delete(`/messages/${messageId}`);
+		return this._axios.delete(`/messages/${messageId}/delete`);
 	};
 
 	public deleteMessages = (messageIds: number[]) => {
-		return this._axios.delete("/messages", { data: { ids: messageIds } });
+		return this._axios.delete("/messages/delete", {
+			data: { ids: messageIds },
+		});
 	};
 
 	public updateMessage = (messageId: number, newContent: string) => {
-		return this._axios.put(`/messages/${messageId}`, { newContent });
+		return this._axios.put(`/messages/${messageId}/update`, { newContent });
 	};
 }
 

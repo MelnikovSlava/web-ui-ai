@@ -7,7 +7,8 @@ export const addChat = async (workspaceId: number, name: string) => {
 	return await db
 		.insert(chatsTable)
 		.values({ name, timestamp: Date.now(), workspaceId })
-		.returning();
+		.returning()
+		.get();
 };
 
 export const deleteChat = async (id: number) => {
@@ -36,7 +37,7 @@ export const getChat = async (id: number) => {
 export const forkChat = async (chatId: number, messageId: number) => {
 	const donorChat = await getChat(chatId);
 	const newChat = await addChat(donorChat.workspaceId, "");
-	const newChatId = newChat[0].id;
+	const newChatId = newChat.id;
 
 	const messages = await getAllMessages(chatId);
 	const msgsForCopy = messages.filter((msg) => msg.id <= messageId);
@@ -46,8 +47,8 @@ export const forkChat = async (chatId: number, messageId: number) => {
 	for await (const msg of msgsForCopy) {
 		const addedMsg = await addMessage(newChatId, msg.content, msg.role);
 
-		msgs.push(addedMsg[0]);
+		msgs.push(addedMsg);
 	}
 
-	return { chat: newChat[0], messages: msgs };
+	return { chat: newChat, messages: msgs };
 };

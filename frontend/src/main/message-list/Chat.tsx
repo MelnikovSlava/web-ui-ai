@@ -8,6 +8,7 @@ import { Created } from "./Created";
 import { Empty } from "./Empty";
 import { InputBlock } from "./input/InputBlock";
 import { Message } from "./message/Message";
+import { toJS } from "mobx";
 
 export const Chat = observer(() => {
 	const chatStore = useChatStore();
@@ -38,7 +39,8 @@ export const Chat = observer(() => {
 					>
 						<Created timestamp={chatStore.data.timestamp} />
 
-						{chatStore.messageStores.map((msgStore) => {
+						{chatStore.messages.map((msgStore) => {
+							console.log("id", msgStore.data.id, toJS(msgStore.data));
 							return <Message msg={msgStore} key={msgStore.data.id} />;
 						})}
 					</div>

@@ -23,7 +23,7 @@ interface ForkChatPayload {
 const chatRoutes = (server: Server) => {
 	server.route({
 		method: "POST",
-		path: "/api/chats",
+		path: "/api/chats/add",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -37,13 +37,13 @@ const chatRoutes = (server: Server) => {
 			const { name, workspaceId } = request.payload as AddChatPayload;
 			const result = await addChat(workspaceId, name);
 
-			return h.response(result[0]).code(201);
+			return h.response(result).code(201);
 		},
 	});
 
 	server.route({
 		method: "DELETE",
-		path: "/api/chats/{id}",
+		path: "/api/chats/{id}/delete",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -61,7 +61,7 @@ const chatRoutes = (server: Server) => {
 
 	server.route({
 		method: "PUT",
-		path: "/api/chats/{id}",
+		path: "/api/chats/{id}/update",
 		options: {
 			auth: "jwt",
 			validate: {

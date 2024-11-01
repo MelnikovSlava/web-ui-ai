@@ -1,9 +1,9 @@
+import { CircularProgress } from "@mui/material";
 import clsx from "clsx";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router";
 import { useRootStore } from "../store/root.store";
 import { delayPromise } from "../utils/utils";
-import { CircularProgress } from "@mui/material";
 
 export const DataFetcher = () => {
 	const rootStore = useRootStore();
@@ -11,6 +11,7 @@ export const DataFetcher = () => {
 	const [isLoading, setIsLoading] = useState<boolean>(true);
 
 	useEffect(() => {
+		console.log("here");
 		delayPromise(
 			Promise.all([rootStore.getDataAction(), rootStore.aiStore.fetchModels()]),
 			// Promise.all([rootStore.getDataAction()]),

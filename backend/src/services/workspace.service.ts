@@ -29,10 +29,9 @@ export const createWorkspace = async (
 	model: string,
 	userId: number,
 ) => {
-	const newWorkspace = { name, model, userId };
-	const result = await db
+	return await db
 		.insert(workspacesTable)
-		.values(newWorkspace)
-		.returning();
-	return result[0];
+		.values({ name, model, userId })
+		.returning()
+		.get();
 };

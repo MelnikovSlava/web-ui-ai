@@ -58,12 +58,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 						ref: refTextarea,
 						endAdornment: (
 							<InputAdornment position="end">
-								<div
-									className={clsx(
-										// "absolute top-[5.5px] right-[6px]",
-										// "border-b-orange-300 border",
-									)}
-								>
+								<div>
 									{isStreaming ? (
 										<StopBtn onClick={handleStopStreaming} />
 									) : (
@@ -72,6 +67,7 @@ export const InputBlock = observer((props: InputBlockProps) => {
 											className={clsx(
 												"flex items-center justify-center",
 												"h-[36px] w-[36px]",
+												"mr-2",
 											)}
 										>
 											<LuSend
@@ -101,8 +97,8 @@ export const InputBlock = observer((props: InputBlockProps) => {
 				// size="sm"
 				sx={{
 					"& .MuiOutlinedInput-root": {
-						borderRadius: "9px",
-						padding: "4px 10px 4px 4px",
+						borderRadius: "8px",
+						padding: "4px",
 					},
 
 					width: "100%",

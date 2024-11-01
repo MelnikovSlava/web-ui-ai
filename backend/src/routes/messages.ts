@@ -24,7 +24,7 @@ const messageRoutes = (server: Server) => {
 	// Route to add a message
 	server.route({
 		method: "POST",
-		path: "/api/messages",
+		path: "/api/messages/add",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -46,7 +46,7 @@ const messageRoutes = (server: Server) => {
 	// Route to delete a message
 	server.route({
 		method: "DELETE",
-		path: "/api/messages/{id}",
+		path: "/api/messages/{id}/delete",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -65,7 +65,7 @@ const messageRoutes = (server: Server) => {
 	// Route to delete multiple messages
 	server.route({
 		method: "DELETE",
-		path: "/api/messages",
+		path: "/api/messages/delete",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -84,7 +84,7 @@ const messageRoutes = (server: Server) => {
 	// Route to update a message's content
 	server.route({
 		method: "PUT",
-		path: "/api/messages/{id}",
+		path: "/api/messages/{id}/update",
 		options: {
 			auth: "jwt",
 			validate: {

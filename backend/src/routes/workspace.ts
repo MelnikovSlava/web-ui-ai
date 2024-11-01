@@ -20,7 +20,7 @@ interface UpdateWorkspacePayload {
 const workspaceRoutes = (server) => {
 	server.route({
 		method: "POST",
-		path: "/api/workspace",
+		path: "/api/workspace/add",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -47,7 +47,7 @@ const workspaceRoutes = (server) => {
 
 	server.route({
 		method: "DELETE",
-		path: "/api/workspace/{id}",
+		path: "/api/workspace/{id}/delete",
 		options: {
 			auth: "jwt",
 			validate: {
@@ -65,7 +65,7 @@ const workspaceRoutes = (server) => {
 
 	server.route({
 		method: "PUT",
-		path: "/api/workspace",
+		path: "/api/workspace/update",
 		options: {
 			auth: "jwt",
 			validate: {

@@ -34,7 +34,7 @@ export const Message = observer((props: MessageProps) => {
 	if (isEditing) {
 		content = (
 			<MsgEditing
-				msg={props.msg.data}
+				msgStore={props.msg}
 				onCancel={() => setIsEditing(false)}
 				onSubmit={onEdit.promise}
 			/>
