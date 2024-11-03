@@ -1,5 +1,11 @@
 import { createTheme } from "@mui/material/styles";
 
+declare module '@mui/material/styles' {
+	interface BreakpointOverrides {
+		w800: true;
+	}
+}
+
 export const muiTheme = createTheme({
 	palette: {
 		// mode: "dark",
@@ -23,6 +29,16 @@ export const muiTheme = createTheme({
 		button: {
 			textTransform: "none",
 			fontWeight: 500,
+		},
+	},
+	breakpoints: {
+		values: {
+			xs: 0,
+			sm: 600,
+			md: 900,
+			w800: 800,
+			lg: 1200,
+			xl: 1536,
 		},
 	},
 	components: {
@@ -161,3 +177,5 @@ export const muiTheme = createTheme({
 		},
 	},
 });
+
+export type Theme = typeof muiTheme;

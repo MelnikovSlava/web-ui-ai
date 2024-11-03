@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import {} from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router";
 import { useUrlChatId } from "../../../hooks/useUrlChatId";
@@ -8,8 +7,8 @@ import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { routes } from "../../../router";
 import type { ChatStore } from "../../../store/chat.store";
 import { IconWrapper } from "../../../ui-kit/IconWrapper";
-import { INIT_CHAT_TITLE } from "../../../utils/constants";
 import type { VitalProps } from "../../../utils/types";
+import { ChatTitle } from "./ChatTitle";
 
 type ChatItemProps = {
 	chat: ChatStore;
@@ -65,9 +64,8 @@ export const ChatItem = observer((props: ChatItemProps) => {
 				props.className,
 			)}
 		>
-			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>
-				{props.chat.data.name || INIT_CHAT_TITLE}
-			</h1>
+
+			<ChatTitle title={props.chat.data.name} className={clsx('pr-2', 'flex-1')} />
 
 			<div
 				onClick={(e) => {

@@ -15,35 +15,31 @@ export const Panel = observer(() => {
 	return (
 		<div
 			className={clsx(
-				"flex flex-col",
+				"flex flex-col flex-1",
 				"p-4",
 				"h-screen",
 				"overflow-auto",
 				"bg-[var(--panel-background)]",
 			)}
 		>
-			<div className={clsx("panel-list flex-1")}>
-				{rootStore.workspaces.map((workspace) => (
-					<Accordion
-						key={workspace.data.id}
-						title={<WorkspaceItem workspace={workspace} />}
-						isOpen={urlWorkspaceId === workspace.data.id}
-						onToggle={() => {}}
-						className={clsx("pb-2")}
-					>
-						<div className={clsx("chat-list", "pt-1", "pl-1")}>
-							{workspace.chats.map((chat) => (
-								<ChatItem chat={chat} className="mb-1" key={chat.data.id} />
-							))}
-							<AddNewChatBtn workspace={workspace} />
-						</div>
-					</Accordion>
-				))}
+			{rootStore.workspaces.map((workspace) => (
+				<Accordion
+					key={workspace.data.id}
+					title={<WorkspaceItem workspace={workspace} />}
+					isOpen={urlWorkspaceId === workspace.data.id}
+					onToggle={() => { }}
+					className={clsx("pb-2")}
+				>
+					<div className={clsx("chat-list", "pt-1", "pl-1")}>
+						{workspace.chats.map((chat) => (
+							<ChatItem chat={chat} className="mb-1" key={chat.data.id} />
+						))}
+						<AddNewChatBtn workspace={workspace} />
+					</div>
+				</Accordion>
+			))}
 
-				<CreateNewWBtn />
-
-				{/* {rootStore.workspaces.size === 0 && <NoWorkspaces className={clsx("mt-2")} />} */}
-			</div>
+			<CreateNewWBtn />
 		</div>
 	);
 });
