@@ -7,7 +7,7 @@ export const MainLayout = (props: MainLayoutProps) => {
 	return (
 		<div
 			className={clsx(
-				"flex flex-col items-start",
+				"flex flex-col",
 				"w-full h-full",
 				"overflow-hidden",
 				props.className,

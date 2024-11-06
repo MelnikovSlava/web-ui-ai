@@ -1,12 +1,12 @@
-import { VitalProps } from '../../../utils/types';
 import { Drawer } from '@mui/material';
+import type { VitalProps } from '../../../utils/types';
 import { Panel } from '../panel/Panel';
-import clsx from 'clsx';
 
 
 type DrawerProps = {
   open: boolean;
   onClose: () => void;
+  onClick: (e?: any) => void;
 } & VitalProps;
 
 export const DrawerMobile = (props: DrawerProps) => {
@@ -16,7 +16,7 @@ export const DrawerMobile = (props: DrawerProps) => {
         width: '80%',
       }
     }}>
-      <Panel />
+      <Panel onClick={props.onClick} />
     </Drawer >
   );
 };

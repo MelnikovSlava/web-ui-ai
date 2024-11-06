@@ -2,6 +2,7 @@ import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router";
+import { useMobile } from "../../../hooks/useMobile";
 import { useUrlChatId } from "../../../hooks/useUrlChatId";
 import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { routes } from "../../../router";
@@ -12,10 +13,12 @@ import { ChatTitle } from "./ChatTitle";
 
 type ChatItemProps = {
 	chat: ChatStore;
+	onClick?: (e?: any) => void
 } & VitalProps;
 
 export const ChatItem = observer((props: ChatItemProps) => {
 	const navigate = useNavigate();
+	const isMobile = useMobile();
 	const chatStore = props.chat;
 
 	const urlWorkspaceId = useUrlWorkspaceId();
@@ -44,11 +47,18 @@ export const ChatItem = observer((props: ChatItemProps) => {
 		props.chat.workspace.deleteChatAction(chatId);
 	};
 
+	const onClick = (e: any) => {
+		navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
+
+		if (props?.onClick) {
+			props.onClick(e);
+		}
+	};
+
 	return (
 		<div
-			onClick={() => {
-				navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
-			}}
+			onClick={isMobile ? undefined : onClick}
+			onTouchStart={isMobile ? onClick : undefined}
 			className={clsx(
 				isActive
 					? "text-gray-200 hover:bg-[var(--hover-chat)]"

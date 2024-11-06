@@ -4,6 +4,7 @@ import { IoIosSettings } from "react-icons/io";
 import { RiApps2Fill } from "react-icons/ri";
 import { RiApps2Line } from "react-icons/ri";
 import { useNavigate } from "react-router";
+import { useMobile } from "../../../hooks/useMobile";
 import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { routes } from "../../../router";
 import type { WorkspaceStore } from "../../../store/workspace.store";
@@ -17,17 +18,19 @@ type WorkspaceItemProps = {
 
 export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 	const navigate = useNavigate();
+	const isMobile = useMobile();
 	const workspaceStore = props.workspace;
 
 	const urlWorkspaceId = useUrlWorkspaceId();
 
 	const isActive = workspaceStore.data.id === urlWorkspaceId;
 
-	const openWorkspace = (workspaceId: number) => {
+	const openWorkspace = () => {
 		if (isActive) {
 			return;
 		}
 
+		const workspaceId = workspaceStore.data.id;
 		let route = routes.workspace(workspaceId);
 
 		const targetWorkspace = workspaceStore.root.getWorkspace(workspaceId);
@@ -40,11 +43,13 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 		}
 
 		navigate(route);
+
 	};
 
 	return (
 		<div
-			onClick={() => openWorkspace(workspaceStore.data.id)}
+			onClick={isMobile ? undefined : openWorkspace}
+			onTouchStart={isMobile ? openWorkspace : undefined}
 			className={clsx(
 				isActive ? "bg-[var(--workspace-active)]" : "opacity-70",
 				"border-[var(--workspace-active)] border",

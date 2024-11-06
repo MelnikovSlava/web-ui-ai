@@ -1,7 +1,7 @@
 import LoadingButton from "@mui/lab/LoadingButton";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import {} from "react";
+import { } from "react";
 import { useNavigate } from "react-router";
 import { usePromise } from "../../hooks/usePromise";
 import { useUrlWorkspaceId } from "../../hooks/useUrlWorkspaceId";
@@ -42,7 +42,7 @@ export const WorkspaceSettings = observer(() => {
 	});
 
 	return (
-		<MainLayout>
+		<MainLayout className={clsx("items-start")}>
 			<PageContainer>
 				<h1 className={clsx("text-[28px] font-bold")}>Workspace Settings</h1>
 

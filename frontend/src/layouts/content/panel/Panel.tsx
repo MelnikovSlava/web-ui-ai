@@ -2,13 +2,18 @@ import clsx from "clsx";
 import { observer } from "mobx-react-lite";
 import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { useRootStore } from "../../../store/root.store";
+import type { VitalProps } from "../../../utils/types";
 import { Accordion } from "./Accordion";
 import { AddNewChatBtn } from "./AddNewChatBtn";
 import { ChatItem } from "./ChatItem";
 import { CreateNewWBtn } from "./CreateNewWBtn";
 import { WorkspaceItem } from "./WorkspaceItem";
 
-export const Panel = observer(() => {
+type PanelProps = {
+	onClick?: (e?: any) => void
+} & VitalProps;
+
+export const Panel = observer((props: PanelProps) => {
 	const rootStore = useRootStore();
 	const urlWorkspaceId = useUrlWorkspaceId();
 
@@ -32,7 +37,7 @@ export const Panel = observer(() => {
 				>
 					<div className={clsx("chat-list", "pt-1", "pl-1")}>
 						{workspace.chats.map((chat) => (
-							<ChatItem chat={chat} className="mb-1" key={chat.data.id} />
+							<ChatItem chat={chat} className="mb-1" key={chat.data.id} onClick={props.onClick} />
 						))}
 						<AddNewChatBtn workspace={workspace} />
 					</div>

@@ -1,60 +1,24 @@
-import { observer } from 'mobx-react-lite';
+import { AppBar, Toolbar } from '@mui/material';
 import clsx from 'clsx';
-import { Menu, Plus } from 'lucide-react';
-import { useRootStore } from '../../../store/root.store';
-import { useUrlChatId } from '../../../hooks/useUrlChatId';
+import { observer } from 'mobx-react-lite';
 import { useUrlWorkspaceId } from '../../../hooks/useUrlWorkspaceId';
-import { ChatTitle } from '../panel/ChatTitle';
-import { Fragment, useMemo, useState } from 'react';
-import { AppBar, IconButton, Toolbar } from '@mui/material';
-import { DrawerMobile } from './DrawerMobile';
-import { useCreateChat } from '../../../hooks/useCreateChat';
+import { AddNewChatIcon } from './AddNewChatIcon';
+import { MenuSidebar } from './MenuSidebar';
+import { MobileChatTitle } from './MobileChatTitle';
 
 export const MobileSidebar = observer(() => {
-  const rootStore = useRootStore();
   const urlWorkspaceId = useUrlWorkspaceId();
-  const urlChatId = useUrlChatId();
-  const chatStore = useMemo(() => {
-    if (!isNaN(urlWorkspaceId) && !isNaN(urlChatId)) {
-      return rootStore.getChat(urlWorkspaceId, urlChatId);
-    }
-
-    return undefined
-  }, [urlWorkspaceId, urlChatId])
-  const { onCreateChat } = useCreateChat();
-
-  const [open, setOpen] = useState(false);
-
-  const toggleDrawer = () => {
-    setOpen(!open);
-  };
 
   return (
-    // <div
-    //   className={clsx(
-    //     "border-b-[var(--main-border)] border-b",
-    //     "bg-[var(--sidebar-background)]",
-    //     "h-[60px]",
-    //     "flex items-center justify-between",
-    //     "px-5"
-    //     // "pb-4 pt-6",
-    //   )}
-    // >
-    <Fragment>
-      <DrawerMobile onClose={toggleDrawer} open={open} />
-      <AppBar position="static" color='primary'>
-        <Toolbar variant="regular" className={clsx('justify-between')}>
-          <IconButton onClick={() => toggleDrawer()}>
-            <Menu />
-          </IconButton>
+    <AppBar position="static" color='primary'>
+      <Toolbar variant="regular" className={clsx('justify-between')}>
 
-          {chatStore && <ChatTitle title={chatStore.data.name} />}
+        <MenuSidebar />
+        <MobileChatTitle />
 
-          <IconButton onClick={() => onCreateChat.promise()}>
-            <Plus />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-    </Fragment>
+        {!Number.isNaN(urlWorkspaceId) && <AddNewChatIcon />}
+
+      </Toolbar>
+    </AppBar>
   );
 });

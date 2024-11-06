@@ -8,12 +8,13 @@ declare module '@mui/material/styles' {
 
 export const muiTheme = createTheme({
 	palette: {
-		// mode: "dark",
+		mode: "dark",
 		primary: {
+			// main: "var(--workspace-active)", // Zinc-900
 			main: "#D7BA7D", // Zinc-900
 			// main: "#18181b", // Zinc-900
-			// light: "#27272a", // Zinc-800
-			// dark: "#09090b", // Zinc-950
+			light: "#27272a", // Zinc-800
+			dark: "#D7BA7D", // Zinc-950
 		},
 		// background: {
 		// 	default: "#ffffff",
@@ -54,23 +55,23 @@ export const muiTheme = createTheme({
 
 					"&:hover": {
 						boxShadow: "none",
-						backgroundColor: "#27272a",
+						// backgroundColor: "#27272a",
 						opacity: 0.9,
 					},
 				},
 				contained: {
-					backgroundColor: "#18181b",
-					color: "#ffffff",
+					// backgroundColor: "#18181b",
+					// color: "#ffffff",
 					"&:hover": {
-						backgroundColor: "#27272a",
+						// backgroundColor: "#27272a",
 					},
 				},
 				outlined: {
-					borderColor: "#e4e4e7", // Zinc-200
-					color: "#18181b",
+					// borderColor: "#e4e4e7", // Zinc-200
+					// color: "#18181b",
 					"&:hover": {
-						backgroundColor: "#f4f4f5", // Zinc-100
-						borderColor: "#e4e4e7",
+						// backgroundColor: "#f4f4f5", // Zinc-100
+						// borderColor: "#e4e4e7",
 					},
 				},
 			},

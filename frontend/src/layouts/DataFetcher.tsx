@@ -19,7 +19,7 @@ export const DataFetcher = () => {
 	}, [rootStore]);
 
 	if (isLoading) {
-		return <CircularProgress className={clsx("!mx-auto self-center")} />;
+		return <div className={clsx('h-full w-full', 'flex flex-col justify-center')}><CircularProgress className={clsx("!mx-auto self-center")} /></div>;
 	}
 
 	return <Outlet />;

@@ -1,17 +1,18 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import {} from "react";
+import { } from "react";
 import { useChatStore } from "../../hooks/useChatStore";
+import { useMobile } from "../../hooks/useMobile";
 import ListContainer from "../../layouts/ListContainer";
 import { MainLayout } from "../../layouts/MainLayout";
 import { Created } from "./Created";
 import { Empty } from "./Empty";
 import { InputBlock } from "./input/InputBlock";
 import { Message } from "./message/Message";
-import { toJS } from "mobx";
 
 export const Chat = observer(() => {
 	const chatStore = useChatStore();
+	const isMobile = useMobile();
 
 	return (
 		<MainLayout
@@ -40,7 +41,6 @@ export const Chat = observer(() => {
 						<Created timestamp={chatStore.data.timestamp} />
 
 						{chatStore.messages.map((msgStore) => {
-							console.log("id", msgStore.data.id, toJS(msgStore.data));
 							return <Message msg={msgStore} key={msgStore.data.id} />;
 						})}
 					</div>
@@ -49,7 +49,7 @@ export const Chat = observer(() => {
 				<Empty />
 			)}
 
-			<div className={clsx("py-4 w-full px-5")}>
+			<div className={clsx("py-4 w-full px-5", isMobile && 'mb-5')}>
 				<InputBlock />
 			</div>
 		</MainLayout>

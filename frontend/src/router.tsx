@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createHashRouter } from "react-router-dom";
 import { Auth } from "./auth/Auth";
 import { KeyForm } from "./key/KeyForm";
 import { AuthRedirect } from "./layouts/AuthRedirect";
@@ -29,7 +29,7 @@ export const routes = {
 	settings: "/settings",
 };
 
-export const router = createBrowserRouter([
+export const router = createHashRouter([
 	{
 		element: <Root />,
 		errorElement: <ErrorAppHandler />,

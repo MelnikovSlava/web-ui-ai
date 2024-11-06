@@ -1,9 +1,9 @@
 import clsx from "clsx";
 import { Outlet } from "react-router";
 import { useHotkeysGlobal } from "../hooks/hotkeys/useGlobalHotkeys";
+import { useMobile } from "../hooks/useMobile";
 import { SnackBarManager } from "../ui-kit/snackbar/SnackBarManager";
 import { useSetTheme } from "../utils/theme";
-import { useMobile } from "../hooks/useMobile";
 
 export const Root = () => {
 	useSetTheme();

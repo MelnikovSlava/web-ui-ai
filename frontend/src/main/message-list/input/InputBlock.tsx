@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import React, { useEffect, useMemo, useState } from "react";
 import { LuSend } from "react-icons/lu";
 import { useChatStore } from "../../../hooks/useChatStore";
+import { useMobile } from "../../../hooks/useMobile";
 import { usePromise } from "../../../hooks/usePromise";
 import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 import type { VitalProps } from "../../../utils/types";
@@ -13,6 +14,7 @@ type InputBlockProps = {} & VitalProps;
 
 export const InputBlock = observer((props: InputBlockProps) => {
 	const chatStore = useChatStore();
+	const isMobile = useMobile();
 
 	const refTextarea = React.useRef<HTMLTextAreaElement>(null);
 	const isStreaming = chatStore.isStreaming;
