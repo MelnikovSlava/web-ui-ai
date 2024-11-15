@@ -14,9 +14,10 @@ export const Content = () => {
 	const isMobile = useMobile();
 
 	if (isMobile) {
-		return <>
+		return <Fragment>
 			<MobileSidebar />
-			<Outlet /></>
+			<Outlet />
+		</Fragment>
 	}
 
 	return (
