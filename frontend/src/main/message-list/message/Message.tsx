@@ -1,6 +1,9 @@
+import { Popover } from "@mui/material";
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { useLongPress } from "use-long-press";
+import { useMobile } from "../../../hooks/useMobile";
 import { usePromise } from "../../../hooks/usePromise";
 import type { MessageStore } from "../../../store/message.store";
 import { LoaderDots } from "../../../ui-kit/LoaderDots";
@@ -17,7 +20,21 @@ type MessageProps = {
 export const Message = observer((props: MessageProps) => {
 	const messageStore = props.msg;
 	const isUser = messageStore.data.role === "user";
+	const isMobile = useMobile();
 	const isStreaming = messageStore.chatStore.workspace.root.aiStore.isStreaming;
+	const [open, setOpen] = useState<boolean>(false);
+	const refMsg = useRef(null);
+
+	const bind = useLongPress(
+		() => {
+			if (isMobile && !isStreaming) {
+				setOpen(true);
+			}
+		},
+		{
+			threshold: 500,
+		},
+	);
 
 	const [isEditing, setIsEditing] = useState<boolean>(false);
 
@@ -59,6 +76,7 @@ export const Message = observer((props: MessageProps) => {
 			)}
 		>
 			<div
+				ref={refMsg}
 				className={clsx(
 					isUser
 						? "bg-[var(--msg-user-body)] border-[var(--msg-user-border)]"
@@ -72,8 +90,9 @@ export const Message = observer((props: MessageProps) => {
 					"min-w-[140px]",
 					// "w-full",
 					isUser && "max-w-[96%]",
-					"group/msg",
+					!isMobile && "group/msg",
 				)}
+				{...bind()}
 			>
 				<div
 					className={clsx(
@@ -82,6 +101,7 @@ export const Message = observer((props: MessageProps) => {
 						"justify-between",
 						"mb-2",
 						"items-center",
+						"select-none",
 					)}
 				>
 					<Avatar isUser={isUser} />
@@ -98,6 +118,26 @@ export const Message = observer((props: MessageProps) => {
 
 				{content}
 			</div>
+
+			<Popover
+				id={"pop"}
+				open={open}
+				onClose={() => setOpen(false)}
+				anchorEl={refMsg.current}
+				anchorOrigin={{
+					vertical: "bottom",
+					horizontal: isUser ? "right" : "left",
+				}}
+			>
+				<div className={clsx("p-4")}>
+					<Toolbox
+						size={30}
+						msg={props.msg}
+						onEdit={() => setIsEditing(true)}
+						className={clsx()}
+					/>
+				</div>
+			</Popover>
 		</div>
 	);
 });

@@ -43,13 +43,11 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 		}
 
 		navigate(route);
-
 	};
 
 	return (
 		<div
-			onClick={isMobile ? undefined : openWorkspace}
-			onTouchStart={isMobile ? openWorkspace : undefined}
+			onClick={openWorkspace}
 			className={clsx(
 				isActive ? "bg-[var(--workspace-active)]" : "opacity-70",
 				"border-[var(--workspace-active)] border",
@@ -58,7 +56,7 @@ export const WorkspaceItem = observer((props: WorkspaceItemProps) => {
 				"rounded-lg",
 				"select-none",
 				"cursor-pointer",
-				"group/item",
+				!isMobile && "group/item",
 				props.className,
 			)}
 		>

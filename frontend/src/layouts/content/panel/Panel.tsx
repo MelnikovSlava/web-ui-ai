@@ -9,9 +9,7 @@ import { ChatItem } from "./ChatItem";
 import { CreateNewWBtn } from "./CreateNewWBtn";
 import { WorkspaceItem } from "./WorkspaceItem";
 
-type PanelProps = {
-	onClick?: (e?: any) => void
-} & VitalProps;
+type PanelProps = {} & VitalProps;
 
 export const Panel = observer((props: PanelProps) => {
 	const rootStore = useRootStore();
@@ -32,12 +30,12 @@ export const Panel = observer((props: PanelProps) => {
 					key={workspace.data.id}
 					title={<WorkspaceItem workspace={workspace} />}
 					isOpen={urlWorkspaceId === workspace.data.id}
-					onToggle={() => { }}
+					onToggle={() => {}}
 					className={clsx("pb-2")}
 				>
 					<div className={clsx("chat-list", "pt-1", "pl-1")}>
 						{workspace.chats.map((chat) => (
-							<ChatItem chat={chat} className="mb-1" key={chat.data.id} onClick={props.onClick} />
+							<ChatItem chat={chat} className="mb-1" key={chat.data.id} />
 						))}
 						<AddNewChatBtn workspace={workspace} />
 					</div>

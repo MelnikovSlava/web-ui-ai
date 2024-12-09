@@ -1,12 +1,11 @@
 import clsx from "clsx";
 import { HoverWrapper, type HoverWrapperProps } from "./HoverWrapper";
 
-type IconWrapperProps = HoverWrapperProps;
-
-const SIZE = 24;
+type IconWrapperProps = { size?: number } & HoverWrapperProps;
 
 export const IconWrapper = (props: IconWrapperProps) => {
 	const { children, className, ...rest } = props;
+	const SIZE = props.size ?? 24;
 
 	return (
 		<HoverWrapper

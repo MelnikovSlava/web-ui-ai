@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import hljs from "highlight.js";
 import { Marked, Renderer } from "marked";
 import { markedHighlight } from "marked-highlight";
@@ -85,6 +86,7 @@ export const MsgContent = observer((props: MsgContentProps) => {
 	return (
 		<div
 			// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+			className={clsx("select-none")}
 			dangerouslySetInnerHTML={{
 				__html: isUser ? `<p>${props.msg.content}</p>` : parsedText,
 			}}

@@ -1,6 +1,6 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import {} from "react";
+import { useState } from "react";
 import { GrEdit } from "react-icons/gr";
 import { MdForkRight } from "react-icons/md";
 import { RiDeleteBinLine } from "react-icons/ri";
@@ -17,14 +17,14 @@ import type { VitalProps } from "../../../utils/types";
 type ToolboxProps = {
 	msg: MessageStore;
 	onEdit: () => void;
+	size?: number;
 } & VitalProps;
-
-const SIZE = 15;
 
 export const Toolbox = observer((props: ToolboxProps) => {
 	const navigate = useNavigate();
 	const urlWorkspaceId = useUrlWorkspaceId();
 	const { copy } = useClipboard();
+	const [size] = useState<number>(props.size ?? 15);
 
 	const messageStore = props.msg;
 
@@ -45,7 +45,7 @@ export const Toolbox = observer((props: ToolboxProps) => {
 
 	const items = [
 		{
-			icon: <TbCopy size={SIZE} />,
+			icon: <TbCopy size={size} />,
 			onClick: () => copy(props.msg.data.content),
 			show: true,
 		},
@@ -55,12 +55,12 @@ export const Toolbox = observer((props: ToolboxProps) => {
 		// 	show: !isUser,
 		// },
 		{
-			icon: <GrEdit size={SIZE - 2} />,
+			icon: <GrEdit size={size - 2} />,
 			onClick: props.onEdit,
 			show: isUser,
 		},
 		{
-			icon: <MdForkRight size={SIZE} />,
+			icon: <MdForkRight size={size} />,
 			onClick: () => {
 				if (!onFork.loading) {
 					onFork.promise();
@@ -69,7 +69,7 @@ export const Toolbox = observer((props: ToolboxProps) => {
 			show: !isUser,
 		},
 		{
-			icon: <RiDeleteBinLine size={SIZE} />,
+			icon: <RiDeleteBinLine size={size} />,
 			onClick: () => onDelete.promise(),
 			show: true,
 		},
@@ -84,6 +84,7 @@ export const Toolbox = observer((props: ToolboxProps) => {
 
 				return (
 					<IconWrapper
+						size={size + 9}
 						key={i}
 						className={clsx("ml-0.5")}
 						onClick={item.onClick}

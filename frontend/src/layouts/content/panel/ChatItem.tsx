@@ -13,7 +13,6 @@ import { ChatTitle } from "./ChatTitle";
 
 type ChatItemProps = {
 	chat: ChatStore;
-	onClick?: (e?: any) => void
 } & VitalProps;
 
 export const ChatItem = observer((props: ChatItemProps) => {
@@ -49,20 +48,18 @@ export const ChatItem = observer((props: ChatItemProps) => {
 
 	const onClick = (e: any) => {
 		navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
-
-		if (props?.onClick) {
-			props.onClick(e);
-		}
 	};
 
 	return (
 		<div
-			onClick={isMobile ? undefined : onClick}
-			onTouchStart={isMobile ? onClick : undefined}
+			onClick={onClick}
+			// onClick={isMobile ? undefined : onClick}
+			// onTouchStart={isMobile ? onClick : undefined}
 			className={clsx(
 				isActive
-					? "text-gray-200 hover:bg-[var(--hover-chat)]"
-					: "hover:bg-[var(--hover-chat)] text-gray-500",
+					? clsx(!isMobile && "hover:bg-[var(--hover-chat)]", "text-gray-200")
+					: clsx(!isMobile && "hover:bg-[var(--hover-chat)]", "text-gray-500"),
+				!isMobile && "group/chat",
 				"items-stretch",
 				"rounded-lg",
 				"select-none",
@@ -70,12 +67,13 @@ export const ChatItem = observer((props: ChatItemProps) => {
 				"flex items-center",
 				"overflow-hidden",
 				"p-2",
-				"group/chat",
 				props.className,
 			)}
 		>
-
-			<ChatTitle title={props.chat.data.name} className={clsx('pr-2', 'flex-1')} />
+			<ChatTitle
+				title={props.chat.data.name}
+				className={clsx("pr-2", "flex-1")}
+			/>
 
 			<div
 				onClick={(e) => {
