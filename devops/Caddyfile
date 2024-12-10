@@ -1,4 +1,4 @@
-{$HOST}:8443 {
+{$HOST}:8443, 185.31.200.109:8443 {
     # Enable response compression
     encode zstd gzip
 
