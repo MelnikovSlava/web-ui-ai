@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 
 # Copy backend files
 COPY backend/ .
-RUN bun install --production --verbose
+RUN bun install --production
 
 EXPOSE 4000
 
