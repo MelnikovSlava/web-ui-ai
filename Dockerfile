@@ -1,4 +1,4 @@
-FROM oven/bun:canary-alpine AS runner
+FROM oven/bun:1.1.35-alpine AS runner
 WORKDIR /app
 
 # Install required system dependencies
@@ -16,7 +16,7 @@ RUN apk add --no-cache \
 
 # Copy backend files
 COPY backend/ .
-RUN bun install --production
+RUN bun install --production --verbose
 
 EXPOSE 4000
 
