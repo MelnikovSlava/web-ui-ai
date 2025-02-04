@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRootStore } from "../../store/root.store";
 import type { VitalProps } from "../../utils/types";
 import { FormControl, TextField } from "@mui/material";
+import numerify from 'numerify';
 
 type TabModelsProps = {} & VitalProps;
 
@@ -15,6 +16,14 @@ export const TabModels = observer((props: TabModelsProps) => {
 	const models = store.aiStore.models.filter((model) =>
 		model.name.toLowerCase().includes(value.toLowerCase()),
 	);
+
+	const round = (num: number) => {
+		return parseFloat(num.toFixed(2));
+	}
+
+	const getText = (text: string, value: string | number) => {
+		return `${text}: ${value}$`
+	}
 
 	return (
 		<div className={clsx("w-full", props.className)}>
@@ -53,8 +62,12 @@ export const TabModels = observer((props: TabModelsProps) => {
 					</tr>
 				</thead>
 				<tbody>
-					{models.map((model) => (
-						<tr
+					{models.map((model) => {
+						const pricePrompt = round(parseFloat(model.pricing.prompt) * 1000000);
+						const priceCompletion = round(parseFloat(model.pricing.completion) * 1000000);
+						const context = numerify(model.context_length, '0 a');
+
+						return <tr
 							key={model.id}
 							className={clsx(
 								"border-b border-[var(--main-border)] hover:bg-gray-800",
@@ -71,13 +84,13 @@ export const TabModels = observer((props: TabModelsProps) => {
 							</th>
 							<td className={clsx("px-6 py-4")}>
 								<span className={clsx("flex flex-col", "text-xs opacity-50")}>
-									<span>Prompt:{model.pricing.prompt}</span>
-									<span>Completion:{model.pricing.completion}</span>
+									<span>{getText('Prompt', pricePrompt)}</span>
+									<span>{getText('Completion', priceCompletion)}</span>
 								</span>
 							</td>
-							<td className={clsx("px-6 py-4")}>{model.context_length}</td>
+							<td className={clsx("px-6 py-4")}>{context}</td>
 						</tr>
-					))}
+					})}
 				</tbody>
 			</table>
 		</div>
