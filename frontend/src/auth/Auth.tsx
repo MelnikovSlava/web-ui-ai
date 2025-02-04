@@ -1,19 +1,21 @@
+import { Box, Card, Tab, Tabs } from '@mui/material';
+import clsx from 'clsx';
+import { observer } from 'mobx-react-lite';
 import type React from 'react';
 import { useState } from 'react';
-import { observer } from 'mobx-react-lite';
-import { Box, Card, Tabs, Tab } from '@mui/material';
+import { useCreateStore } from '../hooks/useCreateStore';
+import { MainLayout } from '../layouts/MainLayout';
 import { Login } from './Login';
 import { Register } from './Register';
 import AuthStore, { AuthStoreData } from './auth.store';
-import { useCreateStore } from '../hooks/useCreateStore';
 
 export const Auth = observer(() => {
   const authStore = useCreateStore(new AuthStore());
   const [activeTab, setActiveTab] = useState<string>('login');
 
   return (
-    <div style={{ width: '400px', margin: 'auto' }}>
-      <Box maxWidth="400px">
+    <MainLayout className={clsx('items-center justify-center')}>
+      <Box maxWidth="360px" width="100%">
         <Card>
           <Box display="flex" flexDirection="column" gap={2}>
             <Tabs value={activeTab} onChange={(event, newValue) => setActiveTab(newValue)} variant="fullWidth">
@@ -33,7 +35,7 @@ export const Auth = observer(() => {
           </Box>
         </Card>
       </Box>
-    </div>
+    </MainLayout>
   );
 });
 

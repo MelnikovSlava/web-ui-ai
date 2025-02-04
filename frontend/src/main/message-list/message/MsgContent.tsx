@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import hljs from "highlight.js";
 import { Marked, Renderer } from "marked";
 import { markedHighlight } from "marked-highlight";
@@ -5,6 +6,7 @@ import markedKatex from "marked-katex-extension";
 import { observer } from "mobx-react-lite";
 import { useEffect, useRef } from "react";
 import { useClipboard } from "../../../hooks/useClipboard";
+import { useMobile } from "../../../hooks/useMobile";
 import type { Message } from "../../../store/types";
 import type { VitalProps } from "../../../utils/types";
 
@@ -14,6 +16,7 @@ type MsgContentProps = {
 
 export const MsgContent = observer((props: MsgContentProps) => {
 	const isUser = props.msg.role === "user";
+	const isMobile = useMobile();
 
 	const clipboard = useClipboard({ timeout: 1000 });
 
@@ -85,6 +88,7 @@ export const MsgContent = observer((props: MsgContentProps) => {
 	return (
 		<div
 			// biome-ignore lint/security/noDangerouslySetInnerHtml: <explanation>
+			className={clsx(isMobile && "select-none")}
 			dangerouslySetInnerHTML={{
 				__html: isUser ? `<p>${props.msg.content}</p>` : parsedText,
 			}}

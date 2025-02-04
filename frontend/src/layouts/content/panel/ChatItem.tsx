@@ -1,15 +1,15 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import {} from "react";
 import { RiDeleteBinLine } from "react-icons/ri";
 import { useNavigate } from "react-router";
+import { useMobile } from "../../../hooks/useMobile";
 import { useUrlChatId } from "../../../hooks/useUrlChatId";
 import { useUrlWorkspaceId } from "../../../hooks/useUrlWorkspaceId";
 import { routes } from "../../../router";
 import type { ChatStore } from "../../../store/chat.store";
 import { IconWrapper } from "../../../ui-kit/IconWrapper";
-import { INIT_CHAT_TITLE } from "../../../utils/constants";
 import type { VitalProps } from "../../../utils/types";
+import { ChatTitle } from "./ChatTitle";
 
 type ChatItemProps = {
 	chat: ChatStore;
@@ -17,6 +17,7 @@ type ChatItemProps = {
 
 export const ChatItem = observer((props: ChatItemProps) => {
 	const navigate = useNavigate();
+	const isMobile = useMobile();
 	const chatStore = props.chat;
 
 	const urlWorkspaceId = useUrlWorkspaceId();
@@ -45,15 +46,20 @@ export const ChatItem = observer((props: ChatItemProps) => {
 		props.chat.workspace.deleteChatAction(chatId);
 	};
 
+	const onClick = (e: any) => {
+		navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
+	};
+
 	return (
 		<div
-			onClick={() => {
-				navigate(routes.chat(urlWorkspaceId, chatStore.data.id));
-			}}
+			onClick={onClick}
+			// onClick={isMobile ? undefined : onClick}
+			// onTouchStart={isMobile ? onClick : undefined}
 			className={clsx(
 				isActive
-					? "text-gray-200 hover:bg-[var(--hover-chat)]"
-					: "hover:bg-[var(--hover-chat)] text-gray-500",
+					? clsx(!isMobile && "hover:bg-[var(--hover-chat)]", "text-gray-200")
+					: clsx(!isMobile && "hover:bg-[var(--hover-chat)]", "text-gray-500"),
+				!isMobile && "group/chat",
 				"items-stretch",
 				"rounded-lg",
 				"select-none",
@@ -61,13 +67,13 @@ export const ChatItem = observer((props: ChatItemProps) => {
 				"flex items-center",
 				"overflow-hidden",
 				"p-2",
-				"group/chat",
 				props.className,
 			)}
 		>
-			<h1 className={clsx("line-clamp-1 pr-2 text-[14px] flex-1")}>
-				{props.chat.data.name || INIT_CHAT_TITLE}
-			</h1>
+			<ChatTitle
+				title={props.chat.data.name}
+				className={clsx("pr-2", "flex-1")}
+			/>
 
 			<div
 				onClick={(e) => {

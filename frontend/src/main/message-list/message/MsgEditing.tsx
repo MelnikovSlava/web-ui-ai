@@ -33,11 +33,12 @@ export const MsgEditing = observer((props: MsgEditingProps) => {
 				onChange={(e) => setValue(e.target.value)}
 				onKeyDown={handleKeyDown}
 				maxRows={20}
+				multiline
 				variant="outlined"
 				// size="sm"
 				sx={{
 					"& .MuiOutlinedInput-root": {
-						// borderRadius: "9px",
+						padding: "4px",
 					},
 
 					background: "none",

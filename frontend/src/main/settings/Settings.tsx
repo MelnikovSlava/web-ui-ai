@@ -4,11 +4,11 @@ import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { MainLayout } from "../../layouts/MainLayout";
 import { PageBottom } from "../../layouts/containers/PageBottom";
+import { PageContainer } from "../../layouts/containers/PageContainer";
 import { useRootStore } from "../../store/root.store";
 import { TabAppearance } from "./TabAppearance";
 import { TabCommon } from "./TabCommon";
 import { TabModels } from "./TabModels";
-import { PageContainer } from "../../layouts/containers/PageContainer";
 
 export const Settings = observer(() => {
 	const store = useRootStore();
@@ -33,14 +33,14 @@ export const Settings = observer(() => {
 	];
 
 	return (
-		<MainLayout className={clsx("")}>
+		<MainLayout className={clsx("items-start")}>
 			<PageContainer>
 				<h1 className={clsx("text-[28px] font-bold", "mb-5")}>Settings</h1>
 
 				<Tabs
 					value={tab}
 					onChange={(event, newValue) => settab(newValue)}
-					className={clsx("w-full", "overflow-hidden")}
+				// className={clsx("w-full", "overflow-hidden")}
 				>
 					{items.map((item) => (
 						<Tab label={item.title} value={item.key} key={item.key} />

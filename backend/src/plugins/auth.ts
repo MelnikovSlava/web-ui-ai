@@ -15,7 +15,7 @@ export const authPlugin: Plugin<null> = {
 				sub: false,
 				nbf: true,
 				exp: true,
-				maxAgeSec: 14400, // 4 часа
+				maxAgeSec: 31536000, // Updated to 1 year
 				timeSkewSec: 15,
 			},
 			validate: async (artifacts: any, request: any, h: any) => {

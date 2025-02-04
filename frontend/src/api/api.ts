@@ -25,7 +25,8 @@ class Api {
 		this._prefix = "/api";
 
 		if (this._dev) {
-			this._baseUrl = "http://localhost:4000";
+			// this._baseUrl = "http://localhost:4000";
+			this._baseUrl = "https://secondary.freemyip.com:8443";
 		}
 
 		this._axios = axios.create({
