@@ -20,8 +20,9 @@ export const chatsTable = sqliteTable("chats", {
 	workspaceId: integer("workspaceId")
 		.references(() => workspacesTable.id, { onDelete: "cascade" })
 		.notNull(),
+	modelId: integer("modelId")
+		.references(() => modelsTable.id, { onDelete: "set null" }),
 	name: text("name").notNull(),
-	model: text("model").notNull().default("meta-llama/llama-3.1-405b-instruct"),
 	timestamp: integer("timestamp").notNull(),
 });
 
@@ -35,7 +36,13 @@ export const messagesTable = sqliteTable("messages", {
 	timestamp: integer("timestamp").notNull(),
 });
 
+export const modelsTable = sqliteTable("models", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	name: text("name").notNull(),
+});
+
 export type User = typeof usersTable.$inferSelect;
 export type Workspace = typeof workspacesTable.$inferSelect;
 export type Chat = typeof chatsTable.$inferSelect;
 export type Message = typeof messagesTable.$inferSelect;
+export type Model = typeof modelsTable.$inferSelect;

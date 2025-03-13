@@ -15,7 +15,7 @@ type ModelSelectProps = {} & VitalProps;
 export const ModelSelect: FC<ModelSelectProps> = observer((props) => {
 	const workspace = useGetWorkspace();
 	const models = workspace.root.aiStore.models;
-	const currentModel = workspace.data.model || DEFAULT_MODEL;
+	const currentModel = workspace.getModel();
 
 	const [open, setOpen] = useState(false);
 	const [value, setValue] = useState<Model>(() => {

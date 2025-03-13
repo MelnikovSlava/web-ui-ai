@@ -9,6 +9,7 @@ import { usePromise } from "../../../hooks/usePromise";
 import { HoverWrapper } from "../../../ui-kit/HoverWrapper";
 import type { VitalProps } from "../../../utils/types";
 import { StopBtn } from "./StopBtn";
+import { ModelList } from "./ModelList";
 
 type InputBlockProps = {} & VitalProps;
 
@@ -106,6 +107,8 @@ export const InputBlock = observer((props: InputBlockProps) => {
 					width: "100%",
 				}}
 			/>
+
+			<ModelList className={clsx('mt-1 ml-4')}/>
 		</div>
 	);
 });

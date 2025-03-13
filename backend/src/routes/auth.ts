@@ -1,10 +1,11 @@
 import type { Server } from "@hapi/hapi";
 import Joi from "joi";
-import type { Chat, Message } from "../db/schema";
+import type { Chat, Message, Model } from "../db/schema";
 import { getAllChats } from "../services/chat.service";
 import { getAllMessages } from "../services/message.service";
 import { authenticateUser, registerUser } from "../services/user.service";
 import { getAllWorkspaces } from "../services/workspace.service";
+import { getAllModels } from "../services/model.service";
 
 export const authRoutes = (server: Server) => {
 	server.route({
@@ -76,6 +77,7 @@ export const authRoutes = (server: Server) => {
 
 			try {
 				const workspaces = await getAllWorkspaces(userId);
+				const models = await getAllModels();
 
 				const allChats: Chat[] = [];
 				const allMessages: Message[] = [];
@@ -95,6 +97,7 @@ export const authRoutes = (server: Server) => {
 						workspaces,
 						chats: allChats,
 						messages: allMessages,
+						models,
 					})
 					.code(200);
 			} catch (error) {

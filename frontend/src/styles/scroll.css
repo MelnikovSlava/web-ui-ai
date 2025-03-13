@@ -61,12 +61,12 @@
   height: 8px;
 }
 
-::-webkit-scrollbar {
+/* ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-}
+} */
 
-::-webkit-scrollbar-track,
+/* ::-webkit-scrollbar-track,
 ::-webkit-scrollbar-thumb {
   background-clip: content-box;
   border-radius: inherit;
@@ -78,4 +78,4 @@
 
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
-}
+} */

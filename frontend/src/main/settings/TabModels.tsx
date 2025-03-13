@@ -1,10 +1,12 @@
 import clsx from "clsx";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRootStore } from "../../store/root.store";
 import type { VitalProps } from "../../utils/types";
 import { FormControl, TextField } from "@mui/material";
 import numerify from 'numerify';
+import { Star } from "lucide-react";
+import { usePromise } from "../../hooks/usePromise";
 
 type TabModelsProps = {} & VitalProps;
 
@@ -12,6 +14,14 @@ export const TabModels = observer((props: TabModelsProps) => {
 	const store = useRootStore();
 
 	const [value, setValue] = useState<string>("");
+
+	const onAdd = usePromise({
+		func: store.addModelAction,
+	});
+
+	const onRemove = usePromise({
+		func: store.deleteModelAction,
+	});
 
 	const models = store.aiStore.models.filter((model) =>
 		model.name.toLowerCase().includes(value.toLowerCase()),
@@ -24,6 +34,12 @@ export const TabModels = observer((props: TabModelsProps) => {
 	const getText = (text: string, value: string | number) => {
 		return `${text}: ${value}$`
 	}
+
+	const sorted = useMemo(() => {
+		return models.sort((a, b) => {
+			return store.inCollection(a.id) ? -1 : store.inCollection(b.id) ? 1 : 0;
+		});
+	}, [models, store.models.length]);
 
 	return (
 		<div className={clsx("w-full", props.className)}>
@@ -51,6 +67,9 @@ export const TabModels = observer((props: TabModelsProps) => {
 				>
 					<tr>
 						<th scope="col" className={clsx("px-6 py-3")}>
+							<Star className="w-4 h-4" />
+						</th>
+						<th scope="col" className={clsx("px-6 py-3")}>
 							Name
 						</th>
 						<th scope="col" className={clsx("px-6 py-3")}>
@@ -62,10 +81,11 @@ export const TabModels = observer((props: TabModelsProps) => {
 					</tr>
 				</thead>
 				<tbody>
-					{models.map((model) => {
+					{sorted.map((model) => {
 						const pricePrompt = round(parseFloat(model.pricing.prompt) * 1000000);
 						const priceCompletion = round(parseFloat(model.pricing.completion) * 1000000);
 						const context = numerify(model.context_length, '0 a');
+						const inCollection = store.inCollection(model.id);
 
 						return <tr
 							key={model.id}
@@ -73,6 +93,15 @@ export const TabModels = observer((props: TabModelsProps) => {
 								"border-b border-[var(--main-border)] hover:bg-gray-800",
 							)}
 						>
+							<td className={clsx("px-6 py-4", "cursor-pointer")} onClick={() => {
+								if (inCollection) {
+									onRemove.promise(model.id)
+								} else {
+									onAdd.promise(model.id)
+								}
+								}}>
+									<Star className={clsx('w-4 h-4 opacity-50', inCollection && "text-yellow-400")} fill={inCollection ? "yellow": undefined} />
+							</td>
 							<th
 								scope="row"
 								className={clsx("px-6 py-4 font-medium whitespace-nowrap")}

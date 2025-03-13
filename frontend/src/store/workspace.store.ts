@@ -7,6 +7,7 @@ import { ChatStore } from "./chat.store";
 import type { MessageStore } from "./message.store";
 import type { RootStore } from "./root.store";
 import type { Chat, Message, Workspace } from "./types";
+import { DEFAULT_MODEL } from "../utils/constants";
 
 export class WorkspaceStore {
 	private _chats: Map<Chat["id"], ChatStore>;
@@ -42,6 +43,10 @@ export class WorkspaceStore {
 				this._createChat(chat, messages);
 			});
 	};
+
+	public getModel = () => {
+		return this.data.model || DEFAULT_MODEL;
+	}
 
 	private _createChat = async (chat: Chat, messages: Message[]) => {
 		const chatStore = new ChatStore(chat, this);

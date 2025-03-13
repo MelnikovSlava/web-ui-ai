@@ -25,8 +25,8 @@ class Api {
 		this._prefix = "/api";
 
 		if (this._dev) {
-			// this._baseUrl = "http://localhost:4000";
-			this._baseUrl = "https://secondary.freemyip.com:8443";
+			this._baseUrl = "http://localhost:4000";
+			// this._baseUrl = "https://secondary.freemyip.com:8443";
 		}
 
 		this._axios = axios.create({
@@ -131,6 +131,18 @@ class Api {
 	public updateMessage = (messageId: number, newContent: string) => {
 		return this._axios.put(`/messages/${messageId}/update`, { newContent });
 	};
+
+	public addModel = (params: { name: string }) => {
+		return this._axios.post("/models/add", params);
+	};
+
+	public deleteModel = (id: number) => {
+	return this._axios.delete(`/models/${id}/delete`);
+};
+
+public changeChatModel = (id: number, modelId: number) => {
+	return this._axios.put(`/chats/${id}/change-model`, { modelId });
+};
 }
 
 export const api = new Api();

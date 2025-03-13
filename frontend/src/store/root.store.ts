@@ -6,19 +6,21 @@ import { localStorageUtils } from "../utils/localStorage";
 import { resolvePromise } from "../utils/utils";
 import { AiStore } from "./ai.store";
 import { SettingsStore } from "./settings.store";
-import type { Workspace } from "./types";
+import type { ModelFavorite, Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
 import { router, routes } from "../router";
 
 export class RootStore {
 	public aiStore: AiStore;
 	private _workspaces: Map<Workspace["id"], WorkspaceStore>;
+	private _models: Map<ModelFavorite['id'], ModelFavorite>;
 
 	public settingsStore: SettingsStore;
 
 	constructor() {
 		this.settingsStore = new SettingsStore(this);
 		this._workspaces = new Map();
+		this._models = new Map();
 		this.aiStore = new AiStore();
 
 		makeAutoObservable(this);
@@ -32,6 +34,10 @@ export class RootStore {
 		return resolvePromise({
 			promise: () => api.getData(),
 			resolve: ({ data }) => {
+				data.models.forEach((model) => {
+					this._models.set(model.id, model);
+				})
+
 				data.workspaces.forEach((workspace) => {
 					const store = new WorkspaceStore(workspace, this);
 					store.deserialize(workspace, data.chats, data.messages);
@@ -40,6 +46,18 @@ export class RootStore {
 			},
 		});
 	};
+
+	public get models() {
+		return Array.from(this._models.values());
+	}
+
+	public getModelById = (modelId: number) => {
+		return this._models.get(modelId); 
+	}
+
+	public getModelByName = (name: string) => {
+		return this.models.find((m) => m.name === name);
+	}
 
 	public existsWorkspace = (id: number) => {
 		return this._workspaces.has(id);
@@ -109,6 +127,37 @@ export class RootStore {
 			},
 		});
 	};
+
+	public addModelAction = async (name: string) => {
+		return resolvePromise({
+			promise: () => api.addModel({ name }),
+			resolve: ({ data }) => {
+				this._models.set(data.id, data);
+			},
+		});
+	};
+
+	public deleteModelAction = async (name: string) => {
+		const model = this.getModelByName(name);
+
+		if (!model) {
+			throw new Error(`Model not found: ${name}`);
+		}
+
+		this._models.delete(model.id);
+
+		return resolvePromise({
+			promise: () => api.deleteModel(model.id),
+			resolve: () => {},
+			reject: () => {
+				this._models.set(model.id, model);
+			},
+		});
+	};
+
+	public inCollection(modelName: string) {
+		return Array.from(this._models).some((model) => model[1].name === modelName)
+	}
 
 	public logout = () => {
 		localStorageUtils.clearAllSettings();

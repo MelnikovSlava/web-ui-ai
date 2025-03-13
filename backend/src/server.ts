@@ -4,7 +4,8 @@ import { authPlugin } from "./plugins/auth";
 import { authRoutes } from "./routes/auth";
 import chatRoutes from "./routes/chats";
 import messageRoutes from "./routes/messages";
-import workspaceRoutes from "./routes/workspace"; // Import the workspace routes
+import workspaceRoutes from "./routes/workspace";
+import modelRoutes from "./routes/models";
 
 const init = async () => {
 	const server = Hapi.server({
@@ -21,6 +22,7 @@ const init = async () => {
 	workspaceRoutes(server);
 	messageRoutes(server);
 	chatRoutes(server);
+	modelRoutes(server);
 
 	await server.start();
 	console.log("Server running on %s", server.info.uri);

@@ -7,6 +7,7 @@ export interface Workspace {
 export interface Chat {
 	id: number;
 	workspaceId: number;
+	modelId: number;
 	name: string;
 	timestamp: number;
 }
@@ -42,8 +43,14 @@ export type Model = {
 	top_provider: string;
 };
 
+export type ModelFavorite = {
+	id: number;
+	name: string;
+};
+
 export type Data = {
 	workspaces: Workspace[];
 	chats: Chat[];
 	messages: Message[];
+	models: ModelFavorite[];
 };

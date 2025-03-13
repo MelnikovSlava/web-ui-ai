@@ -2,6 +2,8 @@ import { makeAutoObservable } from "mobx";
 import { localStorageUtils } from "../utils/localStorage";
 import type { RootStore } from "./root.store";
 
+import { api } from "../api/api";
+
 export class SettingsStore {
 	private _root: RootStore;
 

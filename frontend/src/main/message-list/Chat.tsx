@@ -49,7 +49,7 @@ export const Chat = observer(() => {
 				<Empty />
 			)}
 
-			<div className={clsx("py-4 w-full px-5", isMobile && 'mb-5')}>
+			<div className={clsx("py-4 w-full px-5", "border-t border-t-[var(--main-border)]", isMobile && 'mb-5')}>
 				<InputBlock />
 			</div>
 		</MainLayout>

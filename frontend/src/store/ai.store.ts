@@ -1,6 +1,7 @@
 import { makeAutoObservable, runInAction } from "mobx";
 import type { Key, Model } from "./types";
 import { localStorageUtils } from "../utils/localStorage";
+import { SnackbarManagerInstance } from "../ui-kit/snackbar/snackbar-manager";
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 const AUTH_KEY_URL = "https://openrouter.ai/api/v1/auth/key";
@@ -106,7 +107,8 @@ export class AiStore {
 			let aiResponse = "";
 
 			while (true) {
-				const { done, value } = await reader.read();
+				const result = await reader.read();
+				const { done, value } = result;
 				if (done) break;
 
 				const chunk = decoder.decode(value);
@@ -120,6 +122,11 @@ export class AiStore {
 						}
 
 						const data = JSON.parse(content);
+
+						if (data.error) {
+							throw new Error(data.error?.message ||  "Something is wrong!")
+						}
+
 						const partialResponse = data.choices[0].delta.content;
 						if (partialResponse) {
 							aiResponse += partialResponse;
@@ -134,12 +141,14 @@ export class AiStore {
 			});
 
 			return aiResponse;
-		} catch (error) {
+		} catch (error: any) {
 			console.error("Error sending message:", error);
+
 			runInAction(() => {
 				this.isStreaming = false;
 			});
-			return null;
+
+			throw error;
 		}
 	};
 

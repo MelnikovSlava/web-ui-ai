@@ -52,3 +52,10 @@ export const forkChat = async (chatId: number, messageId: number) => {
 
 	return { chat: newChat, messages: msgs };
 };
+
+export const updateChatModel = async (id: number, modelId: number) => {
+	return await db
+		.update(chatsTable)
+		.set({ modelId })
+		.where(eq(chatsTable.id, id));
+};

@@ -4,6 +4,7 @@ import {
 	addChat,
 	deleteChat,
 	forkChat,
+	updateChatModel,
 	updateChatName,
 } from "../services/chat.service";
 
@@ -101,6 +102,28 @@ const chatRoutes = (server: Server) => {
 			const result = await forkChat(id, messageId);
 
 			return h.response(result).code(201);
+		},
+	});
+
+	server.route({
+		method: "PUT",
+		path: "/api/chats/{id}/change-model",
+		options: {
+			auth: "jwt",
+			validate: {
+				params: Joi.object({
+					id: Joi.number().required(),
+				}),
+				payload: Joi.object({
+					modelId: Joi.number().required(),
+				}),
+			},
+		},
+		handler: async (request, h) => {
+			const { id } = request.params;
+			const { modelId } = request.payload as { modelId: number };
+			await updateChatModel(id, modelId);
+			return h.response().code(200);
 		},
 	});
 };

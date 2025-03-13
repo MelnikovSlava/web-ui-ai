@@ -6,6 +6,7 @@ import { AiStore } from "./ai.store";
 import { MessageStore } from "./message.store";
 import type { Chat, Message } from "./types";
 import type { WorkspaceStore } from "./workspace.store";
+import { SnackbarManagerInstance } from "../ui-kit/snackbar/snackbar-manager";
 
 export class ChatStore {
 	private _aiStore: AiStore;
@@ -80,7 +81,7 @@ export class ChatStore {
 			promise: () => api.deleteMessages(messageIds),
 			resolve: () => {
 				for (const messageId of messageIds) {
-					this.messageStores.delete(messageId);
+					this._removeMessage(messageId);
 				}
 			},
 		});
@@ -162,6 +163,46 @@ export class ChatStore {
 		return messageStore;
 	};
 
+	private _removeMessage = (msgId: number) => {
+		this.messageStores.delete(msgId);
+	}
+
+	public getModel = () => {
+		const modelId = this.data.modelId;
+
+		if (modelId) {
+			const model = this.workspace.root.getModelById(modelId);
+
+			if (model) {
+				return model.name;
+			}
+		}
+
+		return this.workspace.getModel();
+	}
+
+	public changeChatModel = async (modelName: string) => {
+		const oldValue = this.data.modelId;
+		const model = this.workspace.root.getModelByName(modelName);
+
+		if (!model) {
+		throw new Error('Model not found')	
+		}
+
+		if (model.id === oldValue) {
+			return;	
+		}
+
+				this.data.modelId = model.id;
+
+		await resolvePromise({
+			promise: () => api.changeChatModel(this.data.id, model.id),
+			reject: () => {
+				this.data.modelId = oldValue;
+			},
+		});
+	};
+
 	private _sendMessagesToAi = async () => {
 		const messageHistory = this._prepareMessagesForAi(this.messages);
 
@@ -174,12 +215,14 @@ export class ChatStore {
 		};
 
 		const messageFromAi = this._createMessage(msg);
+		const model = this.getModel();
 
-		await this._aiStore.sendMessage(
-			messageHistory,
-			this.workspace.data.model,
-			messageFromAi.setContent,
-		);
+		try {
+			await this._aiStore.sendMessage(
+				messageHistory,
+				model,
+				messageFromAi.setContent,
+			);
 
 		await resolvePromise({
 			promise: () => {
@@ -198,6 +241,10 @@ export class ChatStore {
 
 		if (this._needUpdateChatTitle()) {
 			this._updateChatTitle();
+		}
+		} catch (error: any) {
+SnackbarManagerInstance.showSnackbar({message: error?.message, type: "error"})
+			this._removeMessage(msg.id);
 		}
 	};
 
