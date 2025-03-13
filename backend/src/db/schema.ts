@@ -21,6 +21,7 @@ export const chatsTable = sqliteTable("chats", {
 		.references(() => workspacesTable.id, { onDelete: "cascade" })
 		.notNull(),
 	name: text("name").notNull(),
+	model: text("model").notNull().default("meta-llama/llama-3.1-405b-instruct"),
 	timestamp: integer("timestamp").notNull(),
 });
 
