@@ -10,3 +10,5 @@ Apply migrations:
 npx drizzle-kit migrate
 
 Read more about migration process in documentation.
+
+If you want to migrate db, go to server and migrate by hands!
