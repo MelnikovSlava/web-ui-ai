@@ -4,10 +4,10 @@ import { z } from "zod";
 dotenv.config();
 
 const envSchema = z.object({
-	NODE_ENV: z.enum(["development", "production", "test"]),
+	NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 	PORT: z.string().default("4000").transform(Number),
 	DB_FILE_NAME: z.string().default("file:database/database.sqlite"),
-	JWT_SECRET: z.string(),
+	JWT_SECRET: z.string().default("123"),
 });
 
 const envParseResult = envSchema.safeParse(process.env);
