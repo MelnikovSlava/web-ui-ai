@@ -20,7 +20,6 @@ if (!envParseResult.success) {
 
 export const envVariables = {
 	nodeEnv: envParseResult.data.NODE_ENV,
-	env: envParseResult.data.NODE_ENV,
 	port: envParseResult.data.PORT,
 	dbFileName: envParseResult.data.DB_FILE_NAME,
 	jwtSecret: envParseResult.data.JWT_SECRET,

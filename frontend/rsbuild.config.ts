@@ -12,9 +12,9 @@ export default defineConfig({
 		meta: {
 			"apple-mobile-web-app-capable": "yes",
 			"apple-mobile-web-app-status-bar-style": "black-translucent",
-			"apple-mobile-web-app-title": "Assistent",
+			"apple-mobile-web-app-title": "AI",
 			"mobile-web-app-capable": "yes",
-			"theme-color": "#459234",
+			"theme-color": "black",
 			"viewport": "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 		}
 	},
