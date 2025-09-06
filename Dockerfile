@@ -16,8 +16,8 @@ RUN apk add --no-cache \
 
 # Copy backend files
 COPY backend/ .
-RUN bun install --production
-RUN bun migrate
+RUN bun install --omit dev
+RUN bun run migrate
 
 EXPOSE 4000
 
