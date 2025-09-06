@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "migrate": "bun x drizzle-kit push",
+    "migrate": "bun drizzle-kit push",
     "start": "bun ./src/server.ts",
     "dev": "bun --watch ./src/server.ts"
   },
