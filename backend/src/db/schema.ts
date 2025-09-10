@@ -16,13 +16,17 @@ export const workspacesTable = sqliteTable("workspaces", {
 		.notNull(),
 });
 
+export const modelsTable = sqliteTable("models", {
+	id: integer("id").primaryKey({ autoIncrement: true }),
+	name: text("name").notNull(),
+});
+
 export const chatsTable = sqliteTable("chats", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	workspaceId: integer("workspaceId")
 		.references(() => workspacesTable.id, { onDelete: "cascade" })
 		.notNull(),
-	modelId: integer("modelId")
-		.references(() => modelsTable.id, { onDelete: "set null" }),
+	modelId: integer("modelId"),
 	name: text("name").notNull(),
 	timestamp: integer("timestamp").notNull(),
 });
@@ -35,11 +39,6 @@ export const messagesTable = sqliteTable("messages", {
 	content: text("content").notNull(),
 	role: text("role").notNull(),
 	timestamp: integer("timestamp").notNull(),
-});
-
-export const modelsTable = sqliteTable("models", {
-	id: integer("id").primaryKey({ autoIncrement: true }),
-	name: text("name").notNull(),
 });
 
 export type User = typeof usersTable.$inferSelect;
