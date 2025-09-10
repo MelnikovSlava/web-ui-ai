@@ -26,14 +26,30 @@ export const SelectTheme = (props: SelectThemeProps) => {
 	};
 
 	return (
-		<FormControl>
-			<FormLabel sx={{ color: "inherit" }}>Theme</FormLabel>
+		<FormControl fullWidth>
+			<FormLabel sx={{ color: "inherit", marginBottom: "8px", fontWeight: 600 }}>
+				Theme
+			</FormLabel>
 			<Select
 				value={theme}
 				variant="outlined"
 				onChange={(e) => {
 					const value = (e.target.value as Theme) || "default";
 					handleChange(value);
+				}}
+				sx={{
+					backgroundColor: "var(--bg-secondary)",
+					borderRadius: "8px",
+					"& .MuiOutlinedInput-notchedOutline": {
+						borderColor: "var(--border)",
+					},
+					"&:hover .MuiOutlinedInput-notchedOutline": {
+						borderColor: "var(--primary)",
+					},
+					"&.Mui-focused .MuiOutlinedInput-notchedOutline": {
+						borderColor: "var(--primary)",
+						borderWidth: "2px",
+					},
 				}}
 			>
 				{items.map((item) => {

@@ -96,8 +96,8 @@ export const Panel = observer((props: PanelProps) => {
 						horizontal: 'right',
 					}}
 					transformOrigin={{
-						vertical: 'top',
-						horizontal: 'right',
+						vertical: 'bottom',
+						horizontal: 'center',
 					}}
 				>
 					<MenuItem onClick={handleSettings}>

@@ -16,9 +16,13 @@ export const Accordion: FC<AccordionProps> = (props) => {
 	return (
 		<div className={clsx("accordion", className)}>
 			<div
-				className={clsx("accordion-header", {
-					"accordion-header-open": isOpen,
-				})}
+				className={clsx(
+					"accordion-header", 
+					"sticky top-0 z-10 bg-[var(--panel-background)]",
+					{
+						"accordion-header-open": isOpen,
+					}
+				)}
 				onClick={onToggle}
 			>
 				{title}
