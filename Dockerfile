@@ -17,9 +17,8 @@ RUN apk add --no-cache \
 # Copy backend files
 COPY backend/ .
 RUN bun install --omit dev
-RUN bun run migrate
 
 EXPOSE 4000
 
-# Start backend
-CMD [ "bun", "start" ]
+# Start backend with migrations first
+CMD ["sh", "-c", "bun run migrate && bun start"]
