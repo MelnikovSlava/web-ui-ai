@@ -3,7 +3,16 @@ import { observer } from "mobx-react-lite";
 import { useMemo, useState } from "react";
 import { useRootStore } from "../../store/root.store";
 import type { VitalProps } from "../../utils/types";
-import { FormControl, TextField } from "@mui/material";
+import {
+  FormControl,
+  TextField,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell
+} from "@mui/material";
 import numerify from 'numerify';
 import { Star } from "lucide-react";
 import { usePromise } from "../../hooks/usePromise";
@@ -45,90 +54,92 @@ export const Models = observer((props: ModelsProps) => {
 
 	return (
 		<MainLayout className={clsx("items-start")}>
-			<PageContainer>
+			<PageContainer className={clsx('pb-4')}>
 				<h1 className={clsx("text-[28px] font-bold", "mb-5")}>Models</h1>
 
-				<div className={clsx("w-full", props.className)}>
-					<FormControl>
+					<FormControl sx={{ mb: 2 }} className={clsx('self-start')}>
 						<TextField
 							value={value}
 							onChange={(e) => {
 								setValue(e.target.value);
 							}}
-							className={clsx("mb-4")}
 							placeholder="Search models..."
 						/>
 					</FormControl>
 
-					<table
-						className={clsx(
-							"w-full text-sm text-left rtl:text-right border border-[var(--main-border)]",
-							"rounded-lg",
-						)}
+					<TableContainer 
+						sx={{ 
+							height: '100%',
+							borderRadius: '8px',
+							border: '1px solid',
+							borderColor: 'var(--main-border)'
+						}}
 					>
-						<thead
-							className={clsx(
-								"text-xs uppercase border-b border-[var(--main-border)]",
-							)}
-						>
-							<tr>
-								<th scope="col" className={clsx("px-6 py-3")}>
-									<Star className="w-4 h-4" />
-								</th>
-								<th scope="col" className={clsx("px-6 py-3")}>
-									Name
-								</th>
-								<th scope="col" className={clsx("px-6 py-3")}>
-									Price
-								</th>
-								<th scope="col" className={clsx("px-6 py-3")}>
-									Context
-								</th>
-							</tr>
-						</thead>
-						<tbody>
-							{sorted.map((model) => {
-								const pricePrompt = round(parseFloat(model.pricing.prompt) * 1000000);
-								const priceCompletion = round(parseFloat(model.pricing.completion) * 1000000);
-								const context = numerify(model.context_length, '0 a');
-								const inCollection = store.inCollection(model.id);
+						<Table stickyHeader size="small">
+							<TableHead>
+								<TableRow>
+									<TableCell sx={{ minWidth: '60px' }}>
+										<Star className="w-4 h-4 mx-auto" />
+									</TableCell>
+									<TableCell sx={{ pr: 3, pl: 1, py: 1.5, minWidth: '400px' }}>
+										Name
+									</TableCell>
+									<TableCell sx={{ pr: 3, pl: 1, py: 1.5, minWidth: '180px' }}>
+										Price
+									</TableCell>
+									<TableCell sx={{ pr: 3, pl: 1, py: 1.5, minWidth: '100px' }}>
+										Context
+									</TableCell>
+								</TableRow>
+							</TableHead>
+							<TableBody>
+								{sorted.map((model) => {
+									const pricePrompt = round(parseFloat(model.pricing.prompt) * 1000000);
+									const priceCompletion = round(parseFloat(model.pricing.completion) * 1000000);
+									const context = numerify(model.context_length, '0 a');
+									const inCollection = store.inCollection(model.id);
 
-								return <tr
-									key={model.id}
-									className={clsx(
-										"border-b border-[var(--main-border)] hover:bg-gray-800",
-									)}
-								>
-									<td className={clsx("px-6 py-4", "cursor-pointer")} onClick={() => {
-										if (inCollection) {
-											onRemove.promise(model.id)
-										} else {
-											onAdd.promise(model.id)
-										}
-										}}>
-											<Star className={clsx('w-4 h-4 opacity-50', inCollection && "text-yellow-400")} fill={inCollection ? "yellow": undefined} />
-									</td>
-									<th
-										scope="row"
-										className={clsx("px-6 py-4 font-medium whitespace-nowrap")}
+									const isFree = pricePrompt === 0 && priceCompletion === 0;
+
+									return <TableRow
+										key={model.id}
+										sx={{
+											borderBottom: '1px solid',
+											borderColor: 'var(--main-border)',
+											'&:hover': { backgroundColor: 'grey.800' }
+										}}
 									>
-										<span className={clsx("flex flex-col")}>
-											<span>{model.name}</span>
-											<span className={clsx("text-xs opacity-50")}>{model.id}</span>
-										</span>
-									</th>
-									<td className={clsx("px-6 py-4")}>
-										<span className={clsx("flex flex-col", "text-xs opacity-50")}>
-											<span>{getText('Prompt', pricePrompt)}</span>
-											<span>{getText('Completion', priceCompletion)}</span>
-										</span>
-									</td>
-									<td className={clsx("px-6 py-4")}>{context}</td>
-								</tr>
-							})}
-						</tbody>
-					</table>
-				</div>
+										<TableCell 
+											sx={{ cursor: 'pointer', minWidth: '60px'}} 
+											onClick={() => {
+												if (inCollection) {
+													onRemove.promise(model.id)
+												} else {
+													onAdd.promise(model.id)
+												}
+											}}
+										>
+											<Star className={clsx('w-4 h-4 mx-auto', inCollection && "text-[#FFD700]")} fill={inCollection ? "#FFD700": undefined} />
+										</TableCell>
+										<TableCell sx={{ pr: 3, pl: 1, py: 2, fontWeight: 'medium', whiteSpace: 'nowrap', minWidth: '300px' }}>
+											<span className={clsx("flex flex-col")}>
+												<span>{model.name}</span>
+												<span className={clsx("text-xs opacity-50")}>{model.id}</span>
+											</span>
+										</TableCell>
+										<TableCell sx={{ pr: 3, pl: 1, py: 2, minWidth: '150px' }}>
+											{isFree ? <span className={clsx('text-green-700', "")}>Free</span>: 
+											<span className={clsx("flex flex-col", "text-xs opacity-50")}>
+												<span>{getText('Prompt', pricePrompt)}</span>
+												<span>{getText('Completion', priceCompletion)}</span>
+											</span>}
+										</TableCell>
+										<TableCell sx={{ pr: 3, pl: 1, py: 2, minWidth: '100px' }}>{context}</TableCell>
+									</TableRow>
+								})}
+							</TableBody>
+						</Table>
+					</TableContainer>
 			</PageContainer>
 		</MainLayout>
 	);
