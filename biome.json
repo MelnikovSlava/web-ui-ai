@@ -1,5 +1,6 @@
 {
-	"$schema": "https://biomejs.dev/schemas/1.9.4/schema.json",
+	"root": false,
+	"$schema": "https://biomejs.dev/schemas/2.2.3/schema.json",
 	"vcs": {
 		"enabled": false,
 		"clientKind": "git",
@@ -7,46 +8,55 @@
 	},
 	"files": {
 		"ignoreUnknown": false,
-		"ignore": []
+		"includes": [
+			"**"
+		]
 	},
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab"
 	},
-	"organizeImports": {
-		"enabled": true
+	"assist": {
+		"actions": {
+			"source": {
+				"organizeImports": "on"
+			}
+		}
 	},
-  "linter": {
-    "enabled": true,
-    "rules": {
+	"linter": {
+		"enabled": true,
+		"rules": {
 			"recommended": true,
 			"suspicious": {
 				"noExplicitAny": "off"
 			},
-      "correctness": {
-        "noUnusedImports": {
-          "level": "info",
-          "fix": "safe"
-        }
-      },
+			"correctness": {
+				"noUnusedImports": {
+					"level": "info",
+					"fix": "safe",
+					"options": {}
+				}
+			},
 			"complexity": {
 				"noForEach": "off"
 			},
-      "style":{
-				"useTemplate":{
+			"style": {
+				"useTemplate": {
 					"level": "warn",
-					"fix": "safe"
+					"fix": "safe",
+					"options": {}
 				},
-        "useImportType": {
-          "level": "error",
-          "fix": "safe"
-        }
-      },
-      "a11y": {
-        "useKeyWithClickEvents": "off"
-      }
-    }
-  },
+				"useImportType": {
+					"level": "error",
+					"fix": "safe",
+					"options": {}
+				}
+			},
+			"a11y": {
+				"useKeyWithClickEvents": "off"
+			}
+		}
+	},
 	"javascript": {
 		"formatter": {
 			"quoteStyle": "double"

@@ -1,27 +1,26 @@
 import { makeAutoObservable } from "mobx";
 import { api } from "../api/api";
-import {} from "../utils/constants";
 import { encrypt } from "../utils/encryptor";
 import { localStorageUtils } from "../utils/localStorage";
 import { resolvePromise } from "../utils/utils";
-import { AiStore } from "./ai.store";
 import { SettingsStore } from "./settings.store";
 import type { ModelFavorite, Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
 import { router, routes } from "../router";
+import { OpenRouterStore } from "./openrouter.store";
 
 export class RootStore {
-	public aiStore: AiStore;
+	public openrouterStore: OpenRouterStore;
 	private _workspaces: Map<Workspace["id"], WorkspaceStore>;
-	private _models: Map<ModelFavorite['id'], ModelFavorite>;
+	private _favoriteModels: Map<ModelFavorite['id'], ModelFavorite>;
 
 	public settingsStore: SettingsStore;
 
 	constructor() {
 		this.settingsStore = new SettingsStore(this);
 		this._workspaces = new Map();
-		this._models = new Map();
-		this.aiStore = new AiStore();
+		this._favoriteModels = new Map();
+		this.openrouterStore = new OpenRouterStore();
 
 		makeAutoObservable(this);
 	}
@@ -35,7 +34,7 @@ export class RootStore {
 			promise: () => api.getData(),
 			resolve: ({ data }) => {
 				data.models.forEach((model) => {
-					this._models.set(model.id, model);
+					this._favoriteModels.set(model.id, model);
 				})
 
 				data.workspaces.forEach((workspace) => {
@@ -48,11 +47,11 @@ export class RootStore {
 	};
 
 	public get models() {
-		return Array.from(this._models.values());
+		return Array.from(this._favoriteModels.values());
 	}
 
 	public getModelById = (modelId: number) => {
-		return this._models.get(modelId); 
+		return this._favoriteModels.get(modelId); 
 	}
 
 	public getModelByName = (name: string) => {
@@ -98,7 +97,6 @@ export class RootStore {
 
 		return resolvePromise({
 			promise: () => api.deleteWorkspace(workspaceId),
-			resolve: () => {},
 			reject: () => {
 				this._workspaces.set(workspaceId, workspaceStore);
 			},
@@ -109,7 +107,10 @@ export class RootStore {
 		const workspaceStore = this.getWorkspace(workspaceId);
 
 		return resolvePromise({
-			promise: () => api.updateWorkspaceModel({ id: workspaceId, model }),
+			promise: () => api.updateWorkspaceModel({
+				id: workspaceId,
+				model
+			}),
 			resolve: () => {
 				workspaceStore.data.model = model;
 			},
@@ -121,7 +122,10 @@ export class RootStore {
 
 		return resolvePromise({
 			promise: () =>
-				api.updateWorkspaceName({ id: workspaceId, name: encrypt(name) }),
+				api.updateWorkspaceName({
+					id: workspaceId,
+					name: encrypt(name)
+				}),
 			resolve: () => {
 				workspaceStore.data.name = name;
 			},
@@ -132,7 +136,7 @@ export class RootStore {
 		return resolvePromise({
 			promise: () => api.addModel({ name }),
 			resolve: ({ data }) => {
-				this._models.set(data.id, data);
+				this._favoriteModels.set(data.id, data);
 			},
 		});
 	};
@@ -144,19 +148,19 @@ export class RootStore {
 			throw new Error(`Model not found: ${name}`);
 		}
 
-		this._models.delete(model.id);
+		this._favoriteModels.delete(model.id);
 
 		return resolvePromise({
 			promise: () => api.deleteModel(model.id),
 			resolve: () => {},
 			reject: () => {
-				this._models.set(model.id, model);
+				this._favoriteModels.set(model.id, model);
 			},
 		});
 	};
 
 	public inCollection(modelName: string) {
-		return Array.from(this._models).some((model) => model[1].name === modelName)
+		return Array.from(this._favoriteModels).some((model) => model[1].name === modelName)
 	}
 
 	public logout = () => {

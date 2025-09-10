@@ -12,7 +12,9 @@ export const DataFetcher = () => {
 
 	useEffect(() => {
 		delayPromise(
-			Promise.all([rootStore.getDataAction(), rootStore.aiStore.fetchModels()]),
+			Promise.all([
+				rootStore.getDataAction(),
+				rootStore.openrouterStore.fetchModels()]),
 		).then(() => {
 			setIsLoading(false);
 		});

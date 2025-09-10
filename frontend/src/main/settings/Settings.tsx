@@ -8,7 +8,6 @@ import { PageContainer } from "../../layouts/containers/PageContainer";
 import { useRootStore } from "../../store/root.store";
 import { TabAppearance } from "./TabAppearance";
 import { TabCommon } from "./TabCommon";
-import { TabModels } from "./TabModels";
 
 export const Settings = observer(() => {
 	const store = useRootStore();
@@ -24,11 +23,6 @@ export const Settings = observer(() => {
 			key: "appearance",
 			title: "Appearance",
 			content: <TabAppearance />,
-		},
-		{
-			key: "models",
-			title: "Models",
-			content: <TabModels />,
 		},
 	];
 

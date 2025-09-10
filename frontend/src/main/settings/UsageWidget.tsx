@@ -11,7 +11,7 @@ export const UsageWidget = observer((props: UsageWidgetProps) => {
 
 	return (
 		<div className={clsx("flex", props.className)}>
-			<p>Usage: ${store.aiStore.creditsRemaining?.usage}</p>
+			<p>Usage: ${store.openrouterStore.creditsRemaining?.usage}</p>
 		</div>
 	);
 });

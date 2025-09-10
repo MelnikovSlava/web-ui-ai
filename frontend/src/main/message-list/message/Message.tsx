@@ -21,7 +21,7 @@ export const Message = observer((props: MessageProps) => {
 	const messageStore = props.msg;
 	const isUser = messageStore.data.role === "user";
 	const isMobile = useMobile();
-	const isStreaming = messageStore.chatStore.workspace.root.aiStore.isStreaming;
+	const isStreaming = messageStore.chatStore.isStreaming;
 	const [open, setOpen] = useState<boolean>(false);
 	const refMsg = useRef(null);
 

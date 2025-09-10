@@ -23,7 +23,7 @@ export const TabModels = observer((props: TabModelsProps) => {
 		func: store.deleteModelAction,
 	});
 
-	const models = store.aiStore.models.filter((model) =>
+	const models = store.openrouterStore.models.filter((model) =>
 		model.name.toLowerCase().includes(value.toLowerCase()),
 	);
 

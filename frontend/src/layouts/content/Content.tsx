@@ -4,7 +4,6 @@ import { Panel, PanelGroup, PanelResizeHandle } from "react-resizable-panels";
 import { Outlet } from "react-router";
 import { usePanelSize } from "../../hooks/usePanelSize";
 import { Panel as Side } from "./panel/Panel";
-import { Sidebar } from "./Sidebar";
 import { useMobile } from "../../hooks/useMobile";
 import { MobileSidebar } from "./mobile/MobileSidebar";
 
@@ -22,7 +21,6 @@ export const Content = () => {
 
 	return (
 		<Fragment>
-			<Sidebar />
 			<PanelGroup direction="horizontal">
 				<Panel
 					defaultSize={panelSize}

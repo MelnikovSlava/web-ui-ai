@@ -14,6 +14,7 @@ import { Content } from "./layouts/content/Content";
 import { Chat } from "./main/message-list/Chat";
 import { Settings } from "./main/settings/Settings";
 import { WorkspaceSettings } from "./main/workspace-settings/WorkspaceSettings";
+import { Models } from "./main/models/Models";
 
 export const routes = {
 	root: "/",
@@ -27,6 +28,7 @@ export const routes = {
 		`/workspace/${wId}/settings`,
 
 	settings: "/settings",
+	models: "/models",
 };
 
 export const router = createHashRouter([
@@ -68,6 +70,10 @@ export const router = createHashRouter([
 											{
 												path: routes.settings,
 												element: <Settings />,
+											},
+											{
+												path: routes.models,
+												element: <Models />,
 											},
 											{
 												path: routes.workspace(),
