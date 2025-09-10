@@ -8,6 +8,7 @@ import { useRootStore } from "../../store/root.store";
 import { InputToken } from "./InputToken";
 import { SelectTheme } from "./SelectTheme";
 import { TabModels } from "./TabModels";
+import { TitleModelSelect } from "./TitleModelSelect";
 
 export const Settings = observer(() => {
 	const store = useRootStore();
@@ -19,10 +20,9 @@ export const Settings = observer(() => {
 
 				<div className={clsx("space-y-6")}>
 					{/* Common Settings */}
-					<div className={clsx("space-y-4")}>
-						<div className={clsx("grid grid-cols-1 md:grid-cols-2 gap-6")}>
-							<InputToken />
-						</div>
+					<div className={clsx("space-y-6")}>
+						<InputToken />
+						<TitleModelSelect />
 					</div>
 
 					{/* Appearance Settings */}

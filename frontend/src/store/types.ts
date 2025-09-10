@@ -53,4 +53,5 @@ export type Data = {
 	chats: Chat[];
 	messages: Message[];
 	models: ModelFavorite[];
+	titleModel: string | null;
 };

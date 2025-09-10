@@ -34,6 +34,7 @@ export class ChatStore {
 
 	private async _updateChatTitle() {
 		const ai = new AiStore();
+		const titleModel = this.workspace.root.settingsStore.titleModel;
 
 		const firstTwoMessages = this.messages.slice(0, 2);
 		const messageShortHistory = this._prepareMessagesForAi(firstTwoMessages);
@@ -44,7 +45,7 @@ export class ChatStore {
 			role: "user",
 		});
 
-		const response = await ai.sendMessage(messageShortHistory);
+		const response = await ai.sendMessage(messageShortHistory, titleModel);
 
 		if (response) {
 			const jsonRegex = /\{.*\}/s;

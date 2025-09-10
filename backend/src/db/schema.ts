@@ -4,6 +4,7 @@ export const usersTable = sqliteTable("users", {
 	id: integer("id").primaryKey({ autoIncrement: true }),
 	username: text("username").notNull().unique(),
 	password: text("password").notNull(),
+	titleModel: text("titleModel"),
 });
 
 export const workspacesTable = sqliteTable("workspaces", {

@@ -8,6 +8,7 @@ import type { ModelFavorite, Workspace } from "./types";
 import { WorkspaceStore } from "./workspace.store";
 import { router, routes } from "../router";
 import { OpenRouterStore } from "./openrouter.store";
+import { DEFAULT_TITLE_MODEL } from "../utils/constants";
 
 export class RootStore {
 	public openrouterStore: OpenRouterStore;
@@ -33,6 +34,8 @@ export class RootStore {
 		return resolvePromise({
 			promise: () => api.getData(),
 			resolve: ({ data }) => {
+				this.settingsStore.setTitleModel(data.titleModel);
+				
 				data.models.forEach((model) => {
 					this._favoriteModels.set(model.id, model);
 				})

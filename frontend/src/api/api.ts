@@ -143,6 +143,10 @@ class Api {
 public changeChatModel = (id: number, modelId: number) => {
 	return this._axios.put(`/chats/${id}/change-model`, { modelId });
 };
+
+public updateTitleModel = (titleModel: string) => {
+	return this._axios.put("/user/update-title-model", { titleModel });
+};
 }
 
 export const api = new Api();

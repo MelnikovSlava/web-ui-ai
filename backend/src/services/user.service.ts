@@ -8,6 +8,17 @@ export const getUserById = async (id: number): Promise<User | undefined> => {
 	return await db.select().from(usersTable).where(eq(usersTable.id, id)).get();
 };
 
+export const getUserTitleModel = async (id: number): Promise<string | null> => {
+	const user = await getUserById(id);
+	return user?.titleModel || null;
+};
+
+export const updateUserTitleModel = async (id: number, titleModel: string): Promise<void> => {
+	await db.update(usersTable)
+		.set({ titleModel })
+		.where(eq(usersTable.id, id));
+};
+
 export const registerUser = async (username: string, password: string) => {
 	const existingUser = await db
 		.select()
